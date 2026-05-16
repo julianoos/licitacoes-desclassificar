@@ -8,18 +8,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap">
 <style>
 :root {
-  --bg: #0a0a0a;
-  --surface: #141414;
-  --surface-2: #1c1c1c;
+  --bg: #1c1c1c;
+  --surface: #262626;
+  --surface-2: #303030;
   --ink: #f0f0f0;
   --ink-2: #d4d2c9;
   --muted: #888880;
-  --muted-2: #555550;
-  --line: #262626;
-  --line-strong: #383838;
+  --muted-2: #606058;
+  --line: #383838;
+  --line-strong: #4a4a4a;
   --radius: 12px;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --shadow-hover: 0 12px 32px -12px rgba(0,0,0,0.7), 0 2px 6px -2px rgba(0,0,0,0.4);
+  --shadow-hover: 0 12px 32px -12px rgba(0,0,0,0.5), 0 2px 6px -2px rgba(0,0,0,0.3);
 }
 html.light {
   --bg: #f4f3f0;
@@ -501,10 +501,9 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
     </nav>
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
+    <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      <span id="theme-label">Claro</span>
     </button>
   </div>
   </header>
@@ -1403,17 +1402,12 @@ let sidebarHidden = localStorage.getItem('sidebar_hidden') === '1';
 
 function applySidebar(){
   const container = document.querySelector('.container');
-  const forceHide = currentSection === 'home';
-  container.classList.toggle('sidebar-off', forceHide || sidebarHidden);
+  const isHome = currentSection === 'home';
+  container.classList.toggle('sidebar-off', isHome || sidebarHidden);
   const btn = document.getElementById('sidebar-toggle');
   if(!btn) return;
-  if(forceHide || sidebarHidden){
-    btn.title = 'Mostrar barra lateral';
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`;
-  } else {
-    btn.title = 'Ocultar barra lateral';
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`;
-  }
+  btn.style.display = isHome ? 'none' : '';
+  btn.title = sidebarHidden ? 'Mostrar barra lateral' : 'Ocultar barra lateral';
 }
 
 function toggleSidebar(){
@@ -1720,7 +1714,7 @@ function applyTheme(isLight){
   document.documentElement.classList.toggle('light', isLight);
   document.getElementById('theme-icon-moon').style.display = isLight ? 'none' : 'block';
   document.getElementById('theme-icon-sun').style.display  = isLight ? 'block' : 'none';
-  document.getElementById('theme-label').textContent = isLight ? 'Escuro' : 'Claro';
+  document.getElementById('theme-toggle').title = isLight ? 'Modo escuro' : 'Modo claro';
 }
 function toggleTheme(){
   const isLight = !document.documentElement.classList.contains('light');
