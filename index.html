@@ -68,6 +68,75 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
 .nav-btn.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .nav-btn:active{transform:scale(0.97)}
 
+/* ─── TOPBAR LEFT ─── */
+.topbar-left{display:flex;align-items:center;gap:10px}
+.brand-btn{
+  appearance:none;background:none;border:none;cursor:pointer;padding:0;
+  font-family:'Outfit',sans-serif;font-weight:500;font-size:clamp(11px,0.9vw,14px);
+  letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);
+  transition:color 200ms var(--ease);line-height:1.2;text-align:left;
+}
+.brand-btn:hover{color:var(--muted)}
+.brand-btn span{display:block;color:var(--muted);font-weight:300;font-size:clamp(9px,0.75vw,11px);letter-spacing:0.08em;margin-top:1px}
+
+/* ─── ICON BUTTON ─── */
+.icon-btn{
+  appearance:none;background:transparent;
+  border:1px solid var(--line);color:var(--muted);
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background 220ms var(--ease),border-color 220ms var(--ease),color 220ms var(--ease),transform 160ms var(--ease);
+}
+.icon-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.icon-btn:active{transform:scale(0.95)}
+.icon-btn svg{width:15px;height:15px}
+
+/* ─── SIDEBAR TOGGLE ─── */
+.container.sidebar-off{grid-template-columns:1fr}
+.container.sidebar-off .sidebar{display:none}
+
+/* ─── HOME PAGE ─── */
+.home-wrap{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100%;
+  padding:clamp(32px,6vh,80px) clamp(24px,6vw,80px);
+}
+.home-eyebrow{
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;margin-bottom:16px;text-align:center;
+}
+.home-title{
+  font-family:'Outfit',sans-serif;font-weight:200;
+  font-size:clamp(26px,3.5vw,54px);letter-spacing:-0.04em;
+  color:var(--ink);line-height:1.05;text-align:center;max-width:760px;
+}
+.home-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
+.home-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  margin-top:48px;width:100%;max-width:700px;
+}
+@media(max-width:600px){.home-grid{grid-template-columns:1fr}}
+.home-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:28px 28px 40px;cursor:pointer;text-align:left;
+  display:flex;flex-direction:column;gap:8px;
+  position:relative;overflow:hidden;
+  transition:transform 280ms var(--ease),border-color 280ms var(--ease),box-shadow 280ms var(--ease);
+}
+.home-card:hover{transform:translateY(-4px);border-color:var(--line-strong);box-shadow:var(--shadow-hover)}
+.home-card-icon{color:var(--muted-2);margin-bottom:4px}
+.home-card-icon svg{width:20px;height:20px}
+.home-card-num{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted-2);font-weight:500}
+.home-card-title{font-family:'Outfit',sans-serif;font-weight:400;font-size:17px;letter-spacing:-0.01em;color:var(--ink)}
+.home-card-desc{font-size:12px;color:var(--muted);font-weight:300;line-height:1.65}
+.home-card-arrow{
+  position:absolute;bottom:18px;right:20px;
+  font-size:14px;color:var(--muted-2);
+  transition:transform 280ms var(--ease),color 280ms var(--ease);
+}
+.home-card:hover .home-card-arrow{transform:translate(3px,-3px);color:var(--ink)}
+
 /* ─── THEME TOGGLE ─── */
 .theme-toggle{
   appearance:none;background:transparent;
@@ -417,10 +486,17 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 <body>
 <div class="app">
   <header class="topbar">
-    <span class="brand">Desclassificar <span>Concorrentes</span></span>
+  <div class="topbar-left">
+    <button class="icon-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Ocultar barra lateral">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
+    <button class="brand-btn" onclick="switchSection('home')" title="Início">
+      Licitações<span>Precificação e Desclassificação de Concorrentes</span>
+    </button>
+  </div>
   <div class="topbar-right">
     <nav class="nav-group">
-      <button class="nav-btn active" data-section="teoria">Teoria</button>
+      <button class="nav-btn" data-section="teoria">Teoria</button>
       <button class="nav-btn" data-section="legislacao">Legislação</button>
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
@@ -1070,7 +1146,10 @@ const checkedItems = JSON.parse(localStorage.getItem('ck_checked')||'{}');
 function renderSidebar(){
   const sb = document.getElementById('sidebar');
   let html = '';
-  if(currentSection==='teoria'){
+  if(currentSection==='home'){
+    sb.innerHTML='';
+    return;
+  } else if(currentSection==='teoria'){
     html += '<div class="sidebar-section-title">Teoria</div>';
     TEORIA.forEach((t,i)=>{
       html += `<a class="sidebar-link" href="#" data-id="${t.id}" onclick="scrollToId('${t.id}');return false;">${String(i+1).padStart(2,'0')} ${t.titulo}</a>`;
@@ -1301,11 +1380,13 @@ function escAttr(s){
 function switchSection(section){
   currentSection=section;
   document.querySelectorAll('.nav-btn').forEach(b=>{
-    b.classList.toggle('active',b.dataset.section===section);
+    b.classList.toggle('active', b.dataset.section===section);
   });
   document.getElementById('main').scrollTop=0;
+  applySidebar();
   renderSidebar();
-  if(section==='teoria') renderTeoria();
+  if(section==='home') renderHome();
+  else if(section==='teoria') renderTeoria();
   else if(section==='legislacao') renderLegislacao();
   else if(section==='checklist') renderChecklist();
   else renderCalculadora();
@@ -1314,6 +1395,78 @@ function switchSection(section){
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click',()=>switchSection(btn.dataset.section));
 });
+
+// ═══════════════════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ═══════════════════════════════════════════════════════════
+let sidebarHidden = localStorage.getItem('sidebar_hidden') === '1';
+
+function applySidebar(){
+  const container = document.querySelector('.container');
+  const forceHide = currentSection === 'home';
+  container.classList.toggle('sidebar-off', forceHide || sidebarHidden);
+  const btn = document.getElementById('sidebar-toggle');
+  if(!btn) return;
+  if(forceHide || sidebarHidden){
+    btn.title = 'Mostrar barra lateral';
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`;
+  } else {
+    btn.title = 'Ocultar barra lateral';
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`;
+  }
+}
+
+function toggleSidebar(){
+  if(currentSection === 'home') return;
+  sidebarHidden = !sidebarHidden;
+  localStorage.setItem('sidebar_hidden', sidebarHidden ? '1' : '0');
+  applySidebar();
+  if(!sidebarHidden) renderSidebar();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER HOME
+// ═══════════════════════════════════════════════════════════
+function renderHome(){
+  const cards = [
+    {
+      section:'teoria', num:'01', title:'Teoria',
+      desc:'17 tópicos operacionais: impugnação, desclassificação, inexequibilidade, habilitação, jurisprudência e mais.',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`
+    },
+    {
+      section:'legislacao', num:'02', title:'Legislação',
+      desc:'Texto completo dos Arts. 59 a 70 da Lei 14.133/2021 — base legal para desclassificação e inabilitação.',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`
+    },
+    {
+      section:'checklist', num:'03', title:'Checklist',
+      desc:'30+ itens em 8 grupos com jurisprudência, observações e texto de recurso pronto para copiar ou editar.',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`
+    },
+    {
+      section:'calculadora', num:'04', title:'Calculadora',
+      desc:'Preço Mínimo de Venda com alíquota reversa do Simples Nacional. Tabelas Comércio (Anexo I) e Serviços (Anexo IV).',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`
+    }
+  ];
+  document.getElementById('main').innerHTML = `
+    <div class="home-wrap">
+      <div class="home-eyebrow">Sistema de Licitações</div>
+      <h1 class="home-title">Precificação e Desclassificação de Concorrentes</h1>
+      <p class="home-sub">Selecione uma área para começar</p>
+      <div class="home-grid">
+        ${cards.map(c=>`
+          <div class="home-card" onclick="switchSection('${c.section}')">
+            <div class="home-card-icon">${c.icon}</div>
+            <div class="home-card-num">${c.num}</div>
+            <div class="home-card-title">${c.title}</div>
+            <div class="home-card-desc">${c.desc}</div>
+            <span class="home-card-arrow">↗</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
 
 // ═══════════════════════════════════════════════════════════
 // DATA — SIMPLES NACIONAL
@@ -1577,7 +1730,7 @@ function toggleTheme(){
 applyTheme(localStorage.getItem('theme') === 'light');
 
 // ─── INIT ───
-switchSection('teoria');
+switchSection('home');
 </script>
 </body>
 </html>
