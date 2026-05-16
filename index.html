@@ -409,53 +409,53 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
 .calc-layout{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
 @media(max-width:1000px){.calc-layout{grid-template-columns:1fr}}
 
-.calc-form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(22px,3vh,36px) clamp(20px,2.5vw,32px)}
-.calc-form-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:20px}
+.calc-form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px}
+.calc-form-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:12px}
 
-.field-group{margin-bottom:18px}
-.field-label{display:block;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
-.field-hint{font-size:11px;color:var(--muted-2);margin-top:5px;font-weight:300}
+.field-group{margin-bottom:10px}
+.field-label{display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:4px}
+.field-hint{font-size:10px;color:var(--muted-2);margin-top:3px;font-weight:300}
 .field-input{
   width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
-  color:var(--ink);font-family:'Outfit',sans-serif;font-size:15px;font-weight:400;
-  padding:10px 14px;transition:border-color 200ms var(--ease),box-shadow 200ms var(--ease);
+  color:var(--ink);font-family:'Outfit',sans-serif;font-size:14px;font-weight:400;
+  padding:7px 12px;transition:border-color 200ms var(--ease),box-shadow 200ms var(--ease);
   appearance:none;
 }
 .field-input:focus{outline:none;border-color:var(--line-strong);box-shadow:0 0 0 3px rgba(240,240,240,0.06)}
 .field-input::placeholder{color:var(--muted-2)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-select{
   width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
   color:var(--ink);font-family:'Outfit',sans-serif;font-size:14px;font-weight:400;
-  padding:10px 14px;cursor:pointer;
+  padding:7px 12px;cursor:pointer;
   transition:border-color 200ms var(--ease);
 }
 .field-select:focus{outline:none;border-color:var(--line-strong)}
 
 .calc-result-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:clamp(22px,3vh,36px) clamp(20px,2.5vw,32px);
+  padding:16px 20px;
   position:sticky;top:24px;
 }
-.calc-result-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:6px}
+.calc-result-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:4px}
 .calc-pmv-value{
   font-family:'Outfit',sans-serif;font-weight:200;
-  font-size:clamp(36px,4vw,52px);letter-spacing:-0.04em;
-  color:var(--ink);line-height:1;margin-bottom:24px;
+  font-size:clamp(28px,3vw,40px);letter-spacing:-0.04em;
+  color:var(--ink);line-height:1;margin-bottom:14px;
 }
 .calc-pmv-value.error{font-size:16px;font-weight:400;color:var(--muted);letter-spacing:0}
-.calc-breakdown{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.calc-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.calc-breakdown{display:flex;flex-direction:column;gap:0;margin-bottom:12px}
+.calc-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
 .calc-row:last-child{border-bottom:none}
-.calc-row-label{font-size:13px;color:var(--muted);font-weight:300}
-.calc-row-value{font-size:15px;color:var(--ink);font-weight:400;letter-spacing:-0.01em;white-space:nowrap}
+.calc-row-label{font-size:12px;color:var(--muted);font-weight:300}
+.calc-row-value{font-size:13px;color:var(--ink);font-weight:400;letter-spacing:-0.01em;white-space:nowrap}
 .calc-total-row{
   background:var(--surface-2);border-radius:8px;
-  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;
-  margin-top:8px;
+  padding:10px 14px;display:flex;justify-content:space-between;align-items:center;
+  margin-top:6px;
 }
-.calc-total-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
-.calc-total-value{font-size:20px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
+.calc-total-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.calc-total-value{font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
 
 .calc-section{margin-top:40px}
 .calc-section-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:16px}
@@ -1509,10 +1509,9 @@ const SIMPLES = {
 // ═══════════════════════════════════════════════════════════
 function renderCalculadora(){
   const html = `
-  <div class="section-header">
+  <div class="section-header" style="margin-bottom:20px">
     <div class="section-eyebrow"><span class="dot"></span>Simples Nacional<span class="dot"></span>Alíquota Reversa</div>
-    <h1 class="section-title">Calculadora de Preços</h1>
-    <p class="section-subtitle">Calcule o Preço Mínimo de Venda (PMV) correto para licitações, usando a alíquota reversa do Simples Nacional.</p>
+    <h1 class="section-title" style="font-size:clamp(22px,2.5vw,32px)">Calculadora de Preços</h1>
   </div>
 
   <div class="calc-layout">
@@ -1523,45 +1522,44 @@ function renderCalculadora(){
         <div class="field-row">
           <div class="field-group">
             <label class="field-label" for="c-qty">Quantidade</label>
-            <input class="field-input" id="c-qty" type="number" min="1" value="5" oninput="calcUpdate()">
+            <input class="field-input" id="c-qty" type="number" min="1" placeholder="Ex: 10" oninput="calcUpdate()">
           </div>
           <div class="field-group">
             <label class="field-label" for="c-custo">Custo unitário (R$)</label>
-            <input class="field-input" id="c-custo" type="number" min="0" step="0.01" value="100" oninput="calcUpdate()">
+            <input class="field-input" id="c-custo" type="number" min="0" step="0.01" placeholder="Ex: 100,00" oninput="calcUpdate()">
           </div>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="c-frete">Frete / Logística por item (R$)</label>
-          <input class="field-input" id="c-frete" type="number" min="0" step="0.01" value="10" oninput="calcUpdate()">
-          <div class="field-hint">Custo de entrega rateado por unidade. Coloque 0 se não houver.</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="c-frete">Frete por item (R$)</label>
+            <input class="field-input" id="c-frete" type="number" min="0" step="0.01" placeholder="0,00" oninput="calcUpdate()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="c-lucro">Margem de lucro (%)</label>
+            <input class="field-input" id="c-lucro" type="number" min="0" max="99" step="0.1" value="25" oninput="calcUpdate()">
+          </div>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="c-lucro">Margem de lucro desejada (%)</label>
-          <input class="field-input" id="c-lucro" type="number" min="0" max="99" step="0.1" value="30" oninput="calcUpdate()">
-          <div class="field-hint">O ideal é no mínimo 20%. O lucro é calculado sobre o preço de venda (não sobre o custo).</div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="c-tipo">Tipo de empresa</label>
-          <select class="field-select" id="c-tipo" onchange="calcTipoChange()">
-            <option value="comercio">Comércio — Anexo I</option>
-            <option value="servico">Serviços — Anexo IV</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="c-faixa">Faixa de faturamento anual</label>
-          <select class="field-select" id="c-faixa" onchange="calcFaixaChange()">
-          </select>
-          <div class="field-hint">Selecione a faixa do seu faturamento bruto anual para preencher a alíquota automaticamente.</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="c-tipo">Tipo de empresa</label>
+            <select class="field-select" id="c-tipo" onchange="calcTipoChange()">
+              <option value="comercio">Comércio — Anexo I</option>
+              <option value="servico">Serviços — Anexo IV</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="c-faixa">Faixa de faturamento</label>
+            <select class="field-select" id="c-faixa" onchange="calcFaixaChange()">
+            </select>
+          </div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="c-aliquota">Alíquota reversa (%)</label>
           <input class="field-input" id="c-aliquota" type="number" min="0" max="99" step="0.01" value="4.20" oninput="calcUpdate()">
-          <div class="field-hint">Preenchida automaticamente pela faixa. Você pode ajustar manualmente se necessário.</div>
+          <div class="field-hint">Preenchida automaticamente pela faixa. Ajuste manualmente se necessário.</div>
         </div>
       </div>
     </div>
