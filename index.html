@@ -95,6 +95,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
 /* ─── SIDEBAR TOGGLE ─── */
 .container.sidebar-off{grid-template-columns:1fr}
 .container.sidebar-off .sidebar{display:none}
+.sidebar-toggle-row{display:flex;justify-content:flex-end;padding:10px 10px 0;flex-shrink:0}
 
 /* ─── HOME PAGE ─── */
 .home-wrap{
@@ -113,10 +114,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
 }
 .home-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
-  margin-top:48px;width:100%;max-width:700px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin-top:48px;width:100%;max-width:1040px;
 }
-@media(max-width:600px){.home-grid{grid-template-columns:1fr}}
+@media(max-width:860px){.home-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.home-grid{grid-template-columns:1fr}}
 .home-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   padding:28px 28px 40px;cursor:pointer;text-align:left;
@@ -306,7 +308,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
   transition:background 200ms var(--ease),border-color 200ms var(--ease),color 200ms var(--ease);
 }
 .artigo-link:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.artigo-texto{font-size:13.5px;color:var(--ink-2);line-height:1.9;font-weight:300;white-space:pre-wrap}
+.artigo-texto{font-size:13.5px;color:var(--ink-2);line-height:1.6;font-weight:300}
 .artigo-texto .inciso{padding-left:0;display:block;margin:4px 0}
 .artigo-texto .paragrafo{display:block;margin:8px 0;padding-left:0}
 .artigo-texto strong{color:var(--ink);font-weight:500}
@@ -487,9 +489,6 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 <div class="app">
   <header class="topbar">
   <div class="topbar-left">
-    <button class="icon-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Ocultar barra lateral">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-    </button>
     <button class="brand-btn" onclick="switchSection('home')" title="Início">
       Licitações<span>Precificação e Desclassificação de Concorrentes</span>
     </button>
@@ -1142,13 +1141,17 @@ const checkedItems = JSON.parse(localStorage.getItem('ck_checked')||'{}');
 // ═══════════════════════════════════════════════════════════
 // SIDEBAR
 // ═══════════════════════════════════════════════════════════
+const SIDEBAR_TOGGLE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`;
+
 function renderSidebar(){
   const sb = document.getElementById('sidebar');
   let html = '';
   if(currentSection==='home'){
     sb.innerHTML='';
     return;
-  } else if(currentSection==='teoria'){
+  }
+  html += `<div class="sidebar-toggle-row"><button class="icon-btn" onclick="toggleSidebar()" title="Ocultar barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
+  if(currentSection==='teoria'){
     html += '<div class="sidebar-section-title">Teoria</div>';
     TEORIA.forEach((t,i)=>{
       html += `<a class="sidebar-link" href="#" data-id="${t.id}" onclick="scrollToId('${t.id}');return false;">${String(i+1).padStart(2,'0')} ${t.titulo}</a>`;
@@ -1229,7 +1232,7 @@ function renderLegislacao(){
       <div class="artigo-eyebrow">${l.subtitulo||''}</div>
       <h2 class="artigo-titulo">${l.titulo}</h2>
       ${linkHtml}
-      <div class="artigo-texto">${escHtml(l.texto)}</div>
+      <div class="artigo-texto">${escHtml(l.texto).replace(/\n\n+/g,'<br>').replace(/\n/g,'<br>')}</div>
     </div>`;
   });
   document.getElementById('main').innerHTML = html;
@@ -1404,10 +1407,21 @@ function applySidebar(){
   const container = document.querySelector('.container');
   const isHome = currentSection === 'home';
   container.classList.toggle('sidebar-off', isHome || sidebarHidden);
-  const btn = document.getElementById('sidebar-toggle');
-  if(!btn) return;
-  btn.style.display = isHome ? 'none' : '';
-  btn.title = sidebarHidden ? 'Mostrar barra lateral' : 'Ocultar barra lateral';
+  // When sidebar is hidden (and not on home), show a reopen button in the topbar
+  let topbarBtn = document.getElementById('topbar-sb-toggle');
+  if(!isHome && sidebarHidden){
+    if(!topbarBtn){
+      topbarBtn = document.createElement('button');
+      topbarBtn.id = 'topbar-sb-toggle';
+      topbarBtn.className = 'icon-btn';
+      topbarBtn.onclick = toggleSidebar;
+      topbarBtn.title = 'Mostrar barra lateral';
+      topbarBtn.innerHTML = SIDEBAR_TOGGLE_SVG;
+      document.querySelector('.topbar-left').prepend(topbarBtn);
+    }
+  } else if(topbarBtn){
+    topbarBtn.remove();
+  }
 }
 
 function toggleSidebar(){
