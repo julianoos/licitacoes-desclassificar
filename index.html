@@ -6,6 +6,9 @@
 <title>Desclassificar Concorrentes — Guia Operacional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
 :root {
   --bg: #1c1c1c;
@@ -400,6 +403,112 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit'
 }
 .ck-empty{text-align:center;color:var(--muted-2);padding:48px 24px;font-size:14px}
 
+/* ─── EDITAL READER ─── */
+.er-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+@media(max-width:1000px){.er-layout{grid-template-columns:1fr}}
+.er-upload-area{
+  border:2px dashed var(--line-strong);border-radius:var(--radius);
+  padding:36px 24px;text-align:center;cursor:pointer;
+  transition:border-color 220ms var(--ease),background 220ms var(--ease);
+}
+.er-upload-area:hover,.er-upload-area.drag-over{border-color:var(--ink);background:rgba(240,240,240,0.03)}
+.er-upload-icon{color:var(--muted-2);margin-bottom:10px}
+.er-upload-icon svg{width:28px;height:28px}
+.er-upload-label{font-size:14px;color:var(--muted);font-weight:300}
+.er-upload-hint{font-size:11px;color:var(--muted-2);margin-top:5px}
+.er-file-info{
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;margin-top:10px;
+}
+.er-file-name{font-size:13px;color:var(--ink);font-weight:400;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.er-file-size{font-size:11px;color:var(--muted);flex-shrink:0}
+.er-file-remove{background:none;border:none;cursor:pointer;color:var(--muted-2);font-size:16px;padding:0;line-height:1;transition:color 180ms}
+.er-file-remove:hover{color:var(--ink)}
+.er-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.er-panel-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:14px}
+.er-type-row{display:flex;gap:8px;margin-bottom:14px}
+.er-type-btn{
+  flex:1;padding:10px 8px;border:1px solid var(--line);border-radius:var(--radius);
+  background:transparent;font-family:'Outfit',sans-serif;
+  font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;transition:all 220ms var(--ease);
+}
+.er-type-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.er-type-btn.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.er-analyze-btn{
+  width:100%;padding:12px;background:var(--ink);border:1px solid var(--ink);border-radius:var(--radius);
+  font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--bg);
+  cursor:pointer;transition:all 220ms var(--ease);
+}
+.er-analyze-btn:hover{opacity:0.85}
+.er-analyze-btn:disabled{opacity:0.35;cursor:not-allowed}
+.er-loading{display:flex;align-items:center;gap:12px;padding:32px 24px;color:var(--muted);font-size:13px;font-weight:300}
+.er-spinner{width:16px;height:16px;border:2px solid var(--line-strong);border-top-color:var(--ink);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.er-result-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:clamp(18px,2.5vh,28px) clamp(16px,2vw,28px);margin-top:24px;
+}
+.er-result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.er-result-eyebrow{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.er-result-content{font-size:13.5px;color:var(--ink-2);line-height:1.75;font-weight:300}
+.er-result-content h2{font-size:14px;font-weight:600;color:var(--ink);margin:18px 0 8px;letter-spacing:0}
+.er-result-content h3{font-size:13px;font-weight:500;color:var(--ink);margin:14px 0 6px}
+.er-result-content ul{padding-left:18px;margin:8px 0}
+.er-result-content li{margin-bottom:6px}
+.er-result-content strong{color:var(--ink);font-weight:500}
+.er-result-content p{margin-bottom:10px}
+.er-result-content code{font-family:monospace;font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+.er-complete-prompt{
+  margin-top:16px;padding:14px 18px;
+  background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.er-complete-text{font-size:13px;color:var(--ink-2);font-weight:300}
+.er-complete-btn{
+  flex-shrink:0;appearance:none;background:transparent;
+  border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:8px 16px;border-radius:var(--radius);cursor:pointer;
+  transition:all 180ms var(--ease);
+}
+.er-complete-btn:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.er-history-section{margin-top:32px}
+.er-history-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px}
+.er-history-list{display:flex;flex-direction:column;gap:6px}
+.er-history-item{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  transition:border-color 200ms var(--ease);
+}
+.er-history-item:hover{border-color:var(--line-strong)}
+.er-history-name{font-size:12px;color:var(--ink);font-weight:400;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.er-history-meta{font-size:10px;color:var(--muted);flex-shrink:0;letter-spacing:0.04em}
+.er-history-clear{
+  margin-top:10px;appearance:none;background:transparent;
+  border:1px solid var(--line);color:var(--muted-2);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:6px 14px;border-radius:var(--radius);cursor:pointer;
+  transition:all 180ms var(--ease);
+}
+.er-history-clear:hover{border-color:var(--line-strong);color:var(--muted)}
+.er-copy-btn{
+  appearance:none;background:transparent;
+  border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:7px 14px;border-radius:var(--radius);cursor:pointer;
+  transition:all 180ms var(--ease);
+}
+.er-copy-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.er-error{
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);
+  padding:20px 24px;margin-top:16px;font-size:13px;color:var(--muted);font-weight:300;line-height:1.7;
+}
+
 /* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -499,6 +608,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
       <button class="nav-btn" data-section="legislacao">Legislação</button>
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
+      <button class="nav-btn" data-section="editalreader">Edital Reader</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1166,13 +1276,18 @@ function renderSidebar(){
     CHECKLIST.forEach((g,i)=>{
       html += `<a class="sidebar-link" href="#" onclick="scrollToGrupo(${i});return false;">${g.secao}</a>`;
     });
-  } else {
+  } else if(currentSection==='calculadora'){
     html += '<div class="sidebar-section-title">Calculadora</div>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'c-custo\');return false;">Dados do item</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'c-tipo\');return false;">Tipo de empresa</a>';
     html += '<div class="sidebar-divider"></div>';
     html += '<div class="sidebar-section-title">Tabelas</div>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'simples-tables\');return false;">Simples Nacional</a>';
+  } else if(currentSection==='editalreader'){
+    html += '<div class="sidebar-section-title">Edital Reader</div>';
+    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-upload\');return false;">Upload</a>';
+    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-result-area\');return false;">Resultado</a>';
+    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-history\');return false;">Histórico</a>';
   }
   sb.innerHTML = html;
 }
@@ -1391,7 +1506,8 @@ function switchSection(section){
   else if(section==='teoria') renderTeoria();
   else if(section==='legislacao') renderLegislacao();
   else if(section==='checklist') renderChecklist();
-  else renderCalculadora();
+  else if(section==='calculadora') renderCalculadora();
+  else if(section==='editalreader') renderEditalReader();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1456,6 +1572,11 @@ function renderHome(){
       section:'calculadora', num:'04', title:'Calculadora',
       desc:'Preço Mínimo de Venda com alíquota reversa do Simples Nacional. Tabelas Comércio (Anexo I) e Serviços (Anexo IV).',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`
+    },
+    {
+      section:'editalreader', num:'05', title:'Edital Reader',
+      desc:'Análise de editais e Termos de Referência com IA (Gemma). Upload de PDF, Excel ou Word. Resumo executivo ou análise completa em 7 seções.',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
     }
   ];
   document.getElementById('main').innerHTML = `
@@ -1734,6 +1855,462 @@ function toggleTheme(){
   applyTheme(isLight);
 }
 applyTheme(localStorage.getItem('theme') === 'light');
+
+// ═══════════════════════════════════════════════════════════
+// EDITAL READER — CONFIG
+// ═══════════════════════════════════════════════════════════
+const OPENROUTER_KEY = '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';
+const ER_MODEL = 'google/gemma-4-31b-it';
+
+const PROMPT_RESUMIDA = `Você é um especialista em licitações públicas brasileiras. Sua função é extrair informações de editais e/ou Termo de Referência de pregão eletrônico e dispensa com precisão cirúrgica.
+
+Você extrai dados. Não avalia, não recomenda, não elogia, não critica.
+
+PROIBIÇÕES ABSOLUTAS:
+- NUNCA use emojis de nenhum tipo
+- NUNCA dê opiniões sobre o edital
+- NUNCA faça recomendações ao licitante
+- NUNCA inclua conclusões ou julgamentos subjetivos
+- NUNCA calcule margens, custos estimados ou projeções financeiras
+- NUNCA adicione seções além das definidas (RESUMO EXECUTIVO e ANÁLISE DE RISCO)
+- NUNCA responda de forma livre — siga estritamente a estrutura definida
+
+PASSO 0 — VERIFICAÇÃO INICIAL:
+Antes de qualquer análise, confirme se o documento enviado é um edital de licitação ou Termo de Referência (TR). Se não for nenhum dos dois, informe ao usuário e não prossiga.
+
+Esta skill executa APENAS duas seções: RESUMO EXECUTIVO e ANÁLISE DE RISCO (RESUMIDA). Nenhuma outra seção deve ser incluída.
+
+HIERARQUIA DE DOCUMENTOS:
+O TR é a fonte primária. O Edital é fonte secundária e complementar. Em qualquer divergência, o dado do TR prevalece.
+
+REGRAS OBRIGATÓRIAS:
+- Referencie cada informação apenas pelo item/subitem do documento (ex: TR, Item 5.1)
+- Nunca cite número de página
+- Para campos críticos, inclua trecho curto do texto original
+- Campos críticos: Atestado de Capacidade Técnica, Prazo de entrega, Garantia do objeto, Amostra, Índices financeiros
+- Se a informação não estiver no documento: "Informação inexistente no TR"
+- NUNCA invente, presuma, infira ou deduza informações não presentes explicitamente
+- Quando houver divergência: "CONFLITO: [descreva] — Edital: Item X / TR: Item Y"
+
+## RESUMO EXECUTIVO
+
+(Sem referência de itens neste bloco)
+
+- **Objeto:** descrição resumida do que está sendo licitado
+- **Modalidade:** Pregão Eletrônico ou Dispensa Eletrônica
+- **Exclusividade ME/EPP:** exclusivo para ME/EPP ou ampla concorrência?
+- **Valor de referência:** total e unitário (sigiloso ou público)
+- **Lance mínimo (intervalo):** percentual ou valor fixo entre lances
+- **Atestado de Capacidade Técnica:** exige ou não? Se sim, quantitativo mínimo?
+- **Tipo e prazo de entrega:** total ou parcelada? Dias úteis ou corridos?
+- **Garantia do objeto:** prazo e tipo (CDC, fabricante ou ONSITE)
+- **Amostra:** exige ou não? Se sim, prazo e local
+- **Instalação:** exige instalação ou apenas entrega?
+- **Marca de referência:** o TR menciona marca ou modelo? Se sim, qual?
+
+## ANÁLISE DE RISCO (RESUMIDA)
+
+Liste em até 3 bullets os pontos críticos mais relevantes extraídos do documento. Se não houver, informe: "Nenhum ponto crítico identificado".
+
+- [ponto crítico 1]
+- [ponto crítico 2]
+- [ponto crítico 3]
+
+Proibições nesta seção: NUNCA recomende participação, NUNCA diga "você deveria", NUNCA faça avaliação de viabilidade, NUNCA sugira ações ao licitante.`;
+
+const PROMPT_COMPLETA = `Você é um especialista em licitações públicas brasileiras. Sua função é extrair informações de editais e/ou Termo de Referência de pregão eletrônico e dispensa com precisão cirúrgica.
+
+Você extrai dados. Não avalia, não recomenda, não elogia, não critica.
+
+PROIBIÇÕES ABSOLUTAS:
+- NUNCA use emojis de nenhum tipo
+- NUNCA dê opiniões sobre o edital
+- NUNCA faça recomendações ao licitante
+- NUNCA inclua conclusões ou julgamentos subjetivos
+- NUNCA calcule margens, custos estimados ou projeções financeiras
+- NUNCA adicione seções além das definidas (1 a 7)
+- NUNCA responda de forma livre — siga estritamente a estrutura definida
+
+PASSO 0 — VERIFICAÇÃO INICIAL:
+Confirme se o documento é edital ou TR. Se não for, informe e não prossiga.
+
+HIERARQUIA: TR é fonte primária; Edital é fonte secundária. Em divergência, dado do TR prevalece.
+
+REGRAS:
+- Referencie por item/subitem (ex: TR, Item 5.1)
+- Nunca cite página
+- Campos críticos exigem trecho curto: Atestado de Capacidade Técnica, Prazo de entrega, Garantia do objeto, Amostra, Índices financeiros
+- Ausência: "Informação inexistente no TR"
+- NUNCA invente ou infira informações
+- Conflito: "CONFLITO: [descreva] — Edital: Item X / TR: Item Y"
+
+## 1. INFORMAÇÕES GERAIS
+- UASG e número do pregão/dispensa
+- Data, horário e fuso horário da sessão de disputa
+- Plataforma/portal
+- Modalidade, forma e modo de disputa (Aberto, Aberto/Fechado ou Fechado/Aberto)
+- Critério de julgamento: por item, lote ou global
+- Exclusividade ME/EPP
+- Contatos do órgão/pregoeiro: e-mail e telefone
+
+## 2. EXIGÊNCIAS DE HABILITAÇÃO
+- **Capacidade Técnica:** exige atestado? Quantitativo mínimo? (inclua trecho)
+- **Saúde Financeira:** Balanço Patrimonial? Capital Social ou PL mínimo?
+- **Índices Financeiros:** quais índices (LC, LG, SG) e valores mínimos? (inclua trecho)
+- **Certificações e Licenças:** CREA, CRC, alvarás, AFE, IBAMA, Carta de Solidariedade ou outras?
+- **Vistoria Técnica:** obrigatória, facultativa ou substituível por declaração?
+
+## 3. CONDIÇÕES DE EXECUÇÃO E LOGÍSTICA
+- **Tipo de entrega:** total ou parcelada? Prazo após empenho? Dias úteis ou corridos? (inclua trecho)
+- **Locais de entrega:** centralizada ou múltiplos endereços? Área rural?
+- **Fracionamento de empenho:** permite fracionamento?
+- **Garantia do objeto:** prazo e tipo? SLA? (inclua trecho)
+- **Logística reversa:** obrigação de recolher embalagens?
+- **Quantitativo mínimo por pedido:** existe?
+- **Prazo de pagamento:** dias após NF? Contagem começa quando?
+
+## 4. MODELO DE CONTRATAÇÃO
+- **Tipo de contrato:** Registro de Preços (SRP) ou entrega imediata?
+- **Se SRP:** órgão gerenciador, participantes, UFs, previsão de carona?
+- **Garantia contratual:** caução, seguro-garantia? Percentual?
+- **Taxa de participação:** existe valor a pagar?
+- **Amostra ou catálogo técnico:** exigido? Prazo e local? (inclua trecho)
+
+## 5. REGRAS DE LANCES E PRAZOS
+- **Tipo de lance:** valor unitário ou global?
+- **Lance mínimo (intervalo):** percentual ou valor fixo?
+- **Valor de referência/estimado:** total e unitário. Sigiloso ou público?
+- **Duração da etapa de lances:** tempo previsto. Prorrogação automática?
+- **Desempate ME/EPP:** empate ficto? Percentual?
+- **Prazo para regularização de documentos vencidos para ME/EPP**
+
+## 6. IMPUGNAÇÃO
+- **Prazo para impugnar:** quantos dias úteis antes da abertura?
+- **Legitimidade:** qualquer interessado ou apenas cadastrado?
+- **Forma de envio:** portal, e-mail ou presencial?
+- **Prazo de resposta do pregoeiro**
+- **Efeito suspensivo:** suspende automaticamente?
+
+## 7. ANÁLISE DE RISCO
+Apresente apenas pontos críticos concretos extraídos do documento, sem elaborações ou recomendações. Se não houver: "Nenhum ponto crítico identificado".
+
+- [ponto crítico 1]
+- [ponto crítico 2]
+...
+
+Proibições: NUNCA recomende participação, NUNCA avalie viabilidade, NUNCA sugira ações.`;
+
+// ═══════════════════════════════════════════════════════════
+// EDITAL READER — STATE
+// ═══════════════════════════════════════════════════════════
+let erFile = null;
+let erExtractedText = '';
+let erAnalysisType = 'resumida';
+let erLastResult = '';
+
+function erGetHistory(){
+  return JSON.parse(localStorage.getItem('edital_historico')||'[]');
+}
+function erSaveHistory(entry){
+  const hist = erGetHistory();
+  hist.unshift(entry);
+  if(hist.length > 5) hist.pop();
+  localStorage.setItem('edital_historico', JSON.stringify(hist));
+}
+
+// ═══════════════════════════════════════════════════════════
+// EDITAL READER — RENDER
+// ═══════════════════════════════════════════════════════════
+function renderEditalReader(){
+  const hist = erGetHistory();
+  document.getElementById('main').innerHTML = `
+  <div class="section-header" style="margin-bottom:24px">
+    <div class="section-eyebrow"><span class="dot"></span>IA<span class="dot"></span>Gemma 4</div>
+    <h1 class="section-title" style="font-size:clamp(22px,2.5vw,32px)">Edital Reader</h1>
+  </div>
+  <div class="er-layout">
+    <div>
+      <div id="er-upload">
+        <div class="er-upload-area" id="er-drop-zone" onclick="document.getElementById('er-file-input').click()">
+          <div class="er-upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="er-upload-label">Clique ou arraste o arquivo aqui</div>
+          <div class="er-upload-hint">PDF, Excel (.xlsx) ou Word (.docx)</div>
+        </div>
+        <input type="file" id="er-file-input" accept=".pdf,.xlsx,.xls,.docx,.doc" style="display:none">
+        <div id="er-file-info" style="display:none" class="er-file-info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span class="er-file-name" id="er-file-name-label"></span>
+          <span class="er-file-size" id="er-file-size-label"></span>
+          <button class="er-file-remove" onclick="erRemoveFile()" title="Remover arquivo">×</button>
+        </div>
+      </div>
+      <div id="er-result-area"></div>
+      <div id="er-history" class="er-history-section" style="${hist.length?'':'display:none'}">
+        <div class="er-history-title">Histórico de análises</div>
+        <div class="er-history-list" id="er-history-list"></div>
+        <button class="er-history-clear" onclick="erClearHistory()">Limpar histórico</button>
+      </div>
+    </div>
+    <div class="er-panel">
+      <div class="er-panel-title">Tipo de análise</div>
+      <div class="er-type-row">
+        <button class="er-type-btn active" id="er-btn-resumida" onclick="erSetType('resumida')">Resumida</button>
+        <button class="er-type-btn" id="er-btn-completa" onclick="erSetType('completa')">Completa</button>
+      </div>
+      <button class="er-analyze-btn" id="er-analyze-btn" onclick="erAnalyze()" disabled>Analisar Edital</button>
+    </div>
+  </div>`;
+
+  erFile = null;
+  erExtractedText = '';
+  erAnalysisType = 'resumida';
+  erRenderHistory();
+  erInitUpload();
+}
+
+function erInitUpload(){
+  const input = document.getElementById('er-file-input');
+  const zone = document.getElementById('er-drop-zone');
+  if(!input || !zone) return;
+
+  input.addEventListener('change', ()=>{ if(input.files[0]) erLoadFile(input.files[0]); });
+
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e=>{
+    e.preventDefault(); zone.classList.remove('drag-over');
+    if(e.dataTransfer.files[0]) erLoadFile(e.dataTransfer.files[0]);
+  });
+}
+
+function erLoadFile(file){
+  erFile = file;
+  const info = document.getElementById('er-file-info');
+  const nameEl = document.getElementById('er-file-name-label');
+  const sizeEl = document.getElementById('er-file-size-label');
+  nameEl.textContent = file.name;
+  sizeEl.textContent = (file.size/1024/1024).toFixed(1)+' MB';
+  info.style.display = 'flex';
+  document.getElementById('er-analyze-btn').disabled = false;
+}
+
+function erRemoveFile(){
+  erFile = null;
+  erExtractedText = '';
+  document.getElementById('er-file-info').style.display = 'none';
+  document.getElementById('er-file-input').value = '';
+  document.getElementById('er-analyze-btn').disabled = true;
+}
+
+function erSetType(type){
+  erAnalysisType = type;
+  document.getElementById('er-btn-resumida').classList.toggle('active', type==='resumida');
+  document.getElementById('er-btn-completa').classList.toggle('active', type==='completa');
+}
+
+function erRenderHistory(){
+  const hist = erGetHistory();
+  const section = document.getElementById('er-history');
+  const list = document.getElementById('er-history-list');
+  if(!section || !list) return;
+  if(!hist.length){ section.style.display='none'; return; }
+  section.style.display = '';
+  list.innerHTML = hist.map((h,i)=>`
+    <div class="er-history-item" onclick="erShowHistoryItem(${i})">
+      <span class="er-history-name">${h.nomeArquivo}</span>
+      <span class="er-history-meta">${h.data} · ${h.tipo==='resumida'?'Resumida':'Completa'}</span>
+    </div>`).join('');
+}
+
+function erShowHistoryItem(i){
+  const hist = erGetHistory();
+  const h = hist[i];
+  if(!h) return;
+  erLastResult = h.resultado;
+  erRenderResult(h.resultado, h.tipo, h.nomeArquivo);
+}
+
+function erClearHistory(){
+  localStorage.removeItem('edital_historico');
+  const section = document.getElementById('er-history');
+  if(section) section.style.display='none';
+}
+
+// ─── EXTRACT TEXT ───
+async function erExtractText(file){
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext==='pdf') return erExtractPDF(file);
+  if(['xlsx','xls'].includes(ext)) return erExtractExcel(file);
+  if(['docx','doc'].includes(ext)) return erExtractWord(file);
+  throw new Error('Formato não suportado: '+ext);
+}
+
+async function erExtractPDF(file){
+  const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+  if(!pdfjsLib) throw new Error('PDF.js não carregado');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+  let text = '';
+  for(let i=1; i<=pdf.numPages; i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(s=>s.str).join(' ') + '\n';
+  }
+  return text.trim();
+}
+
+async function erExtractExcel(file){
+  if(!window.XLSX) throw new Error('SheetJS não carregado');
+  const arrayBuffer = await file.arrayBuffer();
+  const wb = XLSX.read(arrayBuffer, {type:'array'});
+  let text = '';
+  wb.SheetNames.forEach(name=>{
+    const ws = wb.Sheets[name];
+    text += `\n=== Aba: ${name} ===\n`;
+    text += XLSX.utils.sheet_to_csv(ws);
+  });
+  return text.trim();
+}
+
+async function erExtractWord(file){
+  if(!window.mammoth) throw new Error('Mammoth.js não carregado');
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({arrayBuffer});
+  return result.value.trim();
+}
+
+// ─── ANALYZE ───
+async function erAnalyze(){
+  if(!erFile) return;
+  const btn = document.getElementById('er-analyze-btn');
+  const resultArea = document.getElementById('er-result-area');
+  btn.disabled = true;
+  resultArea.innerHTML = `<div class="er-loading"><div class="er-spinner"></div>Extraindo texto do arquivo...</div>`;
+
+  try {
+    erExtractedText = await erExtractText(erFile);
+  } catch(e) {
+    resultArea.innerHTML = `<div class="er-error">Erro ao extrair texto: ${e.message}<br>Tente outro formato ou verifique se o arquivo não está protegido por senha.</div>`;
+    btn.disabled = false;
+    return;
+  }
+
+  if(!erExtractedText || erExtractedText.length < 50){
+    resultArea.innerHTML = `<div class="er-error">Não foi possível extrair texto deste arquivo. O PDF pode conter apenas imagens (escaneado). Tente converter para Word antes de fazer upload.</div>`;
+    btn.disabled = false;
+    return;
+  }
+
+  resultArea.innerHTML = `<div class="er-loading"><div class="er-spinner"></div>Analisando edital com Gemma 4... Aguarde.</div>`;
+
+  const prompt = erAnalysisType === 'resumida' ? PROMPT_RESUMIDA : PROMPT_COMPLETA;
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_KEY}`,
+        'HTTP-Referer': 'https://licitacoes-local.app',
+        'X-Title': 'Licitacoes - Edital Reader'
+      },
+      body: JSON.stringify({
+        model: ER_MODEL,
+        messages: [
+          { role: 'system', content: prompt },
+          { role: 'user', content: erExtractedText }
+        ],
+        max_tokens: 4096
+      })
+    });
+
+    if(!response.ok){
+      const err = await response.json().catch(()=>({}));
+      throw new Error(err.error?.message || `Erro HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const resultado = data.choices?.[0]?.message?.content || '';
+    if(!resultado) throw new Error('Resposta vazia do modelo');
+
+    erLastResult = resultado;
+
+    const now = new Date();
+    const dataStr = now.toLocaleDateString('pt-BR');
+    erSaveHistory({ nomeArquivo: erFile.name, data: dataStr, tipo: erAnalysisType, resultado });
+
+    erRenderResult(resultado, erAnalysisType, erFile.name);
+    erRenderHistory();
+
+  } catch(e) {
+    resultArea.innerHTML = `<div class="er-error">Erro ao chamar o Gemma: ${e.message}<br>Verifique sua conexão e tente novamente.</div>`;
+  }
+
+  btn.disabled = false;
+}
+
+// ─── RENDER RESULT ───
+function erRenderResult(texto, tipo, nomeArquivo){
+  const resultArea = document.getElementById('er-result-area');
+  if(!resultArea) return;
+  const html = erMarkdownToHtml(texto);
+  const tipoLabel = tipo === 'resumida' ? 'Análise Resumida' : 'Análise Completa';
+  const completePrompt = tipo === 'resumida' ? `
+    <div class="er-complete-prompt">
+      <span class="er-complete-text">Deseja uma análise completa com 7 seções detalhadas?</span>
+      <button class="er-complete-btn" onclick="erSetType('completa');erAnalyze()">Análise Completa →</button>
+    </div>` : '';
+
+  resultArea.innerHTML = `
+    <div class="er-result-card">
+      <div class="er-result-header">
+        <div>
+          <div class="er-result-eyebrow">${tipoLabel}</div>
+          <div style="font-size:12px;color:var(--muted-2);margin-top:3px;font-weight:300">${nomeArquivo}</div>
+        </div>
+        <button class="er-copy-btn" onclick="erCopyResult(this)">Copiar</button>
+      </div>
+      <div class="er-result-content">${html}</div>
+      ${completePrompt}
+    </div>`;
+}
+
+function erMarkdownToHtml(md){
+  return md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/<\/ul>\s*<ul>/g,'')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/\n{2,}/g,'</p><p>')
+    .replace(/^(?!<[hul])(.+)$/gm,'<p>$1</p>')
+    .replace(/<p><\/p>/g,'')
+    .replace(/<p>(<[hul])/g,'$1')
+    .replace(/(<\/[hul][^>]*>)<\/p>/g,'$1');
+}
+
+async function erCopyResult(btn){
+  try {
+    await navigator.clipboard.writeText(erLastResult);
+    btn.textContent = 'Copiado ✓';
+    setTimeout(()=>btn.textContent='Copiar', 2000);
+  } catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = erLastResult;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copiado ✓';
+    setTimeout(()=>btn.textContent='Copiar', 2000);
+  }
+}
 
 // ─── INIT ───
 switchSection('home');
