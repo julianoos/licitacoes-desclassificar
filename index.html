@@ -96,9 +96,27 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .icon-btn svg{width:15px;height:15px}
 
 /* ─── SIDEBAR TOGGLE ─── */
-.container.sidebar-off{grid-template-columns:1fr}
-.container.sidebar-off .sidebar{display:none}
+.container.sidebar-off{grid-template-columns:52px 1fr}
 .sidebar-toggle-row{display:flex;justify-content:flex-end;padding:10px 10px 0;flex-shrink:0}
+/* ─── SIDEBAR ICON MODE ─── */
+.sidebar.icon-mode{
+  padding:0;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;
+}
+.sb-icon-toggle{
+  width:100%;display:flex;justify-content:center;
+  padding:12px 0;border-bottom:1px solid var(--line);flex-shrink:0;
+}
+.sb-icon-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;padding:13px 0;gap:0;
+  cursor:pointer;background:none;border:none;border-left:2px solid transparent;
+  color:var(--muted);
+  transition:color 180ms var(--ease),background 180ms var(--ease),border-left-color 180ms var(--ease);
+}
+.sb-icon-btn:hover{color:var(--ink);background:rgba(240,240,240,0.04)}
+.sb-icon-btn.active{color:var(--ink);border-left-color:var(--ink)}
+.sb-icon-btn svg{width:18px;height:18px;flex-shrink:0}
 
 /* ─── HOME PAGE ─── */
 .home-wrap{
@@ -1520,7 +1538,8 @@ function switchSection(section){
   });
   document.getElementById('main').scrollTop=0;
   applySidebar();
-  renderSidebar();
+  if(sidebarHidden && section!=='home') renderIconSidebar();
+  else renderSidebar();
   if(section==='home') renderHome();
   else if(section==='teoria') renderTeoria();
   else if(section==='legislacao') renderLegislacao();
@@ -1541,24 +1560,46 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 // ═══════════════════════════════════════════════════════════
 let sidebarHidden = localStorage.getItem('sidebar_hidden') === '1';
 
+const SECTION_ICONS = {
+  teoria:       `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+  legislacao:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+  checklist:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+  calculadora:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`,
+  editalreader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
+};
+const SECTION_LABELS = {
+  teoria:'Teoria', legislacao:'Lei', checklist:'Check',
+  calculadora:'Calc.', editalreader:'Leitor'
+};
+
+function renderIconSidebar(){
+  const sb = document.getElementById('sidebar');
+  sb.classList.add('icon-mode');
+  const sections = ['teoria','legislacao','checklist','calculadora','editalreader'];
+  let html = `<div class="sb-icon-toggle"><button class="icon-btn" onclick="toggleSidebar()" title="Expandir barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
+  sections.forEach(s=>{
+    const active = currentSection===s ? ' active' : '';
+    html += `<button class="sb-icon-btn${active}" onclick="switchSection('${s}')" title="${SECTION_LABELS[s]}">${SECTION_ICONS[s]}</button>`;
+  });
+  sb.innerHTML = html;
+}
+
 function applySidebar(){
   const container = document.querySelector('.container');
   const isHome = currentSection === 'home';
-  container.classList.toggle('sidebar-off', isHome || sidebarHidden);
-  // When sidebar is hidden (and not on home), show a reopen button in the topbar
-  let topbarBtn = document.getElementById('topbar-sb-toggle');
-  if(!isHome && sidebarHidden){
-    if(!topbarBtn){
-      topbarBtn = document.createElement('button');
-      topbarBtn.id = 'topbar-sb-toggle';
-      topbarBtn.className = 'icon-btn';
-      topbarBtn.onclick = toggleSidebar;
-      topbarBtn.title = 'Mostrar barra lateral';
-      topbarBtn.innerHTML = SIDEBAR_TOGGLE_SVG;
-      document.querySelector('.topbar-left').prepend(topbarBtn);
-    }
-  } else if(topbarBtn){
-    topbarBtn.remove();
+  const sb = document.getElementById('sidebar');
+  if(isHome){
+    container.classList.add('sidebar-off');
+    sb.classList.remove('icon-mode');
+    sb.innerHTML = '';
+    return;
+  }
+  if(sidebarHidden){
+    container.classList.add('sidebar-off');
+    renderIconSidebar();
+  } else {
+    container.classList.remove('sidebar-off');
+    sb.classList.remove('icon-mode');
   }
 }
 
@@ -1566,8 +1607,12 @@ function toggleSidebar(){
   if(currentSection === 'home') return;
   sidebarHidden = !sidebarHidden;
   localStorage.setItem('sidebar_hidden', sidebarHidden ? '1' : '0');
-  applySidebar();
-  if(!sidebarHidden) renderSidebar();
+  if(sidebarHidden){
+    applySidebar();
+  } else {
+    applySidebar();
+    renderSidebar();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
