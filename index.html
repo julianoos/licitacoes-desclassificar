@@ -38,7 +38,7 @@ html.light {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{transition:background 300ms var(--ease),color 300ms var(--ease)}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit',system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
 
 /* ─── APP SHELL ─── */
 .app{display:flex;flex-direction:column;height:100vh}
@@ -608,7 +608,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
       <button class="nav-btn" data-section="legislacao">Legislação</button>
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
-      <button class="nav-btn" data-section="editalreader">Edital Reader</button>
+      <button class="nav-btn" data-section="editalreader">Leitor de Editais</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1284,7 +1284,7 @@ function renderSidebar(){
     html += '<div class="sidebar-section-title">Tabelas</div>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'simples-tables\');return false;">Simples Nacional</a>';
   } else if(currentSection==='editalreader'){
-    html += '<div class="sidebar-section-title">Edital Reader</div>';
+    html += '<div class="sidebar-section-title">Leitor de Editais</div>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-upload\');return false;">Upload</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-result-area\');return false;">Resultado</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-history\');return false;">Histórico</a>';
@@ -1574,7 +1574,7 @@ function renderHome(){
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`
     },
     {
-      section:'editalreader', num:'05', title:'Edital Reader',
+      section:'editalreader', num:'05', title:'Leitor de Editais',
       desc:'Análise de editais e Termos de Referência com IA (Gemma). Upload de PDF, Excel ou Word. Resumo executivo ou análise completa em 7 seções.',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
     }
@@ -2026,7 +2026,7 @@ function renderEditalReader(){
   document.getElementById('main').innerHTML = `
   <div class="section-header" style="margin-bottom:24px">
     <div class="section-eyebrow"><span class="dot"></span>IA<span class="dot"></span>Gemma 4</div>
-    <h1 class="section-title" style="font-size:clamp(22px,2.5vw,32px)">Edital Reader</h1>
+    <h1 class="section-title" style="font-size:clamp(22px,2.5vw,32px)">Leitor de Editais</h1>
   </div>
   <div class="er-layout">
     <div>
@@ -2215,7 +2215,7 @@ async function erAnalyze(){
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_KEY}`,
         'HTTP-Referer': 'https://licitacoes-local.app',
-        'X-Title': 'Licitacoes - Edital Reader'
+        'X-Title': 'Licitacoes - Leitor de Editais'
       },
       body: JSON.stringify({
         model: ER_MODEL,
