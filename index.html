@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Desclassificar Concorrentes — Guia Operacional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@200;300;400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -38,7 +38,7 @@ html.light {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{transition:background 300ms var(--ease),color 300ms var(--ease)}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Outfit',system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
 
 /* ─── APP SHELL ─── */
 .app{display:flex;flex-direction:column;height:100vh}
@@ -592,6 +592,23 @@ table.simples td{padding:10px 18px;color:var(--ink-2);border-bottom:1px solid va
 table.simples tbody tr:last-child td{border-bottom:none}
 table.simples td.num{color:var(--ink);font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
 table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+/* ─── BETA BADGE ─── */
+.beta-badge{display:inline-block;font-size:9px;font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:middle;line-height:1.6}
+.nav-btn.active .beta-badge{background:var(--bg);color:var(--ink)}
+/* ─── AUTH MODAL ─── */
+.er-modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 200ms var(--ease)}
+.er-modal-overlay.visible{opacity:1}
+.er-modal{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);padding:40px 44px;width:min(400px,90vw);box-shadow:0 24px 64px -16px rgba(0,0,0,.6)}
+.er-modal-eyebrow{font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.er-modal h2{font-family:'Outfit',sans-serif;font-size:22px;font-weight:300;letter-spacing:-.02em;color:var(--ink);margin-bottom:28px}
+.er-modal label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.er-modal input{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;outline:none;margin-bottom:18px;transition:border-color 180ms}
+.er-modal input:focus{border-color:var(--line-strong)}
+.er-modal-error{font-size:13px;color:#e05555;margin-bottom:14px;min-height:18px}
+.er-modal-btn{width:100%;padding:12px;background:var(--ink);color:var(--bg);border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:opacity 180ms}
+.er-modal-btn:hover{opacity:.85}
+.er-logout-btn{display:block;width:100%;margin-top:16px;padding:9px 14px;background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-align:center;transition:all 180ms var(--ease)}
+.er-logout-btn:hover{border-color:var(--line-strong);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -608,7 +625,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
       <button class="nav-btn" data-section="legislacao">Legislação</button>
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
-      <button class="nav-btn" data-section="editalreader">Leitor de Editais</button>
+      <button class="nav-btn" data-section="editalreader">Leitor de Editais<span class="beta-badge">BETA</span></button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1288,6 +1305,7 @@ function renderSidebar(){
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-upload\');return false;">Upload</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-result-area\');return false;">Resultado</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-history\');return false;">Histórico</a>';
+    html += '<button class="er-logout-btn" onclick="erLogout()">Sair da sessão</button>';
   }
   sb.innerHTML = html;
 }
@@ -1507,7 +1525,10 @@ function switchSection(section){
   else if(section==='legislacao') renderLegislacao();
   else if(section==='checklist') renderChecklist();
   else if(section==='calculadora') renderCalculadora();
-  else if(section==='editalreader') renderEditalReader();
+  else if(section==='editalreader'){
+    if(!sessionStorage.getItem('er_auth')){ erShowLogin(); return; }
+    renderEditalReader();
+  }
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1861,6 +1882,61 @@ applyTheme(localStorage.getItem('theme') === 'light');
 // ═══════════════════════════════════════════════════════════
 const OPENROUTER_KEY = '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';
 const ER_MODEL = 'google/gemma-4-31b-it:free';
+const ER_USER = 'julianoos';
+const ER_PASS_HASH = '8588fcadd55e61b280a17540313f1803c4be2bda38735809188062cdda064643';
+
+// ═══════════════════════════════════════════════════════════
+// AUTH — LEITOR DE EDITAIS
+// ═══════════════════════════════════════════════════════════
+async function erVerifyLogin(user, pass){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  return user === ER_USER && hash === ER_PASS_HASH;
+}
+
+function erShowLogin(){
+  const overlay = document.createElement('div');
+  overlay.className = 'er-modal-overlay';
+  overlay.id = 'er-modal-overlay';
+  overlay.innerHTML = `
+    <div class="er-modal" role="dialog" aria-modal="true">
+      <div class="er-modal-eyebrow">Acesso Restrito</div>
+      <h2>Leitor de Editais <span class="beta-badge" style="font-size:10px">BETA</span></h2>
+      <label for="er-user-input">Usuário</label>
+      <input type="text" id="er-user-input" autocomplete="username" placeholder="usuário">
+      <label for="er-pass-input">Senha</label>
+      <input type="password" id="er-pass-input" autocomplete="current-password" placeholder="••••••">
+      <div class="er-modal-error" id="er-modal-error"></div>
+      <button class="er-modal-btn" onclick="erDoLogin()">Entrar</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(()=>overlay.classList.add('visible'));
+  overlay.querySelector('#er-pass-input').addEventListener('keydown', e=>{
+    if(e.key==='Enter') erDoLogin();
+  });
+  setTimeout(()=>overlay.querySelector('#er-user-input').focus(), 50);
+}
+
+async function erDoLogin(){
+  const user = document.getElementById('er-user-input').value.trim();
+  const pass = document.getElementById('er-pass-input').value;
+  const ok = await erVerifyLogin(user, pass);
+  if(ok){
+    sessionStorage.setItem('er_auth','1');
+    const overlay = document.getElementById('er-modal-overlay');
+    overlay.classList.remove('visible');
+    setTimeout(()=>{ overlay.remove(); switchSection('editalreader'); }, 200);
+  } else {
+    document.getElementById('er-modal-error').textContent = 'Usuário ou senha incorretos.';
+    document.getElementById('er-pass-input').value = '';
+    document.getElementById('er-pass-input').focus();
+  }
+}
+
+function erLogout(){
+  sessionStorage.removeItem('er_auth');
+  switchSection('home');
+}
 
 const PROMPT_RESUMIDA = `Você é um especialista em licitações públicas brasileiras. Sua função é extrair informações de editais e/ou Termo de Referência de pregão eletrônico e dispensa com precisão cirúrgica.
 
