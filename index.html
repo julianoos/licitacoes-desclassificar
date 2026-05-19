@@ -96,6 +96,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .icon-btn svg{width:15px;height:15px}
 
 /* ─── SIDEBAR TOGGLE ─── */
+.container.sidebar-home{grid-template-columns:1fr}
+.container.sidebar-home .sidebar{display:none}
 .container.sidebar-off{grid-template-columns:52px 1fr}
 .sidebar-toggle-row{display:flex;justify-content:flex-end;padding:10px 10px 0;flex-shrink:0}
 /* ─── SIDEBAR ICON MODE ─── */
@@ -135,10 +137,9 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 }
 .home-sub{font-size:15px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
-  display:grid;grid-template-columns:repeat(6,1fr);gap:12px;
-  margin-top:48px;width:100%;max-width:1560px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin-top:48px;width:100%;max-width:960px;
 }
-@media(max-width:1100px){.home-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.home-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:450px){.home-grid{grid-template-columns:1fr}}
 .home-card{
@@ -708,7 +709,7 @@ select.acomp-input option{background:var(--surface);color:var(--ink)}
   <header class="topbar">
   <div class="topbar-left">
     <button class="brand-btn" onclick="switchSection('home')" title="Início">
-      Licitações<span>Precificação e Desclassificação de Concorrentes</span>
+      Licitações 2026<span>Precificação e Desclassificação de Concorrentes</span>
     </button>
   </div>
   <div class="topbar-right">
@@ -1822,7 +1823,10 @@ function switchSection(section){
     if(!sessionStorage.getItem('er_auth')){ erShowLogin(); return; }
     renderEditalReader();
   }
-  else if(section==='acompanhamento') renderAcompanhamento();
+  else if(section==='acompanhamento'){
+    if(!sessionStorage.getItem('er_auth')){ erShowLogin('acompanhamento'); return; }
+    renderAcompanhamento();
+  }
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1864,11 +1868,13 @@ function applySidebar(){
   const isHome = currentSection === 'home';
   const sb = document.getElementById('sidebar');
   if(isHome){
-    container.classList.add('sidebar-off');
+    container.classList.add('sidebar-home');
+    container.classList.remove('sidebar-off');
     sb.classList.remove('icon-mode');
     sb.innerHTML = '';
     return;
   }
+  container.classList.remove('sidebar-home');
   if(sidebarHidden){
     container.classList.add('sidebar-off');
     renderIconSidebar();
@@ -1928,7 +1934,7 @@ function renderHome(){
   ];
   document.getElementById('main').innerHTML = `
     <div class="home-wrap">
-      <div class="home-eyebrow">Sistema de Licitações</div>
+      <div class="home-eyebrow">Licitações 2026</div>
       <h1 class="home-title">Precificação e Desclassificação de Concorrentes</h1>
       <p class="home-sub">Selecione uma área para começar</p>
       <div class="home-grid">
@@ -2220,14 +2226,18 @@ async function erVerifyLogin(user, pass){
   return user === ER_USER && hash === ER_PASS_HASH;
 }
 
-function erShowLogin(){
+let erPendingSection = 'editalreader';
+
+function erShowLogin(section='editalreader'){
+  erPendingSection = section;
+  const labels = { editalreader:'Leitor de Editais', acompanhamento:'Acompanhamento' };
   const overlay = document.createElement('div');
   overlay.className = 'er-modal-overlay';
   overlay.id = 'er-modal-overlay';
   overlay.innerHTML = `
     <div class="er-modal" role="dialog" aria-modal="true">
       <div class="er-modal-eyebrow">Acesso Restrito</div>
-      <h2>Leitor de Editais <span class="beta-badge" style="font-size:10px">BETA</span></h2>
+      <h2>${labels[section]||section} <span class="beta-badge" style="font-size:10px">BETA</span></h2>
       <label for="er-user-input">Usuário</label>
       <input type="text" id="er-user-input" autocomplete="username" placeholder="usuário">
       <label for="er-pass-input">Senha</label>
@@ -2251,7 +2261,7 @@ async function erDoLogin(){
     sessionStorage.setItem('er_auth','1');
     const overlay = document.getElementById('er-modal-overlay');
     overlay.classList.remove('visible');
-    setTimeout(()=>{ overlay.remove(); switchSection('editalreader'); }, 200);
+    setTimeout(()=>{ overlay.remove(); switchSection(erPendingSection); }, 200);
   } else {
     document.getElementById('er-modal-error').textContent = 'Usuário ou senha incorretos.';
     document.getElementById('er-pass-input').value = '';
