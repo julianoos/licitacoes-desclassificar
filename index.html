@@ -135,8 +135,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 }
 .home-sub{font-size:15px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
-  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
-  margin-top:48px;width:100%;max-width:1300px;
+  display:grid;grid-template-columns:repeat(6,1fr);gap:12px;
+  margin-top:48px;width:100%;max-width:1560px;
 }
 @media(max-width:1100px){.home-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.home-grid{grid-template-columns:repeat(2,1fr)}}
@@ -611,6 +611,79 @@ table.simples td{padding:10px 18px;color:var(--ink-2);border-bottom:1px solid va
 table.simples tbody tr:last-child td{border-bottom:none}
 table.simples td.num{color:var(--ink);font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
 table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+/* ─── ACOMPANHAMENTO ─── */
+.acomp-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.acomp-toolbar-right{display:flex;gap:10px;align-items:center}
+.acomp-add-btn{
+  appearance:none;background:var(--ink);color:var(--bg);border:none;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 20px;border-radius:var(--radius);cursor:pointer;
+  transition:opacity 180ms var(--ease);
+}
+.acomp-add-btn:hover{opacity:.85}
+.acomp-sort-btn{
+  appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 16px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:background 180ms var(--ease),border-color 180ms var(--ease),color 180ms var(--ease);
+}
+.acomp-sort-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.acomp-count-label{font-size:12px;color:var(--muted);font-weight:300}
+.acomp-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.acomp-scroll{overflow-x:auto}
+.acomp-table{width:100%;border-collapse:collapse;min-width:900px}
+.acomp-table thead th{
+  padding:11px 14px;text-align:left;
+  font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);
+  background:var(--surface);white-space:nowrap;
+}
+.acomp-table tbody tr{transition:background 140ms}
+.acomp-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
+.acomp-table tbody tr.editing td{background:var(--surface-2)}
+.acomp-table td{
+  padding:10px 14px;color:var(--ink-2);border-bottom:1px solid var(--line);
+  font-size:14px;vertical-align:middle;
+}
+.acomp-table tbody tr:last-child td{border-bottom:none}
+.acomp-status{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
+}
+.acomp-status.st-disputar{border:1px solid var(--line-strong);color:var(--ink-2)}
+.acomp-status.st-em-disputa{border:1px solid var(--ink);color:var(--ink);background:rgba(240,240,240,.08)}
+.acomp-status.st-selecao{background:var(--ink);color:var(--bg);border:1px solid var(--ink)}
+.acomp-status.st-finalizado{border:1px solid var(--line);color:var(--muted);text-decoration:line-through}
+.acomp-obs-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acomp-link-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:6px;
+  border:1px solid var(--line);color:var(--muted);text-decoration:none;font-size:13px;
+  transition:background 140ms,border-color 140ms,color 140ms;
+}
+.acomp-link-btn:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.acomp-btn{
+  appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px;border-radius:6px;cursor:pointer;white-space:nowrap;
+  transition:background 140ms,border-color 140ms,color 140ms;
+}
+.acomp-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.acomp-btn.save{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.acomp-btn.save:hover{opacity:.85}
+.acomp-btn.del{border-color:var(--line)}
+.acomp-btn.del:hover{border-color:#e05555;color:#e05555;background:transparent}
+.acomp-actions-cell{white-space:nowrap;display:flex;gap:6px;align-items:center}
+.acomp-input{
+  width:100%;background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;
+  padding:6px 10px;color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;outline:none;
+  transition:border-color 160ms;
+}
+.acomp-input:focus{border-color:var(--ink)}
+select.acomp-input option{background:var(--surface);color:var(--ink)}
+.acomp-empty{text-align:center;padding:64px 24px}
+.acomp-empty-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:300;color:var(--muted);margin-bottom:8px}
+.acomp-empty-sub{font-size:13px;color:var(--muted-2)}
 /* ─── BETA BADGE ─── */
 .beta-badge{display:inline-block;font-size:9px;font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:middle;line-height:1.6}
 .nav-btn.active .beta-badge{background:var(--bg);color:var(--ink)}
@@ -645,6 +718,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
       <button class="nav-btn" data-section="checklist">Checklist</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
       <button class="nav-btn" data-section="editalreader">Leitor de Editais<span class="beta-badge">BETA</span></button>
+      <button class="nav-btn" data-section="acompanhamento">Acompanhamento</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1325,6 +1399,18 @@ function renderSidebar(){
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-result-area\');return false;">Resultado</a>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-history\');return false;">Histórico</a>';
     html += '<button class="er-logout-btn" onclick="erLogout()">Sair da sessão</button>';
+  } else if(currentSection==='acompanhamento'){
+    html += '<div class="sidebar-section-title">Acompanhamento</div>';
+    html += `<a class="sidebar-link" href="#" onclick="return false;" style="pointer-events:none;opacity:.4">Total: ${(()=>{try{return JSON.parse(localStorage.getItem('acomp_data')||'[]').length}catch(e){return 0}})()}</a>`;
+    const statuses = ['A disputar','Em disputa','Seleção','Finalizado'];
+    statuses.forEach(s=>{
+      try{
+        const count = JSON.parse(localStorage.getItem('acomp_data')||'[]').filter(x=>x.status===s).length;
+        html += `<a class="sidebar-link" href="#" onclick="acompFilterStatus('${s}');return false;">${s} <span style="float:right;color:var(--muted-2)">${count}</span></a>`;
+      }catch(e){}
+    });
+    html += '<div class="sidebar-divider"></div>';
+    html += '<a class="sidebar-link" href="#" onclick="acompFilterStatus(null);return false;">Mostrar todas</a>';
   }
   sb.innerHTML = html;
 }
@@ -1340,6 +1426,193 @@ function scrollToGrupo(i){
 function scrollCalc(id){
   const el = document.getElementById(id);
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACOMPANHAMENTO
+// ═══════════════════════════════════════════════════════════
+let acompData = [];
+let acompSortDesc = true;
+let acompEditId = null;
+let acompFilterActive = null;
+
+(function acompInit(){
+  try{ acompData = JSON.parse(localStorage.getItem('acomp_data')||'[]'); }catch(e){ acompData=[]; }
+})();
+
+function acompPersist(){
+  localStorage.setItem('acomp_data', JSON.stringify(acompData));
+}
+
+function acompStatusClass(s){
+  if(s==='A disputar') return 'st-disputar';
+  if(s==='Em disputa') return 'st-em-disputa';
+  if(s==='Seleção') return 'st-selecao';
+  if(s==='Finalizado') return 'st-finalizado';
+  return 'st-disputar';
+}
+
+function acompViewRow(item){
+  const sc = acompStatusClass(item.status);
+  const link = item.link
+    ? `<a href="${escHtml(item.link)}" target="_blank" class="acomp-link-btn" title="Abrir edital">↗</a>`
+    : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
+  return `<tr data-id="${item.id}">
+    <td style="white-space:nowrap">${escHtml(item.data||'—')}</td>
+    <td style="white-space:nowrap">${escHtml(item.uasg||'—')}</td>
+    <td style="white-space:nowrap">${escHtml(item.pregao||'—')}</td>
+    <td>${escHtml(item.orgao||'—')}</td>
+    <td><span class="acomp-status ${sc}">${escHtml(item.status||'—')}</span></td>
+    <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
+    <td style="text-align:center">${link}</td>
+    <td><div class="acomp-actions-cell">
+      <button class="acomp-btn" onclick="acompStartEdit('${item.id}')">Editar</button>
+      <button class="acomp-btn del" onclick="acompConfirmDelete('${item.id}')">Excluir</button>
+    </div></td>
+  </tr>`;
+}
+
+function acompEditRow(item){
+  const isNew = item.id==='new';
+  const opts = ['A disputar','Em disputa','Seleção','Finalizado']
+    .map(s=>`<option value="${s}"${item.status===s?' selected':''}>${s}</option>`).join('');
+  return `<tr class="editing" data-id="${item.id}">
+    <td><input class="acomp-input" id="ae-data" type="date" value="${escHtml(item.data||'')}"></td>
+    <td><input class="acomp-input" id="ae-uasg" type="text" value="${escHtml(item.uasg||'')}" placeholder="UASG" style="min-width:70px"></td>
+    <td><input class="acomp-input" id="ae-pregao" type="text" value="${escHtml(item.pregao||'')}" placeholder="001/2026" style="min-width:80px"></td>
+    <td><input class="acomp-input" id="ae-orgao" type="text" value="${escHtml(item.orgao||'')}" placeholder="Nome do órgão" style="min-width:150px"></td>
+    <td><select class="acomp-input" id="ae-status" style="min-width:110px">${opts}</select></td>
+    <td><input class="acomp-input" id="ae-obs" type="text" value="${escHtml(item.obs||'')}" placeholder="Observações" style="min-width:130px"></td>
+    <td><input class="acomp-input" id="ae-link" type="url" value="${escHtml(item.link||'')}" placeholder="https://..." style="min-width:90px"></td>
+    <td><div class="acomp-actions-cell">
+      <button class="acomp-btn save" onclick="acompSave('${item.id}')">Salvar</button>
+      <button class="acomp-btn" onclick="acompCancelEdit()">Cancelar</button>
+    </div></td>
+  </tr>`;
+}
+
+function renderAcompanhamento(){
+  const main = document.getElementById('main');
+  const total = acompData.length;
+  main.innerHTML = `
+    <div class="section-header">
+      <div class="section-eyebrow"><span>Acompanhamento</span><span class="dot"></span><span id="acomp-subtitle">carregando…</span></div>
+      <h1 class="section-title" style="font-size:clamp(28px,3.5vw,48px)">Acompanhamento de Licitações</h1>
+    </div>
+    <div class="acomp-toolbar">
+      <button class="acomp-add-btn" onclick="acompAddNew()">+ Nova Licitação</button>
+      <div class="acomp-toolbar-right">
+        <span class="acomp-count-label" id="acomp-count-label"></span>
+        <button class="acomp-sort-btn" id="acomp-sort-btn" onclick="acompToggleSort()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Mais recente
+        </button>
+      </div>
+    </div>
+    <div class="acomp-wrap" id="acomp-wrap"></div>`;
+  acompRenderTable();
+}
+
+function acompRenderTable(){
+  const wrap = document.getElementById('acomp-wrap');
+  const subtitle = document.getElementById('acomp-subtitle');
+  const countLabel = document.getElementById('acomp-count-label');
+  const sortBtn = document.getElementById('acomp-sort-btn');
+  if(!wrap) return;
+
+  let list = acompFilterActive
+    ? acompData.filter(x=>x.status===acompFilterActive)
+    : [...acompData];
+
+  list.sort((a,b)=>{
+    const da=a.data||'', db=b.data||'';
+    return acompSortDesc ? db.localeCompare(da) : da.localeCompare(db);
+  });
+
+  if(subtitle) subtitle.textContent = acompData.length + ' licitações';
+  if(countLabel) countLabel.textContent = acompFilterActive ? `Filtro: ${acompFilterActive}` : '';
+  if(sortBtn) sortBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${acompSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> ${acompSortDesc?'Mais recente':'Mais antiga'}`;
+
+  if(list.length===0 && acompEditId!=='new'){
+    wrap.innerHTML = `<div class="acomp-empty">
+      <div class="acomp-empty-title">${acompFilterActive?'Nenhuma licitação com este status.':'Nenhuma licitação cadastrada.'}</div>
+      <div class="acomp-empty-sub">${acompFilterActive?'<a href="#" onclick="acompFilterStatus(null);return false;" style="color:var(--muted)">Limpar filtro</a>':'Clique em "+ Nova Licitação" para começar.'}</div>
+    </div>`;
+    return;
+  }
+
+  let tbody = '';
+  if(acompEditId==='new') tbody += acompEditRow({id:'new',data:'',uasg:'',pregao:'',orgao:'',status:'A disputar',obs:'',link:''});
+  list.forEach(item=>{
+    tbody += item.id===acompEditId ? acompEditRow(item) : acompViewRow(item);
+  });
+
+  wrap.innerHTML = `<div class="acomp-scroll"><table class="acomp-table">
+    <thead><tr>
+      <th>Data do Pregão</th><th>Nº UASG</th><th>Nº Pregão</th>
+      <th>Nome do Órgão</th><th>Status</th><th>Observações</th>
+      <th style="text-align:center">Link</th><th></th>
+    </tr></thead>
+    <tbody>${tbody}</tbody>
+  </table></div>`;
+}
+
+function acompAddNew(){
+  acompEditId = 'new';
+  acompRenderTable();
+  document.getElementById('acomp-wrap')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function acompStartEdit(id){
+  acompEditId = id;
+  acompRenderTable();
+}
+
+function acompCancelEdit(){
+  acompEditId = null;
+  acompRenderTable();
+}
+
+function acompSave(id){
+  const v = f => document.getElementById(f)?.value || '';
+  const item = {
+    id: id==='new' ? String(Date.now()) : id,
+    data: v('ae-data'), uasg: v('ae-uasg'), pregao: v('ae-pregao'),
+    orgao: v('ae-orgao'), status: v('ae-status'),
+    obs: v('ae-obs'), link: v('ae-link')
+  };
+  if(id==='new'){
+    acompData.push(item);
+  } else {
+    const idx = acompData.findIndex(x=>x.id===id);
+    if(idx>=0) acompData[idx] = item;
+  }
+  acompPersist();
+  acompEditId = null;
+  acompRenderTable();
+  renderSidebar();
+}
+
+function acompConfirmDelete(id){
+  const item = acompData.find(x=>x.id===id);
+  const label = item ? (item.orgao||item.pregao||id) : id;
+  if(confirm(`Excluir "${label}"?\n\nEsta ação não pode ser desfeita.`)){
+    acompData = acompData.filter(x=>x.id!==id);
+    acompPersist();
+    if(acompEditId===id) acompEditId=null;
+    acompRenderTable();
+    renderSidebar();
+  }
+}
+
+function acompToggleSort(){
+  acompSortDesc = !acompSortDesc;
+  acompRenderTable();
+}
+
+function acompFilterStatus(status){
+  acompFilterActive = status;
+  acompRenderTable();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1549,6 +1822,7 @@ function switchSection(section){
     if(!sessionStorage.getItem('er_auth')){ erShowLogin(); return; }
     renderEditalReader();
   }
+  else if(section==='acompanhamento') renderAcompanhamento();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1565,17 +1839,18 @@ const SECTION_ICONS = {
   legislacao:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
   checklist:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
   calculadora:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`,
-  editalreader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
+  editalreader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`,
+  acompanhamento: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
 };
 const SECTION_LABELS = {
   teoria:'Teoria', legislacao:'Lei', checklist:'Check',
-  calculadora:'Calc.', editalreader:'Leitor'
+  calculadora:'Calc.', editalreader:'Leitor', acompanhamento:'Acomp.'
 };
 
 function renderIconSidebar(){
   const sb = document.getElementById('sidebar');
   sb.classList.add('icon-mode');
-  const sections = ['teoria','legislacao','checklist','calculadora','editalreader'];
+  const sections = ['teoria','legislacao','checklist','calculadora','editalreader','acompanhamento'];
   let html = `<div class="sb-icon-toggle"><button class="icon-btn" onclick="toggleSidebar()" title="Expandir barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
   sections.forEach(s=>{
     const active = currentSection===s ? ' active' : '';
@@ -1644,6 +1919,11 @@ function renderHome(){
       section:'editalreader', num:'05', title:'Leitor de Editais',
       desc:'Análise de editais e Termos de Referência com IA (Gemma). Upload de PDF, Excel ou Word. Resumo executivo ou análise completa em 7 seções.',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
+    },
+    {
+      section:'acompanhamento', num:'06', title:'Acompanhamento',
+      desc:'Lista de licitações com status, datas, observações e links. Organize e acompanhe todos os pregões em um único lugar.',
+      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
     }
   ];
   document.getElementById('main').innerHTML = `
