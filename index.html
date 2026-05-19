@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Desclassificar Concorrentes — Guia Operacional</title>
+<title>Licitações 2026</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@200;300;400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -690,6 +693,84 @@ html.light .acomp-date-input{color-scheme:light}
 .acomp-empty{text-align:center;padding:64px 24px}
 .acomp-empty-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:300;color:var(--muted);margin-bottom:8px}
 .acomp-empty-sub{font-size:13px;color:var(--muted-2)}
+/* ─── ACOMP DETAIL ─── */
+.acomp-detail-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.acomp-back-btn{
+  appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  padding:8px 14px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:background 140ms,border-color 140ms,color 140ms;flex-shrink:0;
+}
+.acomp-back-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.acomp-detail-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1}
+.acomp-detail-tag{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.acomp-detail-val{font-size:13px;color:var(--ink-2);font-weight:400;white-space:nowrap}
+.acomp-aliq-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.acomp-aliq-label{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.acomp-aliq-input{background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;width:90px;outline:none;transition:border-color 160ms;text-align:center}
+.acomp-aliq-input:focus{border-color:var(--line-strong)}
+.acomp-aliq-hint{font-size:12px;color:var(--muted-2);font-weight:300}
+.acomp-item-add-btn{
+  appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  padding:9px 18px;border-radius:var(--radius);cursor:pointer;margin-bottom:12px;
+  transition:background 140ms,border-color 140ms,color 140ms;
+}
+.acomp-item-add-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.acomp-item-table{width:100%;border-collapse:collapse;min-width:1000px;font-size:13px}
+.acomp-item-table thead th{
+  text-align:left;padding:10px 12px;
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;
+}
+.acomp-item-table td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
+.acomp-item-table tbody tr:last-child td{border-bottom:none}
+.acomp-item-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
+.acomp-item-table tbody tr.editing td{background:var(--surface-2)}
+.acomp-pmv-cell{font-weight:500;color:var(--ink);white-space:nowrap}
+.acomp-lucro-pos{color:var(--ink-2);white-space:nowrap}
+.acomp-lucro-neg{color:#e05555;white-space:nowrap}
+.acomp-item-input{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--ink);font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 160ms;width:100%}
+.acomp-item-input:focus{border-color:var(--line-strong)}
+.acomp-item-empty{text-align:center;padding:40px 24px;color:var(--muted);font-size:14px;font-weight:300}
+/* ─── MODAL ITEM CALCULADORA ─── */
+.mi-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}
+.mi-modal{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);width:min(920px,100%);max-height:90vh;overflow-y:auto;display:flex;flex-direction:column}
+.mi-modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line);flex-shrink:0}
+.mi-modal-body{display:grid;grid-template-columns:1fr 1fr;flex:1}
+@media(max-width:640px){.mi-modal-body{grid-template-columns:1fr}}
+.mi-left{padding:20px 24px;border-right:1px solid var(--line)}
+.mi-right{padding:20px 24px;overflow-y:auto}
+.mi-footer{padding:14px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0}
+/* ─── DOCUMENTOS DE HABILITAÇÃO ─── */
+.docs-section{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+.docs-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.docs-title{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.docs-btns{display:flex;gap:8px;flex-wrap:wrap}
+.docs-list{display:flex;flex-direction:column;gap:6px}
+.docs-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;transition:border-color 140ms}
+.docs-item:hover{border-color:var(--line-strong)}
+.docs-item-name{flex:1;font-size:13px;color:var(--ink-2)}
+.docs-item-link{appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:background 140ms,border-color 140ms,color 140ms;white-space:nowrap}
+.docs-item-link:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
+.docs-empty{color:var(--muted);font-size:13px;font-weight:300;padding:16px 0}
+/* Selector modal */
+.docs-sel-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}
+.docs-sel-modal{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);width:min(560px,100%);max-height:85vh;display:flex;flex-direction:column}
+.docs-sel-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.docs-sel-body{overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:6px}
+.docs-sel-footer{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+.docs-sel-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:background 120ms}
+.docs-sel-item:hover{background:var(--surface-2)}
+.docs-sel-check{width:16px;height:16px;border:1px solid var(--line-strong);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:background 120ms,border-color 120ms}
+.docs-sel-check.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.docs-sel-group{font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);padding:10px 12px 4px;border-top:1px solid var(--line);margin-top:4px}
+.docs-sel-group:first-child{border-top:none;margin-top:0;padding-top:0}
+/* ─── REFERÊNCIA TABS ─── */
+.ref-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:32px;gap:0;flex-shrink:0}
+.ref-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;padding:10px 22px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;margin-bottom:-1px;transition:color 160ms,border-bottom-color 160ms}
+.ref-tab:hover{color:var(--ink)}
+.ref-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
 /* ─── BETA BADGE ─── */
 .beta-badge{display:inline-block;font-size:9px;font-family:'Outfit',sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:middle;line-height:1.6}
 .nav-btn.active .beta-badge{background:var(--bg);color:var(--ink)}
@@ -719,9 +800,7 @@ html.light .acomp-date-input{color-scheme:light}
   </div>
   <div class="topbar-right">
     <nav class="nav-group">
-      <button class="nav-btn" data-section="teoria">Teoria</button>
-      <button class="nav-btn" data-section="legislacao">Legislação</button>
-      <button class="nav-btn" data-section="checklist">Checklist</button>
+      <button class="nav-btn" data-section="referencia">Referência</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
       <button class="nav-btn" data-section="editalreader">Leitor de Editais<span class="beta-badge">BETA</span></button>
       <button class="nav-btn" data-section="acompanhamento">Acompanhamento</button>
@@ -1359,7 +1438,8 @@ const CHECKLIST = [
 // ═══════════════════════════════════════════════════════════
 // APP STATE
 // ═══════════════════════════════════════════════════════════
-let currentSection = 'teoria';
+let currentSection = 'home';
+let referenciaTab = 'teoria';
 const openItems = new Set();
 const openGrupos = new Set([0,1,2,3,4,5,6,7]);
 const checkedItems = JSON.parse(localStorage.getItem('ck_checked')||'{}');
@@ -1377,21 +1457,27 @@ function renderSidebar(){
     return;
   }
   html += `<div class="sidebar-toggle-row"><button class="icon-btn" onclick="toggleSidebar()" title="Ocultar barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
-  if(currentSection==='teoria'){
-    html += '<div class="sidebar-section-title">Teoria</div>';
-    TEORIA.forEach((t,i)=>{
-      html += `<a class="sidebar-link" href="#" data-id="${t.id}" onclick="scrollToId('${t.id}');return false;">${String(i+1).padStart(2,'0')} ${t.titulo}</a>`;
+  if(currentSection==='referencia'){
+    html += '<div class="sidebar-section-title">Referência</div>';
+    ['teoria','legislacao','checklist'].forEach(t=>{
+      const labels = {teoria:'Teoria',legislacao:'Legislação',checklist:'Checklist'};
+      const active = referenciaTab===t ? ' style="color:var(--ink)"' : '';
+      html += `<a class="sidebar-link" href="#" onclick="switchReferenciaTab('${t}');return false;"${active}>${labels[t]}</a>`;
     });
-  } else if(currentSection==='legislacao'){
-    html += '<div class="sidebar-section-title">Legislação</div>';
-    LEGISLACAO.forEach(l=>{
-      html += `<a class="sidebar-link" href="#" data-id="${l.id}" onclick="scrollToId('${l.id}');return false;">${l.titulo}</a>`;
-    });
-  } else if(currentSection==='checklist'){
-    html += '<div class="sidebar-section-title">Checklist</div>';
-    CHECKLIST.forEach((g,i)=>{
-      html += `<a class="sidebar-link" href="#" onclick="scrollToGrupo(${i});return false;">${g.secao}</a>`;
-    });
+    html += '<div class="sidebar-divider"></div>';
+    if(referenciaTab==='teoria'){
+      TEORIA.forEach((t,i)=>{
+        html += `<a class="sidebar-link" href="#" onclick="scrollToId('${t.id}');return false;">${String(i+1).padStart(2,'0')} ${t.titulo}</a>`;
+      });
+    } else if(referenciaTab==='legislacao'){
+      LEGISLACAO.forEach(l=>{
+        html += `<a class="sidebar-link" href="#" onclick="scrollToId('${l.id}');return false;">${l.titulo}</a>`;
+      });
+    } else if(referenciaTab==='checklist'){
+      CHECKLIST.forEach((g,i)=>{
+        html += `<a class="sidebar-link" href="#" onclick="scrollToGrupo(${i});return false;">${g.secao}</a>`;
+      });
+    }
   } else if(currentSection==='calculadora'){
     html += '<div class="sidebar-section-title">Calculadora</div>';
     html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'c-custo\');return false;">Dados do item</a>';
@@ -1435,6 +1521,36 @@ function scrollCalc(id){
 }
 
 // ═══════════════════════════════════════════════════════════
+// DOCUMENTOS DE HABILITAÇÃO
+// ═══════════════════════════════════════════════════════════
+const DOCS_NATIONAL = [
+  { id:'ceis',        nome:'CEIS — Cadastro de Empresas Inidôneas',    link:'https://www.portaldatransparencia.gov.br/ceis' },
+  { id:'cnep',        nome:'CNEP — Cadastro Nacional de Penalidades',  link:'https://www.portaldatransparencia.gov.br/cnep' },
+  { id:'cepim',       nome:'CEPIM — Entidades Privadas Impedidas',     link:'https://www.portaldatransparencia.gov.br/cepim' },
+  { id:'cnd-federal', nome:'CND Federal (RFB/PGFN)',                   link:'https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir' },
+  { id:'crf-fgts',    nome:'CRF-FGTS (Caixa)',                         link:'https://consulta-crf.caixa.gov.br' },
+  { id:'cndt',        nome:'CNDT — Certidão Trabalhista (TST)',         link:'https://www.tst.jus.br/certidao' },
+  { id:'cadin',       nome:'CADIN — Inadimplentes com União',           link:'https://www.bcb.gov.br/estabilidadefinanceira/cadin' },
+  { id:'contrato',    nome:'Contrato Social / CNPJ (Receita Federal)', link:'https://www.gov.br/receitafederal/pt-br/servicos/cadastro-de-pessoas-juridicas' },
+  { id:'balanco',     nome:'Balanço Patrimonial',                       link:'' },
+  { id:'atestado',    nome:'Atestado de Capacidade Técnica',            link:'' },
+  { id:'certidao-est',nome:'Certidão Negativa Estadual',                link:'' },
+  { id:'certidao-mun',nome:'Certidão Negativa Municipal',               link:'' },
+];
+
+let docsLibrary = [];
+(function docsLibInit(){
+  try{ docsLibrary = JSON.parse(localStorage.getItem('docs_links')||'[]'); }catch(e){ docsLibrary=[]; }
+})();
+
+function docsLibraryPersist(){
+  localStorage.setItem('docs_links', JSON.stringify(docsLibrary));
+}
+
+function docsAllDocs(){
+  return [...DOCS_NATIONAL, ...docsLibrary];
+}
+
 // ACOMPANHAMENTO
 // ═══════════════════════════════════════════════════════════
 let acompData = [];
@@ -1443,6 +1559,8 @@ let acompEditId = null;
 let acompFilterActive = null;
 let acompDateFrom = '';
 let acompDateTo = '';
+let acompDetailId = null;
+let acompItemEditId = null;
 
 (function acompInit(){
   try{ acompData = JSON.parse(localStorage.getItem('acomp_data')||'[]'); }catch(e){ acompData=[]; }
@@ -1474,6 +1592,7 @@ function acompViewRow(item){
     <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
     <td style="text-align:center">${link}</td>
     <td><div class="acomp-actions-cell">
+      <button class="acomp-btn" onclick="acompOpenDetail('${item.id}')">Itens</button>
       <button class="acomp-btn" onclick="acompStartEdit('${item.id}')">Editar</button>
       <button class="acomp-btn del" onclick="acompConfirmDelete('${item.id}')">Excluir</button>
     </div></td>
@@ -1500,6 +1619,7 @@ function acompEditRow(item){
 }
 
 function renderAcompanhamento(){
+  if(acompDetailId) return renderAcompDetail(acompDetailId);
   const main = document.getElementById('main');
   const total = acompData.length;
   main.innerHTML = `
@@ -1508,7 +1628,11 @@ function renderAcompanhamento(){
       <h1 class="section-title" style="font-size:clamp(28px,3.5vw,48px)">Acompanhamento de Licitações</h1>
     </div>
     <div class="acomp-toolbar">
-      <button class="acomp-add-btn" onclick="acompAddNew()">+ Nova Licitação</button>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="acomp-add-btn" onclick="acompAddNew()">+ Nova Licitação</button>
+        <button class="acomp-sort-btn" onclick="acompExport()" title="Exportar dados para JSON">↓ Exportar</button>
+        <label class="acomp-sort-btn" style="cursor:pointer" title="Importar dados de JSON">↑ Importar<input type="file" accept=".json" style="display:none" onchange="acompImport(event)"></label>
+      </div>
       <div class="acomp-toolbar-right">
         <div class="acomp-date-filter">
           <label class="acomp-date-label">De</label>
@@ -1591,11 +1715,14 @@ function acompCancelEdit(){
 
 function acompSave(id){
   const v = f => document.getElementById(f)?.value || '';
+  const existing = id==='new' ? null : acompData.find(x=>x.id===id);
   const item = {
     id: id==='new' ? String(Date.now()) : id,
     data: v('ae-data'), uasg: v('ae-uasg'), pregao: v('ae-pregao'),
     orgao: v('ae-orgao'), status: v('ae-status'),
-    obs: v('ae-obs'), link: v('ae-link')
+    obs: v('ae-obs'), link: v('ae-link'),
+    aliq: existing ? (existing.aliq||0) : 0,
+    itens: existing ? (existing.itens||[]) : []
   };
   if(id==='new'){
     acompData.push(item);
@@ -1639,6 +1766,37 @@ function acompSetDate(field, val){
   if(clearBtn) clearBtn.style.display = (acompDateFrom||acompDateTo) ? 'flex' : 'none';
 }
 
+function acompExport(){
+  const json = JSON.stringify(acompData, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'licitacoes-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function acompImport(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error('Formato inválido');
+      if(!confirm(`Importar ${data.length} licitação(ões)?\n\nIsso vai SUBSTITUIR todos os dados atuais.`)) return;
+      acompData = data;
+      acompPersist();
+      acompRenderTable();
+    } catch(err){
+      alert('Erro ao importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 function acompClearDates(){
   acompDateFrom = '';
   acompDateTo = '';
@@ -1652,8 +1810,552 @@ function acompClearDates(){
 }
 
 // ═══════════════════════════════════════════════════════════
+// ACOMP DETAIL — ITENS
+// ═══════════════════════════════════════════════════════════
+
+function acompOpenDetail(id){
+  acompDetailId = id;
+  acompItemEditId = null;
+  renderAcompanhamento();
+}
+
+function acompDetailBack(){
+  acompDetailId = null;
+  acompItemEditId = null;
+  renderAcompanhamento();
+}
+
+function acompCalcPMV(custo, frete, margem, aliq){
+  const denom = 1 - margem/100 - aliq/100;
+  if(denom <= 0) return null;
+  return (custo + frete) / denom;
+}
+
+function fmtBRL(n){
+  if(n===null||isNaN(n)) return '—';
+  return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function renderAcompDetail(id){
+  const lic = acompData.find(x=>x.id===id);
+  if(!lic){ acompDetailBack(); return; }
+  if(!lic.itens) lic.itens = [];
+  if(lic.aliq===undefined) lic.aliq = 0;
+  if(!lic.docsSelecionados) lic.docsSelecionados = [];
+
+  const sc = acompStatusClass(lic.status);
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="section-header" style="padding-bottom:8px">
+      <div class="acomp-detail-header">
+        <button class="acomp-back-btn" onclick="acompDetailBack()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Voltar à lista
+        </button>
+        <div class="acomp-detail-meta">
+          <span class="acomp-detail-tag">Órgão:</span>
+          <span class="acomp-detail-val">${escHtml(lic.orgao||'—')}</span>
+          <span class="acomp-detail-tag" style="margin-left:8px">Pregão:</span>
+          <span class="acomp-detail-val">${escHtml(lic.pregao||'—')}</span>
+          <span class="acomp-detail-tag" style="margin-left:8px">Data:</span>
+          <span class="acomp-detail-val">${escHtml(lic.data||'—')}</span>
+        </div>
+        <span class="acomp-status ${sc}" style="flex-shrink:0">${escHtml(lic.status||'—')}</span>
+      </div>
+    </div>
+    <div class="acomp-aliq-row">
+      <span class="acomp-aliq-label">Alíquota Simples Nacional</span>
+      <input class="acomp-aliq-input" id="aliq-input" type="number" min="0" max="33" step="0.1" value="${lic.aliq||0}" placeholder="0.0">
+      <span class="acomp-aliq-hint">%</span>
+      <button class="acomp-back-btn" onclick="acompSetAliq('${lic.id}')">Aplicar</button>
+      <span class="acomp-aliq-hint" style="margin-left:4px">PMV = custo ÷ (1 − margem% − aliq%)</span>
+    </div>
+    <button class="acomp-item-add-btn" onclick="acompItemAdd('${lic.id}')">+ Adicionar Item</button>
+    <div class="acomp-wrap" id="acomp-item-wrap"></div>
+    <div id="acomp-docs-wrap"></div>`;
+
+  acompItemRenderTable(lic);
+  renderAcompDocs(lic);
+}
+
+function acompItemRenderTable(lic){
+  const wrap = document.getElementById('acomp-item-wrap');
+  if(!wrap) return;
+
+  if(lic.itens.length===0){
+    wrap.innerHTML = `<div class="acomp-item-empty">Nenhum item cadastrado. Clique em "+ Adicionar Item" para começar.</div>`;
+    return;
+  }
+
+  let tbody = '';
+  lic.itens.forEach(item=>{
+    tbody += acompItemViewRow(lic.id, item, lic.aliq||0);
+  });
+
+  wrap.innerHTML = `<div class="acomp-scroll"><table class="acomp-item-table">
+    <thead><tr>
+      <th style="width:40px">Nº</th>
+      <th>Fabricante</th>
+      <th>Produto</th>
+      <th>Valor Edital</th>
+      <th>Qtd</th>
+      <th>Custo Unit.</th>
+      <th>Frete</th>
+      <th>Margem</th>
+      <th>Lance Mín.</th>
+      <th>PMV *</th>
+      <th>Lucro *</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${tbody}</tbody>
+  </table>
+  <div style="padding:10px 12px;font-size:11px;color:var(--muted);font-weight:300">* PMV = (custo+frete) ÷ (1 − margem% − aliq%) &nbsp;|&nbsp; Lucro = (PMV − custo − frete) × qtd</div>
+  </div>`;
+}
+
+function acompItemViewRow(licId, item, aliq){
+  const frete = Number(item.frete)||0;
+  const pmv = acompCalcPMV(Number(item.custo_unit), frete, Number(item.margem), Number(aliq));
+  const lucro = pmv!==null ? (pmv - Number(item.custo_unit) - frete) * Number(item.qtd) : null;
+  const pmvHtml = pmv!==null ? `<span class="acomp-pmv-cell">R$ ${fmtBRL(pmv)}</span>` : `<span style="color:var(--muted-2)">—</span>`;
+  const lucroClass = lucro!==null && lucro < 0 ? 'acomp-lucro-neg' : 'acomp-lucro-pos';
+  const lucroHtml = lucro!==null ? `<span class="${lucroClass}">R$ ${fmtBRL(lucro)}</span>` : `<span style="color:var(--muted-2)">—</span>`;
+  return `<tr data-item-id="${item.id}">
+    <td>${escHtml(String(item.num||''))}</td>
+    <td>${escHtml(item.fabricante||'—')}</td>
+    <td>${escHtml(item.produto||'—')}</td>
+    <td>R$ ${fmtBRL(Number(item.valor_edital))}</td>
+    <td>${escHtml(String(item.qtd||''))}</td>
+    <td>R$ ${fmtBRL(Number(item.custo_unit))}</td>
+    <td>${frete>0?'R$ '+fmtBRL(frete):'—'}</td>
+    <td>${escHtml(String(item.margem||''))}%</td>
+    <td>R$ ${fmtBRL(Number(item.lance_min))}</td>
+    <td>${pmvHtml}</td>
+    <td>${lucroHtml}</td>
+    <td><div class="acomp-actions-cell">
+      <button class="acomp-btn" onclick="acompItemStartEdit('${licId}','${item.id}')">Editar</button>
+      <button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')">Excluir</button>
+    </div></td>
+  </tr>`;
+}
+
+function acompItemAdd(licId){
+  acompItemOpenModal(licId, 'new');
+}
+
+function acompItemStartEdit(licId, itemId){
+  acompItemOpenModal(licId, itemId);
+}
+
+function acompItemDelete(licId, itemId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  const it = lic.itens?.find(x=>x.id===itemId);
+  const label = it ? (it.produto||it.fabricante||itemId) : itemId;
+  if(confirm(`Excluir item "${label}"?\n\nEsta ação não pode ser desfeita.`)){
+    lic.itens = (lic.itens||[]).filter(x=>x.id!==itemId);
+    acompPersist();
+    acompItemRenderTable(lic);
+  }
+}
+
+function acompItemOpenModal(licId, itemId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  const blank = {id:'new',num:'',fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:''};
+  const item = itemId==='new' ? blank : (lic.itens||[]).find(x=>x.id===itemId)||blank;
+  const tipoOpts = [['comercio','Comércio — Anexo I'],['servico','Serviços — Anexo IV']]
+    .map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  const overlay = document.createElement('div');
+  overlay.className = 'mi-overlay';
+  overlay.id = 'mi-overlay';
+  overlay.innerHTML = `
+  <div class="mi-modal">
+    <div class="mi-modal-header">
+      <span style="font-family:'Outfit';font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">${itemId==='new'?'Novo Item':'Editar Item'}</span>
+      <button class="icon-btn" onclick="document.getElementById('mi-overlay').remove()" style="font-size:16px">✕</button>
+    </div>
+    <div class="mi-modal-body">
+      <div class="mi-left">
+        <div class="calc-form-title">Identificação</div>
+        <div class="field-row">
+          <div class="field-group" style="flex:0 0 90px">
+            <label class="field-label" for="mi-num">Nº do Item</label>
+            <input class="field-input" id="mi-num" type="number" min="1" value="${escHtml(String(item.num||''))}" placeholder="1">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="mi-fab">Fabricante</label>
+            <input class="field-input" id="mi-fab" type="text" value="${escHtml(item.fabricante||'')}" placeholder="Fabricante">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="mi-prod">Produto / Descrição</label>
+          <input class="field-input" id="mi-prod" type="text" value="${escHtml(item.produto||'')}" placeholder="Descrição do produto">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="mi-vedital">Valor do Edital (R$)</label>
+            <input class="field-input" id="mi-vedital" type="number" min="0" step="0.01" value="${escHtml(String(item.valor_edital||''))}" placeholder="0,00">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="mi-lance">Lance Mínimo (R$)</label>
+            <input class="field-input" id="mi-lance" type="number" min="0" step="0.01" value="${escHtml(String(item.lance_min||''))}" placeholder="0,00">
+          </div>
+        </div>
+      </div>
+      <div class="mi-right">
+        <div class="calc-form-title">Calculadora</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="mi-qtd">Quantidade</label>
+            <input class="field-input" id="mi-qtd" type="number" min="1" value="${escHtml(String(item.qtd||''))}" placeholder="1" oninput="miCalcUpdate()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="mi-custo">Custo Unitário (R$)</label>
+            <input class="field-input" id="mi-custo" type="number" min="0" step="0.01" value="${escHtml(String(item.custo_unit||''))}" placeholder="0,00" oninput="miCalcUpdate()">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="mi-frete">Frete por Item (R$)</label>
+            <input class="field-input" id="mi-frete" type="number" min="0" step="0.01" value="${escHtml(String(item.frete||0))}" placeholder="0,00" oninput="miCalcUpdate()">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="mi-margem">Margem de Lucro (%)</label>
+            <input class="field-input" id="mi-margem" type="number" min="0" max="99" step="0.1" value="${escHtml(String(item.margem||25))}" placeholder="25" oninput="miCalcUpdate()">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="mi-tipo">Tipo de Empresa</label>
+            <select class="field-select" id="mi-tipo" onchange="miCalcPopulateFaixas()">${tipoOpts}</select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="mi-faixa">Faixa de Faturamento</label>
+            <select class="field-select" id="mi-faixa" onchange="miCalcFaixaChange()"></select>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="mi-aliq">Alíquota Reversa (%)</label>
+          <input class="field-input" id="mi-aliq" type="number" min="0" max="99" step="0.01" value="${+(lic.aliq||4.2)}" oninput="miCalcUpdate()">
+          <div class="field-hint">Preenchida pela faixa. Ajuste manualmente se necessário.</div>
+        </div>
+        <div class="calc-result-card" style="margin-top:16px">
+          <div class="calc-result-label">Preço Mínimo de Venda — unitário</div>
+          <div class="calc-pmv-value" id="mi-pmv">R$ —</div>
+          <div class="calc-breakdown">
+            <div class="calc-row"><span class="calc-row-label">Custo + Frete</span><span class="calc-row-value" id="mi-r-custo">—</span></div>
+            <div class="calc-row"><span class="calc-row-label">Impostos (reverso)</span><span class="calc-row-value" id="mi-r-imposto">—</span></div>
+            <div class="calc-row"><span class="calc-row-label">Lucro unitário</span><span class="calc-row-value" id="mi-r-lucro">—</span></div>
+          </div>
+          <div class="calc-total-row">
+            <span class="calc-total-label">Total da licitação</span>
+            <span class="calc-total-value" id="mi-r-total">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mi-footer">
+      <button class="acomp-btn" onclick="document.getElementById('mi-overlay').remove()">Cancelar</button>
+      <button class="acomp-btn save" onclick="acompItemModalSave('${licId}','${itemId}')">Salvar Item</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  miCalcPopulateFaixas();
+  miCalcUpdate();
+}
+
+function miCalcPopulateFaixas(){
+  const tipo = document.getElementById('mi-tipo')?.value;
+  if(!tipo) return;
+  const sel = document.getElementById('mi-faixa');
+  if(!sel) return;
+  sel.innerHTML = '';
+  SIMPLES[tipo].faixas.forEach((f,i)=>{
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = f.faixa + ' — reversa ' + pct(f.reversa);
+    sel.appendChild(opt);
+  });
+  const aliq = SIMPLES[tipo].faixas[0].reversa;
+  const aliqEl = document.getElementById('mi-aliq');
+  if(aliqEl) aliqEl.value = +(aliq*100).toFixed(2);
+  miCalcUpdate();
+}
+
+function miCalcFaixaChange(){
+  const tipo = document.getElementById('mi-tipo')?.value;
+  const fi = parseInt(document.getElementById('mi-faixa')?.value)||0;
+  if(!tipo) return;
+  const aliq = SIMPLES[tipo].faixas[fi]?.reversa;
+  if(aliq!==undefined){
+    const aliqEl = document.getElementById('mi-aliq');
+    if(aliqEl) aliqEl.value = +(aliq*100).toFixed(2);
+  }
+  miCalcUpdate();
+}
+
+function miCalcUpdate(){
+  const g = id => parseFloat(document.getElementById(id)?.value)||0;
+  const qty   = g('mi-qtd');
+  const custo = g('mi-custo');
+  const frete = g('mi-frete');
+  const lucro = g('mi-margem') / 100;
+  const aliq  = g('mi-aliq') / 100;
+  const denom = 1 - aliq - lucro;
+  const pmvEl = document.getElementById('mi-pmv');
+  if(!pmvEl) return;
+  if(denom <= 0 || custo + frete === 0){
+    pmvEl.textContent = 'Verifique os valores';
+    pmvEl.className = 'calc-pmv-value error';
+    ['mi-r-custo','mi-r-imposto','mi-r-lucro','mi-r-total'].forEach(id=>{
+      const el = document.getElementById(id); if(el) el.textContent='—';
+    });
+    return;
+  }
+  const pmv      = (custo + frete) / denom;
+  const impostoR = pmv * aliq;
+  const lucroR   = pmv * lucro;
+  const total    = pmv * qty;
+  pmvEl.textContent = brl(pmv);
+  pmvEl.className   = 'calc-pmv-value';
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('mi-r-custo',   brl(custo + frete));
+  set('mi-r-imposto', brl(impostoR));
+  set('mi-r-lucro',   brl(lucroR));
+  set('mi-r-total',   brl(total));
+}
+
+function acompItemModalSave(licId, itemId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  if(!lic.itens) lic.itens = [];
+  const g = id => document.getElementById(id)?.value || '';
+  const aliqVal = parseFloat(g('mi-aliq'))||0;
+  lic.aliq = aliqVal;
+  const item = {
+    id: itemId==='new' ? String(Date.now()) : itemId,
+    num: Number(g('mi-num'))||0,
+    fabricante: g('mi-fab'),
+    produto: g('mi-prod'),
+    valor_edital: parseFloat(g('mi-vedital'))||0,
+    qtd: Number(g('mi-qtd'))||0,
+    custo_unit: parseFloat(g('mi-custo'))||0,
+    frete: parseFloat(g('mi-frete'))||0,
+    margem: parseFloat(g('mi-margem'))||0,
+    lance_min: parseFloat(g('mi-lance'))||0
+  };
+  if(itemId==='new'){
+    lic.itens.push(item);
+  } else {
+    const idx = lic.itens.findIndex(x=>x.id===itemId);
+    if(idx>=0) lic.itens[idx] = item;
+  }
+  acompPersist();
+  document.getElementById('mi-overlay')?.remove();
+  acompItemRenderTable(lic);
+  const aliqInput = document.getElementById('aliq-input');
+  if(aliqInput) aliqInput.value = aliqVal;
+}
+
+function acompSetAliq(licId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  const val = parseFloat(document.getElementById('aliq-input')?.value)||0;
+  lic.aliq = val;
+  acompPersist();
+  acompItemRenderTable(lic);
+}
+
+// ═══════════════════════════════════════════════════════════
+// FEATURE B — DOCUMENTOS DE HABILITAÇÃO
+// ═══════════════════════════════════════════════════════════
+
+function renderAcompDocs(lic){
+  const wrap = document.getElementById('acomp-docs-wrap');
+  if(!wrap) return;
+  if(!lic.docsSelecionados) lic.docsSelecionados = [];
+  const all = docsAllDocs();
+  const sel = lic.docsSelecionados;
+
+  let itemsHtml = '';
+  if(sel.length === 0){
+    itemsHtml = `<div class="docs-empty">Nenhum documento selecionado. Clique em "+ Selecionar documentos" para adicionar.</div>`;
+  } else {
+    sel.forEach(docId => {
+      const doc = all.find(d => d.id === docId);
+      if(!doc) return;
+      const linkBtn = doc.link
+        ? `<a class="docs-item-link" href="${escHtml(doc.link)}" target="_blank" rel="noopener">Consultar ↗</a>`
+        : `<span class="docs-item-link" style="opacity:0.35;cursor:default">Sem link</span>`;
+      itemsHtml += `<div class="docs-item">
+        <span class="docs-item-name">${escHtml(doc.nome)}</span>
+        ${linkBtn}
+      </div>`;
+    });
+  }
+
+  wrap.innerHTML = `<div class="docs-section">
+    <div class="docs-header">
+      <span class="docs-title">Documentos de Habilitação</span>
+      <div class="docs-btns">
+        <button class="acomp-btn" onclick="docsLibraryOpen()">Biblioteca regional</button>
+        <button class="acomp-btn save" onclick="acompDocsOpenSelector('${lic.id}')">+ Selecionar documentos</button>
+      </div>
+    </div>
+    <div class="docs-list">${itemsHtml}</div>
+  </div>`;
+}
+
+function acompDocsOpenSelector(licId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  if(!lic.docsSelecionados) lic.docsSelecionados = [];
+  const all = docsAllDocs();
+
+  const national = all.filter(d => DOCS_NATIONAL.some(n => n.id===d.id));
+  const regional = all.filter(d => !DOCS_NATIONAL.some(n => n.id===d.id));
+
+  function docRow(doc){
+    const on = lic.docsSelecionados.includes(doc.id);
+    return `<div class="docs-sel-item" onclick="acompDocsToggle('${licId}','${doc.id}',this)">
+      <span class="docs-sel-check${on?' on':''}">✓</span>
+      <span>${escHtml(doc.nome)}</span>
+    </div>`;
+  }
+
+  let body = `<div class="docs-sel-group"><div class="field-label" style="margin-bottom:8px">Documentos Nacionais</div>`;
+  national.forEach(d => { body += docRow(d); });
+  body += `</div>`;
+  if(regional.length > 0){
+    body += `<div class="docs-sel-group" style="margin-top:16px"><div class="field-label" style="margin-bottom:8px">Biblioteca Regional</div>`;
+    regional.forEach(d => { body += docRow(d); });
+    body += `</div>`;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'docs-sel-overlay';
+  overlay.id = 'docs-sel-overlay';
+  overlay.innerHTML = `<div class="docs-sel-modal">
+    <div class="docs-sel-header">
+      <span style="font-family:'Outfit';font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Selecionar Documentos</span>
+      <button class="icon-btn" onclick="document.getElementById('docs-sel-overlay').remove()">✕</button>
+    </div>
+    <div class="docs-sel-body">${body}</div>
+    <div class="docs-sel-footer">
+      <button class="acomp-btn" onclick="document.getElementById('docs-sel-overlay').remove()">Fechar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function acompDocsToggle(licId, docId, el){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  if(!lic.docsSelecionados) lic.docsSelecionados = [];
+  const idx = lic.docsSelecionados.indexOf(docId);
+  const check = el.querySelector('.docs-sel-check');
+  if(idx >= 0){
+    lic.docsSelecionados.splice(idx,1);
+    if(check) check.classList.remove('on');
+  } else {
+    lic.docsSelecionados.push(docId);
+    if(check) check.classList.add('on');
+  }
+  acompPersist();
+  renderAcompDocs(lic);
+}
+
+function docsLibraryOpen(){
+  const lib = docsLibrary;
+
+  function libRows(){
+    if(lib.length===0) return `<div class="docs-empty" style="padding:12px 0">Nenhum link regional cadastrado.</div>`;
+    return lib.map(d => `<div class="docs-sel-item" style="gap:8px">
+      <span style="flex:1">${escHtml(d.nome)}</span>
+      ${d.link ? `<a href="${escHtml(d.link)}" target="_blank" rel="noopener" class="docs-item-link" style="font-size:11px">↗</a>` : ''}
+      <button class="acomp-btn del" onclick="docsLibraryDelete('${d.id}')" style="padding:2px 8px;font-size:11px">Excluir</button>
+    </div>`).join('');
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'docs-sel-overlay';
+  overlay.id = 'docs-lib-overlay';
+  overlay.innerHTML = `<div class="docs-sel-modal">
+    <div class="docs-sel-header">
+      <span style="font-family:'Outfit';font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Biblioteca de Links Regionais</span>
+      <button class="icon-btn" onclick="document.getElementById('docs-lib-overlay').remove()">✕</button>
+    </div>
+    <div class="docs-sel-body" id="docs-lib-body">
+      ${libRows()}
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line)">
+        <div class="field-label" style="margin-bottom:8px">Adicionar novo documento regional</div>
+        <div class="field-group" style="margin-bottom:8px">
+          <input class="field-input" id="dlib-nome" type="text" placeholder="Nome do documento (ex: SEFAZ CE)">
+        </div>
+        <div class="field-group" style="margin-bottom:8px">
+          <input class="field-input" id="dlib-link" type="url" placeholder="URL de consulta (opcional)">
+        </div>
+        <button class="acomp-btn save" onclick="docsLibraryAdd()">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="docs-sel-footer">
+      <button class="acomp-btn" onclick="document.getElementById('docs-lib-overlay').remove()">Fechar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function docsLibraryAdd(){
+  const nome = document.getElementById('dlib-nome')?.value?.trim();
+  const link = document.getElementById('dlib-link')?.value?.trim();
+  if(!nome){ alert('Informe o nome do documento.'); return; }
+  const newDoc = { id:'reg-'+Date.now(), nome, link: link||'', tipo:'regional' };
+  docsLibrary.push(newDoc);
+  docsLibraryPersist();
+  document.getElementById('docs-lib-overlay')?.remove();
+  docsLibraryOpen();
+}
+
+function docsLibraryDelete(id){
+  if(!confirm('Excluir este documento da biblioteca?')) return;
+  const idx = docsLibrary.findIndex(d=>d.id===id);
+  if(idx>=0){
+    docsLibrary.splice(idx,1);
+    docsLibraryPersist();
+    acompData.forEach(lic=>{
+      if(lic.docsSelecionados){
+        lic.docsSelecionados = lic.docsSelecionados.filter(x=>x!==id);
+      }
+    });
+    acompPersist();
+  }
+  document.getElementById('docs-lib-overlay')?.remove();
+  docsLibraryOpen();
+}
+
+// ═══════════════════════════════════════════════════════════
 // RENDER TEORIA
 // ═══════════════════════════════════════════════════════════
+function renderReferencia(){
+  if(referenciaTab==='teoria') renderTeoria();
+  else if(referenciaTab==='legislacao') renderLegislacao();
+  else if(referenciaTab==='checklist') renderChecklist();
+  const main = document.getElementById('main');
+  const tabs = `<div class="ref-tabs">
+    <button class="ref-tab${referenciaTab==='teoria'?' active':''}" onclick="switchReferenciaTab('teoria')">Teoria</button>
+    <button class="ref-tab${referenciaTab==='legislacao'?' active':''}" onclick="switchReferenciaTab('legislacao')">Legislação</button>
+    <button class="ref-tab${referenciaTab==='checklist'?' active':''}" onclick="switchReferenciaTab('checklist')">Checklist</button>
+  </div>`;
+  main.insertAdjacentHTML('afterbegin', tabs);
+}
+
+function switchReferenciaTab(tab){
+  referenciaTab = tab;
+  renderReferencia();
+  renderSidebar();
+}
+
 function renderTeoria(){
   let html = `<div class="section-header">
     <div class="section-eyebrow"><span class="dot"></span>Guia Operacional<span class="dot"></span>Lei 14.133/2021</div>
@@ -1854,9 +2556,7 @@ function switchSection(section){
   if(sidebarHidden && section!=='home') renderIconSidebar();
   else renderSidebar();
   if(section==='home') renderHome();
-  else if(section==='teoria') renderTeoria();
-  else if(section==='legislacao') renderLegislacao();
-  else if(section==='checklist') renderChecklist();
+  else if(section==='referencia') renderReferencia();
   else if(section==='calculadora') renderCalculadora();
   else if(section==='editalreader') renderEditalReader();
   else if(section==='acompanhamento') renderAcompanhamento();
@@ -1872,22 +2572,19 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 let sidebarHidden = localStorage.getItem('sidebar_hidden') === '1';
 
 const SECTION_ICONS = {
-  teoria:       `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
-  legislacao:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
-  checklist:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+  referencia:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
   calculadora:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`,
   editalreader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`,
   acompanhamento: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
 };
 const SECTION_LABELS = {
-  teoria:'Teoria', legislacao:'Lei', checklist:'Check',
-  calculadora:'Calc.', editalreader:'Leitor', acompanhamento:'Acomp.'
+  referencia:'Ref.', calculadora:'Calc.', editalreader:'Leitor', acompanhamento:'Acomp.'
 };
 
 function renderIconSidebar(){
   const sb = document.getElementById('sidebar');
   sb.classList.add('icon-mode');
-  const sections = ['teoria','legislacao','checklist','calculadora','editalreader','acompanhamento'];
+  const sections = ['referencia','calculadora','editalreader','acompanhamento'];
   let html = `<div class="sb-icon-toggle"><button class="icon-btn" onclick="toggleSidebar()" title="Expandir barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
   sections.forEach(s=>{
     const active = currentSection===s ? ' active' : '';
@@ -1935,32 +2632,22 @@ function toggleSidebar(){
 function renderHome(){
   const cards = [
     {
-      section:'teoria', num:'01', title:'Teoria',
-      desc:'17 tópicos operacionais: impugnação, desclassificação, inexequibilidade, habilitação, jurisprudência e mais.',
+      section:'referencia', num:'01', title:'Referência',
+      desc:'Teoria (17 tópicos), Legislação (Arts. 59–70 da Lei 14.133/2021) e Checklist com 30+ itens e textos de recurso prontos.',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`
     },
     {
-      section:'legislacao', num:'02', title:'Legislação',
-      desc:'Texto completo dos Arts. 59 a 70 da Lei 14.133/2021 — base legal para desclassificação e inabilitação.',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`
-    },
-    {
-      section:'checklist', num:'03', title:'Checklist',
-      desc:'30+ itens em 8 grupos com jurisprudência, observações e texto de recurso pronto para copiar ou editar.',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`
-    },
-    {
-      section:'calculadora', num:'04', title:'Calculadora',
+      section:'calculadora', num:'02', title:'Calculadora',
       desc:'Preço Mínimo de Venda com alíquota reversa do Simples Nacional. Tabelas Comércio (Anexo I) e Serviços (Anexo IV).',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`
     },
     {
-      section:'editalreader', num:'05', title:'Leitor de Editais',
+      section:'editalreader', num:'03', title:'Leitor de Editais',
       desc:'Análise de editais e Termos de Referência com IA (Gemma). Upload de PDF, Excel ou Word. Resumo executivo ou análise completa em 7 seções.',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
     },
     {
-      section:'acompanhamento', num:'06', title:'Acompanhamento',
+      section:'acompanhamento', num:'04', title:'Acompanhamento',
       desc:'Lista de licitações com status, datas, observações e links. Organize e acompanhe todos os pregões em um único lugar.',
       icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
     }
