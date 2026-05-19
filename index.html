@@ -682,6 +682,11 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 }
 .acomp-input:focus{border-color:var(--ink)}
 select.acomp-input option{background:var(--surface);color:var(--ink)}
+.acomp-date-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.acomp-date-label{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.acomp-date-input{background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:7px 10px;color:var(--ink);font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:pointer;transition:border-color 160ms;color-scheme:dark}
+.acomp-date-input:focus{border-color:var(--line-strong)}
+html.light .acomp-date-input{color-scheme:light}
 .acomp-empty{text-align:center;padding:64px 24px}
 .acomp-empty-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:300;color:var(--muted);margin-bottom:8px}
 .acomp-empty-sub{font-size:13px;color:var(--muted-2)}
@@ -1436,6 +1441,8 @@ let acompData = [];
 let acompSortDesc = true;
 let acompEditId = null;
 let acompFilterActive = null;
+let acompDateFrom = '';
+let acompDateTo = '';
 
 (function acompInit(){
   try{ acompData = JSON.parse(localStorage.getItem('acomp_data')||'[]'); }catch(e){ acompData=[]; }
@@ -1503,6 +1510,13 @@ function renderAcompanhamento(){
     <div class="acomp-toolbar">
       <button class="acomp-add-btn" onclick="acompAddNew()">+ Nova Licitação</button>
       <div class="acomp-toolbar-right">
+        <div class="acomp-date-filter">
+          <label class="acomp-date-label">De</label>
+          <input type="date" class="acomp-date-input" id="acomp-from" value="${acompDateFrom}" onchange="acompSetDate('from',this.value)">
+          <label class="acomp-date-label">Até</label>
+          <input type="date" class="acomp-date-input" id="acomp-to" value="${acompDateTo}" onchange="acompSetDate('to',this.value)">
+          <button class="acomp-sort-btn" id="acomp-clear-date" onclick="acompClearDates()" style="display:${(acompDateFrom||acompDateTo)?'flex':'none'}">✕ Limpar</button>
+        </div>
         <span class="acomp-count-label" id="acomp-count-label"></span>
         <button class="acomp-sort-btn" id="acomp-sort-btn" onclick="acompToggleSort()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -1521,9 +1535,10 @@ function acompRenderTable(){
   const sortBtn = document.getElementById('acomp-sort-btn');
   if(!wrap) return;
 
-  let list = acompFilterActive
-    ? acompData.filter(x=>x.status===acompFilterActive)
-    : [...acompData];
+  let list = [...acompData];
+  if(acompFilterActive) list = list.filter(x=>x.status===acompFilterActive);
+  if(acompDateFrom) list = list.filter(x=>(x.data||'')>=acompDateFrom);
+  if(acompDateTo)   list = list.filter(x=>(x.data||'')<=acompDateTo);
 
   list.sort((a,b)=>{
     const da=a.data||'', db=b.data||'';
@@ -1614,6 +1629,26 @@ function acompToggleSort(){
 function acompFilterStatus(status){
   acompFilterActive = status;
   acompRenderTable();
+}
+
+function acompSetDate(field, val){
+  if(field==='from') acompDateFrom = val;
+  else acompDateTo = val;
+  acompRenderTable();
+  const clearBtn = document.getElementById('acomp-clear-date');
+  if(clearBtn) clearBtn.style.display = (acompDateFrom||acompDateTo) ? 'flex' : 'none';
+}
+
+function acompClearDates(){
+  acompDateFrom = '';
+  acompDateTo = '';
+  const f = document.getElementById('acomp-from');
+  const t = document.getElementById('acomp-to');
+  if(f) f.value = '';
+  if(t) t.value = '';
+  acompRenderTable();
+  const clearBtn = document.getElementById('acomp-clear-date');
+  if(clearBtn) clearBtn.style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1806,6 +1841,10 @@ function escAttr(s){
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
 function switchSection(section){
+  // Auth check BEFORE any state change
+  if((section==='editalreader'||section==='acompanhamento') && !sessionStorage.getItem('er_auth')){
+    erShowLogin(section); return;
+  }
   currentSection=section;
   document.querySelectorAll('.nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.section===section);
@@ -1819,14 +1858,8 @@ function switchSection(section){
   else if(section==='legislacao') renderLegislacao();
   else if(section==='checklist') renderChecklist();
   else if(section==='calculadora') renderCalculadora();
-  else if(section==='editalreader'){
-    if(!sessionStorage.getItem('er_auth')){ erShowLogin(); return; }
-    renderEditalReader();
-  }
-  else if(section==='acompanhamento'){
-    if(!sessionStorage.getItem('er_auth')){ erShowLogin('acompanhamento'); return; }
-    renderAcompanhamento();
-  }
+  else if(section==='editalreader') renderEditalReader();
+  else if(section==='acompanhamento') renderAcompanhamento();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
