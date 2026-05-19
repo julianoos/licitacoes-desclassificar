@@ -41,7 +41,7 @@ html.light {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{transition:background 300ms var(--ease),color 300ms var(--ease)}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:20px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:20px;line-height:1.4;-webkit-font-smoothing:antialiased;overflow:hidden}
 
 /* ─── APP SHELL ─── */
 .app{display:flex;flex-direction:column;height:100vh}
@@ -533,9 +533,9 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
   display:inline-block;padding:3px 10px;border-radius:20px;
   font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
 }
-.acomp-status.st-disputar{border:1px solid var(--line-strong);color:var(--ink-2)}
-.acomp-status.st-em-disputa{border:1px solid var(--ink);color:var(--ink);background:rgba(240,240,240,.08)}
-.acomp-status.st-selecao{background:var(--ink);color:var(--bg);border:1px solid var(--ink)}
+.acomp-status.st-disputar{border:1px solid #4a9eff55;color:#4a9eff;background:rgba(74,158,255,.08)}
+.acomp-status.st-em-disputa{border:1px solid #f59e0b55;color:#f59e0b;background:rgba(245,158,11,.08)}
+.acomp-status.st-em-selecao{border:1px solid #22c55e55;color:#22c55e;background:rgba(34,197,94,.08)}
 .acomp-status.st-finalizado{border:1px solid var(--line);color:var(--muted);text-decoration:line-through}
 .acomp-obs-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acomp-link-btn{
@@ -569,6 +569,7 @@ select.acomp-input option{background:var(--surface);color:var(--ink)}
 .acomp-date-input{background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:7px 10px;color:var(--ink);font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:pointer;transition:border-color 160ms;color-scheme:dark}
 .acomp-date-input:focus{border-color:var(--line-strong)}
 html.light .acomp-date-input{color-scheme:light}
+.acomp-save-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface)}
 .acomp-empty{text-align:center;padding:64px 24px}
 .acomp-empty-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:300;color:var(--muted);margin-bottom:8px}
 .acomp-empty-sub{font-size:13px;color:var(--muted-2)}
@@ -682,8 +683,6 @@ html.light .acomp-date-input{color-scheme:light}
 .er-modal-error{font-size:13px;color:#e05555;margin-bottom:14px;min-height:18px}
 .er-modal-btn{width:100%;padding:12px;background:var(--ink);color:var(--bg);border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:opacity 180ms}
 .er-modal-btn:hover{opacity:.85}
-.er-logout-btn{display:block;width:100%;margin-top:16px;padding:9px 14px;background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-align:center;transition:all 180ms var(--ease)}
-.er-logout-btn:hover{border-color:var(--line-strong);color:var(--ink)}
 </style>
 </head>
 <body>
@@ -698,7 +697,7 @@ html.light .acomp-date-input{color-scheme:light}
     <nav class="nav-group">
       <button class="nav-btn" data-section="desclassificar">Desclassificar</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
-      <button class="nav-btn" data-section="editalreader">Leitor de Editais<span class="beta-badge">BETA</span></button>
+      <button class="nav-btn" data-section="editalreader">Leitor de Editais</button>
       <button class="nav-btn" data-section="acompanhamento">Acompanhamento</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
@@ -830,44 +829,15 @@ function renderSidebar(){
     return;
   }
   html += `<div class="sidebar-toggle-row"><button class="icon-btn" onclick="toggleSidebar()" title="Ocultar barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
-  if(currentSection==='desclassificar'){
-    html += '<div class="sidebar-section-title">Navegação</div>';
-    [
-      {s:'home',          label:'Home'},
-      {s:'desclassificar',label:'Desclassificar'},
-      {s:'calculadora',   label:'Calculadora'},
-      {s:'editalreader',  label:'Leitor de Editais'},
-      {s:'acompanhamento',label:'Acompanhamento'},
-    ].forEach(({s, label})=>{
-      const active = currentSection===s ? ' style="color:var(--ink)"' : '';
-      html += `<a class="sidebar-link" href="#" onclick="switchSection('${s}');return false;"${active}>${label}</a>`;
-    });
-  } else if(currentSection==='calculadora'){
-    html += '<div class="sidebar-section-title">Calculadora</div>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'c-custo\');return false;">Dados do item</a>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'c-tipo\');return false;">Tipo de empresa</a>';
-    html += '<div class="sidebar-divider"></div>';
-    html += '<div class="sidebar-section-title">Tabelas</div>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'simples-tables\');return false;">Simples Nacional</a>';
-  } else if(currentSection==='editalreader'){
-    html += '<div class="sidebar-section-title">Leitor de Editais</div>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-upload\');return false;">Upload</a>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-result-area\');return false;">Resultado</a>';
-    html += '<a class="sidebar-link" href="#" onclick="scrollCalc(\'er-history\');return false;">Histórico</a>';
-    html += '<button class="er-logout-btn" onclick="erLogout()">Sair da sessão</button>';
-  } else if(currentSection==='acompanhamento'){
-    html += '<div class="sidebar-section-title">Acompanhamento</div>';
-    html += `<a class="sidebar-link" href="#" onclick="return false;" style="pointer-events:none;opacity:.4">Total: ${(()=>{try{return JSON.parse(localStorage.getItem('acomp_data')||'[]').length}catch(e){return 0}})()}</a>`;
-    const statuses = ['A disputar','Em disputa','Seleção','Finalizado'];
-    statuses.forEach(s=>{
-      try{
-        const count = JSON.parse(localStorage.getItem('acomp_data')||'[]').filter(x=>x.status===s).length;
-        html += `<a class="sidebar-link" href="#" onclick="acompFilterStatus('${s}');return false;">${s} <span style="float:right;color:var(--muted-2)">${count}</span></a>`;
-      }catch(e){}
-    });
-    html += '<div class="sidebar-divider"></div>';
-    html += '<a class="sidebar-link" href="#" onclick="acompFilterStatus(null);return false;">Mostrar todas</a>';
-  }
+  [
+    {s:'desclassificar', label:'Desclassificar'},
+    {s:'calculadora',    label:'Calculadora'},
+    {s:'editalreader',   label:'Leitor de Editais'},
+    {s:'acompanhamento', label:'Acompanhamento'},
+  ].forEach(({s, label})=>{
+    const active = currentSection===s ? ' style="color:var(--ink)"' : '';
+    html += `<a class="sidebar-link" href="#" onclick="switchSection('${s}');return false;"${active}>${label}</a>`;
+  });
   sb.innerHTML = html;
 }
 
@@ -937,7 +907,7 @@ function acompPersist(){
 function acompStatusClass(s){
   if(s==='A disputar') return 'st-disputar';
   if(s==='Em disputa') return 'st-em-disputa';
-  if(s==='Seleção') return 'st-selecao';
+  if(s==='Em Seleção') return 'st-em-selecao';
   if(s==='Finalizado') return 'st-finalizado';
   return 'st-disputar';
 }
@@ -949,6 +919,7 @@ function acompViewRow(item){
     : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
   return `<tr data-id="${item.id}">
     <td style="white-space:nowrap">${escHtml(item.data||'—')}</td>
+    <td style="white-space:nowrap;color:var(--muted)">${escHtml(item.tipo_lic||'—')}</td>
     <td style="white-space:nowrap">${escHtml(item.uasg||'—')}</td>
     <td style="white-space:nowrap">${escHtml(item.pregao||'—')}</td>
     <td>${escHtml(item.orgao||'—')}</td>
@@ -965,20 +936,20 @@ function acompViewRow(item){
 
 function acompEditRow(item){
   const isNew = item.id==='new';
-  const opts = ['A disputar','Em disputa','Seleção','Finalizado']
+  const statusOpts = ['A disputar','Em disputa','Em Seleção','Finalizado']
     .map(s=>`<option value="${s}"${item.status===s?' selected':''}>${s}</option>`).join('');
+  const tipoOpts = ['Pregão','Dispensa']
+    .map(t=>`<option value="${t}"${(item.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
   return `<tr class="editing" data-id="${item.id}">
     <td><input class="acomp-input" id="ae-data" type="date" value="${escHtml(item.data||'')}"></td>
+    <td><select class="acomp-input" id="ae-tipo-lic" style="min-width:90px">${tipoOpts}</select></td>
     <td><input class="acomp-input" id="ae-uasg" type="text" value="${escHtml(item.uasg||'')}" placeholder="UASG" style="min-width:70px"></td>
     <td><input class="acomp-input" id="ae-pregao" type="text" value="${escHtml(item.pregao||'')}" placeholder="001/2026" style="min-width:80px"></td>
     <td><input class="acomp-input" id="ae-orgao" type="text" value="${escHtml(item.orgao||'')}" placeholder="Nome do órgão" style="min-width:150px"></td>
-    <td><select class="acomp-input" id="ae-status" style="min-width:110px">${opts}</select></td>
+    <td><select class="acomp-input" id="ae-status" style="min-width:110px">${statusOpts}</select></td>
     <td><input class="acomp-input" id="ae-obs" type="text" value="${escHtml(item.obs||'')}" placeholder="Observações" style="min-width:130px"></td>
     <td><input class="acomp-input" id="ae-link" type="url" value="${escHtml(item.link||'')}" placeholder="https://..." style="min-width:90px"></td>
-    <td><div class="acomp-actions-cell">
-      <button class="acomp-btn save" onclick="acompSave('${item.id}')">Salvar</button>
-      <button class="acomp-btn" onclick="acompCancelEdit()">Cancelar</button>
-    </div></td>
+    <td></td>
   </tr>`;
 }
 
@@ -994,8 +965,6 @@ function renderAcompanhamento(){
     <div class="acomp-toolbar">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <button class="acomp-add-btn" onclick="acompAddNew()">+ Nova Licitação</button>
-        <button class="acomp-sort-btn" onclick="acompExport()" title="Exportar dados para JSON">↓ Exportar</button>
-        <label class="acomp-sort-btn" style="cursor:pointer" title="Importar dados de JSON">↑ Importar<input type="file" accept=".json" style="display:none" onchange="acompImport(event)"></label>
       </div>
       <div class="acomp-toolbar-right">
         <div class="acomp-date-filter">
@@ -1046,19 +1015,24 @@ function acompRenderTable(){
   }
 
   let tbody = '';
-  if(acompEditId==='new') tbody += acompEditRow({id:'new',data:'',uasg:'',pregao:'',orgao:'',status:'A disputar',obs:'',link:''});
+  if(acompEditId==='new') tbody += acompEditRow({id:'new',data:'',uasg:'',pregao:'',orgao:'',tipo_lic:'Pregão',status:'A disputar',obs:'',link:''});
   list.forEach(item=>{
     tbody += item.id===acompEditId ? acompEditRow(item) : acompViewRow(item);
   });
 
+  const editBar = acompEditId ? `<div class="acomp-save-bar">
+    <button class="acomp-btn save" onclick="acompSave('${acompEditId}')">Salvar</button>
+    <button class="acomp-btn" onclick="acompCancelEdit()">Cancelar</button>
+  </div>` : '';
+
   wrap.innerHTML = `<div class="acomp-scroll"><table class="acomp-table">
     <thead><tr>
-      <th>Data do Pregão</th><th>Nº UASG</th><th>Nº Pregão</th>
+      <th>Data</th><th>Tipo</th><th>Nº UASG</th><th>Nº Pregão</th>
       <th>Nome do Órgão</th><th>Status</th><th>Observações</th>
       <th style="text-align:center">Link</th><th></th>
     </tr></thead>
     <tbody>${tbody}</tbody>
-  </table></div>`;
+  </table></div>${editBar}`;
 }
 
 function acompAddNew(){
@@ -1082,7 +1056,8 @@ function acompSave(id){
   const existing = id==='new' ? null : acompData.find(x=>x.id===id);
   const item = {
     id: id==='new' ? String(Date.now()) : id,
-    data: v('ae-data'), uasg: v('ae-uasg'), pregao: v('ae-pregao'),
+    data: v('ae-data'), tipo_lic: v('ae-tipo-lic')||'Pregão',
+    uasg: v('ae-uasg'), pregao: v('ae-pregao'),
     orgao: v('ae-orgao'), status: v('ae-status'),
     obs: v('ae-obs'), link: v('ae-link'),
     aliq: existing ? (existing.aliq||0) : 0,
@@ -1856,10 +1831,6 @@ function escAttr(s){
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
 function switchSection(section){
-  // Auth check BEFORE any state change
-  if((section==='editalreader'||section==='acompanhamento') && !sessionStorage.getItem('er_auth')){
-    erShowLogin(section); return;
-  }
   currentSection=section;
   document.querySelectorAll('.nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.section===section);
@@ -2247,65 +2218,7 @@ applyTheme(localStorage.getItem('theme') === 'light');
 // ═══════════════════════════════════════════════════════════
 const OPENROUTER_KEY = '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';
 const ER_MODEL = 'google/gemma-4-31b-it:free';
-const ER_USER = 'julianoos';
-const ER_PASS_HASH = '8588fcadd55e61b280a17540313f1803c4be2bda38735809188062cdda064643';
 
-// ═══════════════════════════════════════════════════════════
-// AUTH — LEITOR DE EDITAIS
-// ═══════════════════════════════════════════════════════════
-async function erVerifyLogin(user, pass){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
-  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  return user === ER_USER && hash === ER_PASS_HASH;
-}
-
-let erPendingSection = 'editalreader';
-
-function erShowLogin(section='editalreader'){
-  erPendingSection = section;
-  const labels = { editalreader:'Leitor de Editais', acompanhamento:'Acompanhamento' };
-  const overlay = document.createElement('div');
-  overlay.className = 'er-modal-overlay';
-  overlay.id = 'er-modal-overlay';
-  overlay.innerHTML = `
-    <div class="er-modal" role="dialog" aria-modal="true">
-      <div class="er-modal-eyebrow">Acesso Restrito</div>
-      <h2>${labels[section]||section} <span class="beta-badge" style="font-size:10px">BETA</span></h2>
-      <label for="er-user-input">Usuário</label>
-      <input type="text" id="er-user-input" autocomplete="username" placeholder="usuário">
-      <label for="er-pass-input">Senha</label>
-      <input type="password" id="er-pass-input" autocomplete="current-password" placeholder="••••••">
-      <div class="er-modal-error" id="er-modal-error"></div>
-      <button class="er-modal-btn" onclick="erDoLogin()">Entrar</button>
-    </div>`;
-  document.body.appendChild(overlay);
-  requestAnimationFrame(()=>overlay.classList.add('visible'));
-  overlay.querySelector('#er-pass-input').addEventListener('keydown', e=>{
-    if(e.key==='Enter') erDoLogin();
-  });
-  setTimeout(()=>overlay.querySelector('#er-user-input').focus(), 50);
-}
-
-async function erDoLogin(){
-  const user = document.getElementById('er-user-input').value.trim();
-  const pass = document.getElementById('er-pass-input').value;
-  const ok = await erVerifyLogin(user, pass);
-  if(ok){
-    sessionStorage.setItem('er_auth','1');
-    const overlay = document.getElementById('er-modal-overlay');
-    overlay.classList.remove('visible');
-    setTimeout(()=>{ overlay.remove(); switchSection(erPendingSection); }, 200);
-  } else {
-    document.getElementById('er-modal-error').textContent = 'Usuário ou senha incorretos.';
-    document.getElementById('er-pass-input').value = '';
-    document.getElementById('er-pass-input').focus();
-  }
-}
-
-function erLogout(){
-  sessionStorage.removeItem('er_auth');
-  switchSection('home');
-}
 
 const PROMPT_RESUMIDA = `Você é um especialista em licitações públicas brasileiras. Sua função é extrair informações de editais e/ou Termo de Referência de pregão eletrônico e dispensa com precisão cirúrgica.
 
