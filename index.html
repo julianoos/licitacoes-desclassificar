@@ -135,8 +135,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 }
 .home-title{
   font-family:'Outfit',sans-serif;font-weight:200;
-  font-size:clamp(26px,3.5vw,54px);letter-spacing:-0.04em;
-  color:var(--ink);line-height:1.05;text-align:center;max-width:760px;
+  font-size:clamp(42px,6vw,96px);letter-spacing:-0.04em;
+  color:var(--ink);line-height:1.0;text-align:center;max-width:760px;
 }
 .home-sub{font-size:15px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
@@ -516,8 +516,8 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-scroll{overflow-x:auto}
 .acomp-table{width:100%;border-collapse:collapse;min-width:900px}
 .acomp-table thead th{
-  padding:11px 14px;text-align:left;
-  font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+  padding:8px 10px;text-align:left;
+  font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);
   background:var(--surface);white-space:nowrap;
 }
@@ -525,8 +525,8 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
 .acomp-table tbody tr.editing td{background:var(--surface-2)}
 .acomp-table td{
-  padding:10px 14px;color:var(--ink-2);border-bottom:1px solid var(--line);
-  font-size:14px;vertical-align:middle;
+  padding:7px 10px;color:var(--ink-2);border-bottom:1px solid var(--line);
+  font-size:13px;vertical-align:middle;
 }
 .acomp-table tbody tr:last-child td{border-bottom:none}
 .acomp-status{
@@ -536,6 +536,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-status.st-disputar{border:1px solid #4a9eff55;color:#4a9eff;background:rgba(74,158,255,.08)}
 .acomp-status.st-em-disputa{border:1px solid #f59e0b55;color:#f59e0b;background:rgba(245,158,11,.08)}
 .acomp-status.st-em-selecao{border:1px solid #22c55e55;color:#22c55e;background:rgba(34,197,94,.08)}
+.acomp-status.st-suspenso{border:1px solid #ef444455;color:#ef4444;background:rgba(239,68,68,.08)}
 .acomp-status.st-finalizado{border:1px solid var(--line);color:var(--muted);text-decoration:line-through}
 .acomp-obs-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acomp-link-btn{
@@ -690,7 +691,7 @@ html.light .acomp-date-input{color-scheme:light}
   <header class="topbar">
   <div class="topbar-left">
     <button class="brand-btn" onclick="switchSection('home')" title="Início">
-      Licitações 2026<span>Precificação e Desclassificação de Concorrentes</span>
+      Licitações 2026
     </button>
   </div>
   <div class="topbar-right">
@@ -857,20 +858,15 @@ function scrollCalc(id){
 // ═══════════════════════════════════════════════════════════
 // DOCUMENTOS DE HABILITAÇÃO
 // ═══════════════════════════════════════════════════════════
-const DOCS_NATIONAL = [
-  { id:'ceis',        nome:'CEIS — Cadastro de Empresas Inidôneas',    link:'https://www.portaldatransparencia.gov.br/ceis' },
-  { id:'cnep',        nome:'CNEP — Cadastro Nacional de Penalidades',  link:'https://www.portaldatransparencia.gov.br/cnep' },
-  { id:'cepim',       nome:'CEPIM — Entidades Privadas Impedidas',     link:'https://www.portaldatransparencia.gov.br/cepim' },
-  { id:'cnd-federal', nome:'CND Federal (RFB/PGFN)',                   link:'https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir' },
-  { id:'crf-fgts',    nome:'CRF-FGTS (Caixa)',                         link:'https://consulta-crf.caixa.gov.br' },
-  { id:'cndt',        nome:'CNDT — Certidão Trabalhista (TST)',         link:'https://www.tst.jus.br/certidao' },
-  { id:'cadin',       nome:'CADIN — Inadimplentes com União',           link:'https://www.bcb.gov.br/estabilidadefinanceira/cadin' },
-  { id:'contrato',    nome:'Contrato Social / CNPJ (Receita Federal)', link:'https://www.gov.br/receitafederal/pt-br/servicos/cadastro-de-pessoas-juridicas' },
-  { id:'balanco',     nome:'Balanço Patrimonial',                       link:'' },
-  { id:'atestado',    nome:'Atestado de Capacidade Técnica',            link:'' },
-  { id:'certidao-est',nome:'Certidão Negativa Estadual',                link:'' },
-  { id:'certidao-mun',nome:'Certidão Negativa Municipal',               link:'' },
-];
+function docsFromChecklist(){
+  const docs = [];
+  CHECKLIST.forEach((g, gi)=>{
+    g.itens.forEach((item, ii)=>{
+      docs.push({ id:`ck-${gi}-${ii}`, nome:item.tipo, link:'', grupo:g.secao });
+    });
+  });
+  return docs;
+}
 
 let docsLibrary = [];
 (function docsLibInit(){
@@ -882,7 +878,7 @@ function docsLibraryPersist(){
 }
 
 function docsAllDocs(){
-  return [...DOCS_NATIONAL, ...docsLibrary];
+  return [...docsFromChecklist(), ...docsLibrary];
 }
 
 // ACOMPANHAMENTO
@@ -908,6 +904,7 @@ function acompStatusClass(s){
   if(s==='A disputar') return 'st-disputar';
   if(s==='Em disputa') return 'st-em-disputa';
   if(s==='Em Seleção') return 'st-em-selecao';
+  if(s==='Suspenso') return 'st-suspenso';
   if(s==='Finalizado') return 'st-finalizado';
   return 'st-disputar';
 }
@@ -936,7 +933,7 @@ function acompViewRow(item){
 
 function acompEditRow(item){
   const isNew = item.id==='new';
-  const statusOpts = ['A disputar','Em disputa','Em Seleção','Finalizado']
+  const statusOpts = ['A disputar','Em disputa','Em Seleção','Suspenso','Finalizado']
     .map(s=>`<option value="${s}"${item.status===s?' selected':''}>${s}</option>`).join('');
   const tipoOpts = ['Pregão','Dispensa']
     .map(t=>`<option value="${t}"${(item.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
@@ -1552,8 +1549,8 @@ function acompDocsOpenSelector(licId){
   if(!lic.docsSelecionados) lic.docsSelecionados = [];
   const all = docsAllDocs();
 
-  const national = all.filter(d => DOCS_NATIONAL.some(n => n.id===d.id));
-  const regional = all.filter(d => !DOCS_NATIONAL.some(n => n.id===d.id));
+  const ckDocs = docsFromChecklist();
+  const regional = docsLibrary;
 
   function docRow(doc){
     const on = lic.docsSelecionados.includes(doc.id);
@@ -1563,13 +1560,15 @@ function acompDocsOpenSelector(licId){
     </div>`;
   }
 
-  let body = `<div class="docs-sel-group"><div class="field-label" style="margin-bottom:8px">Documentos Nacionais</div>`;
-  national.forEach(d => { body += docRow(d); });
-  body += `</div>`;
+  const grupos = [...new Set(ckDocs.map(d=>d.grupo))];
+  let body = '';
+  grupos.forEach(g=>{
+    body += `<div class="docs-sel-group">${escHtml(g)}</div>`;
+    ckDocs.filter(d=>d.grupo===g).forEach(d=>{ body += docRow(d); });
+  });
   if(regional.length > 0){
-    body += `<div class="docs-sel-group" style="margin-top:16px"><div class="field-label" style="margin-bottom:8px">Biblioteca Regional</div>`;
-    regional.forEach(d => { body += docRow(d); });
-    body += `</div>`;
+    body += `<div class="docs-sel-group" style="margin-top:4px">Biblioteca Regional</div>`;
+    regional.forEach(d=>{ body += docRow(d); });
   }
 
   const overlay = document.createElement('div');
@@ -1853,7 +1852,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 // ═══════════════════════════════════════════════════════════
 // SIDEBAR TOGGLE
 // ═══════════════════════════════════════════════════════════
-let sidebarHidden = localStorage.getItem('sidebar_hidden') === '1';
+let sidebarHidden = localStorage.getItem('sidebar_hidden') !== '0';
 
 const SECTION_ICONS = {
   desclassificar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
@@ -1938,8 +1937,7 @@ function renderHome(){
   ];
   document.getElementById('main').innerHTML = `
     <div class="home-wrap">
-      <div class="home-eyebrow">Licitações 2026</div>
-      <h1 class="home-title">Precificação e Desclassificação de Concorrentes</h1>
+      <h1 class="home-title">Licitações 2026</h1>
       <p class="home-sub">Selecione uma área para começar</p>
       <div class="home-grid">
         ${cards.map(c=>`
