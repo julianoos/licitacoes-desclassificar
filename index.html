@@ -592,9 +592,14 @@ html.light .acomp-date-input{color-scheme:light}
 }
 .acomp-back-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
 .acomp-detail-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1}
-.acomp-detail-edit-form{flex:1}
-.acomp-detail-edit-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.acomp-detail-edit-row .acomp-input{width:auto}
+.acomp-detail-edit-form{flex:1;min-width:0}
+.acomp-edit-grid-1,.acomp-edit-grid-2{display:grid;gap:8px 12px;margin-bottom:8px}
+.acomp-edit-grid-1{grid-template-columns:2fr 1fr 1fr 1fr}
+.acomp-edit-grid-2{grid-template-columns:1fr 1fr 2fr 1.5fr}
+.acomp-detail-field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.acomp-detail-field .acomp-detail-tag{margin:0}
+.acomp-detail-field .acomp-input{width:100%;box-sizing:border-box}
+.acomp-edit-actions{display:flex;gap:8px;margin-top:2px}
 .acomp-detail-tag{font-family:'Google Sans','DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .acomp-detail-val{font-size:13px;color:var(--ink-2);font-weight:400;white-space:nowrap}
 .acomp-aliq-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
@@ -1372,27 +1377,43 @@ function renderAcompDetail(id){
 
   const headerMeta = editing ? `
     <div class="acomp-detail-edit-form">
-      <div class="acomp-detail-edit-row">
-        <label class="acomp-detail-tag">Órgão</label>
-        <input class="acomp-input" id="dd-orgao" type="text" value="${escHtml(lic.orgao||'')}" placeholder="Nome do órgão" style="flex:1;min-width:180px">
-        <label class="acomp-detail-tag" style="margin-left:8px">Tipo</label>
-        <select class="acomp-input" id="dd-tipo-lic" style="min-width:90px">${tipoOpts}</select>
-        <label class="acomp-detail-tag" style="margin-left:8px">Nº Pregão</label>
-        <input class="acomp-input" id="dd-pregao" type="text" value="${escHtml(lic.pregao||'')}" placeholder="001/2026" style="min-width:90px">
-        <label class="acomp-detail-tag" style="margin-left:8px">Data</label>
-        <input class="acomp-input" id="dd-data" type="date" value="${escHtml(lic.data||'')}">
+      <div class="acomp-edit-grid-1">
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Órgão</label>
+          <input class="acomp-input" id="dd-orgao" type="text" value="${escHtml(lic.orgao||'')}" placeholder="Nome do órgão">
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Tipo</label>
+          <select class="acomp-input" id="dd-tipo-lic">${tipoOpts}</select>
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Nº Pregão</label>
+          <input class="acomp-input" id="dd-pregao" type="text" value="${escHtml(lic.pregao||'')}" placeholder="001/2026">
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Data</label>
+          <input class="acomp-input" id="dd-data" type="date" value="${escHtml(lic.data||'')}">
+        </div>
       </div>
-      <div class="acomp-detail-edit-row" style="margin-top:6px">
-        <label class="acomp-detail-tag">UASG</label>
-        <input class="acomp-input" id="dd-uasg" type="text" value="${escHtml(lic.uasg||'')}" placeholder="UASG" style="min-width:80px">
-        <label class="acomp-detail-tag" style="margin-left:8px">Status</label>
-        <select class="acomp-input" id="dd-status" style="min-width:120px">${statusOpts2}</select>
-        <label class="acomp-detail-tag" style="margin-left:8px">Observações</label>
-        <input class="acomp-input" id="dd-obs" type="text" value="${escHtml(lic.obs||'')}" placeholder="Observações" style="flex:1;min-width:130px">
-        <label class="acomp-detail-tag" style="margin-left:8px">Link</label>
-        <input class="acomp-input" id="dd-link" type="url" value="${escHtml(lic.link||'')}" placeholder="https://..." style="min-width:120px">
+      <div class="acomp-edit-grid-2">
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">UASG</label>
+          <input class="acomp-input" id="dd-uasg" type="text" value="${escHtml(lic.uasg||'')}" placeholder="UASG">
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Status</label>
+          <select class="acomp-input" id="dd-status">${statusOpts2}</select>
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Observações</label>
+          <input class="acomp-input" id="dd-obs" type="text" value="${escHtml(lic.obs||'')}" placeholder="Observações">
+        </div>
+        <div class="acomp-detail-field">
+          <label class="acomp-detail-tag">Link</label>
+          <input class="acomp-input" id="dd-link" type="url" value="${escHtml(lic.link||'')}" placeholder="https://...">
+        </div>
       </div>
-      <div style="margin-top:8px;display:flex;gap:8px">
+      <div class="acomp-edit-actions">
         <button class="acomp-btn save" onclick="acompDetailSave('${lic.id}')">Salvar dados</button>
         <button class="acomp-btn" onclick="acompDetailEditMode=false;renderAcompanhamento()">Cancelar</button>
       </div>
