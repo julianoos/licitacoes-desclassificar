@@ -2132,9 +2132,9 @@ let sidebarHidden = localStorage.getItem('sidebar_hidden') !== '0';
     for(var r=0;r<rows;r++) for(var c=0;c<cols;c++) pts.push({
       bx:c*SPACING,by:r*SPACING,
       x:c*SPACING,y:r*SPACING,
-      ph:Math.random()*Math.PI*2,
-      sp:0.22+Math.random()*0.3,
-      am:1.8+Math.random()*2.5
+      ph:(c*0.45+r*0.35),
+      sp:0.4,
+      am:2.0
     });
   }
 
