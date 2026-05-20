@@ -2331,9 +2331,11 @@ function renderChecklist(){
   document.getElementById('main').innerHTML = html;
 }
 
-function toggleGrupo(gi){
-  const el = document.getElementById('grupo-'+gi);
-  el.classList.toggle('collapsed');
+function toggleGrupo(id){
+  // Funciona com 'grupo-0', 'rec-0', 'resp-0' e converte para 'grupo-rec-0', 'grupo-resp-0' conforme necessário
+  const fullId = id.includes('grupo-') ? id : 'grupo-' + id;
+  const el = document.getElementById(fullId);
+  if(el) el.classList.toggle('collapsed');
 }
 
 function toggleItem(key, e){
@@ -2436,7 +2438,7 @@ function renderRecursos(){
   <div id="rec-grupos">`;
 
   CHECKLIST.forEach((g, gi) => {
-    html += `<div class="grupo" id="rec-grupo-${gi}" data-grupo="${gi}">
+    html += `<div class="grupo" id="grupo-rec-${gi}" data-grupo="${gi}">
       <div class="grupo-header" onclick="toggleGrupo('rec-${gi}')">
         <span class="grupo-eyebrow">${escHtml(g.secao)}</span>
         <span class="grupo-count">${g.itens.length} itens</span>
@@ -2483,7 +2485,7 @@ function renderRespostas(){
   <div id="resp-grupos">`;
 
   RESPOSTAS.forEach((tipo, ti) => {
-    html += `<div class="grupo" id="resp-grupo-${ti}" data-grupo="${ti}">
+    html += `<div class="grupo" id="grupo-resp-${ti}" data-grupo="${ti}">
       <div class="grupo-header" onclick="toggleGrupo('resp-${ti}')">
         <span class="grupo-eyebrow">${escHtml(tipo.tipo)}</span>
         <span class="grupo-count">${tipo.itens.length} itens</span>
