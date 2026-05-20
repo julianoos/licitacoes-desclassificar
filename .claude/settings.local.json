@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git config *)",
+      "Bash(gh repo *)",
+      "Bash(git push *)",
+      "WebFetch(domain:openrouter.ai)",
+      "mcp__Claude_in_Chrome__switch_browser",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebSearch",
+      "PowerShell($str = \"066276\"; $bytes = [System.Text.Encoding]::UTF8.GetBytes\\($str\\); $sha256 = [System.Security.Cryptography.SHA256]::Create\\(\\); $hashBytes = $sha256.ComputeHash\\($bytes\\); \\($hashBytes | ForEach-Object { $_.ToString\\(\"x2\"\\) }\\) -join \"\")",
+      "Bash(exist \"D:\\\\projetosclaude\\\\licitacoes-desclassificar\\\\.git\" echo \"TEM GIT\" else echo \"SEM GIT\")",
+      "PowerShell(vercel --version 2>&1)",
+      "Bash(vercel --prod --yes)",
+      "Bash(git commit *)",
+      "Bash(grep -v \"//.*LEGISLACAO\\\\|//.*TEORIA\\\\|desclassificar\")",
+      "mcp__claude_ai_Vercel__list_teams",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(Get-ChildItem -Path \"D:\\\\projetosclaude\\\\licitacoes-desclassificar\" -Force)",
+      "Bash(Select-Object Name, Mode, LastWriteTime)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\projetosclaude\\\\licitacoes-desclassificar\" -Force | Select-Object Name, Mode, @{Name=\"Modified\"; Expression={$_.LastWriteTime}})",
+      "WebFetch(domain:antigravity.google)",
+      "WebFetch(domain:brandfetch.com)",
+      "WebFetch(domain:www.bram.us)",
+      "Bash(curl -s \"https://docs.google.com/spreadsheets/d/1y5iuV32luj7KtAMK5CGlVPjNUJ_uwHEzTU6TbHV2D9U/export?format=csv&gid=31516928\")"
+    ]
+  }
+}

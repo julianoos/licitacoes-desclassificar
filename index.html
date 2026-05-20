@@ -855,6 +855,7 @@ const CHECKLIST = [
 let currentSection = 'home';
 let desclassificarTab = 'checklist';
 const openItems = new Set();
+let recursosExpanded = {};
 const openGrupos = new Set([0,1,2,3,4,5,6,7]);
 
 // ═══════════════════════════════════════════════════════════
@@ -1290,6 +1291,8 @@ function acompRenderTable(){
       <div class="acomp-new-field"><label class="acomp-detail-tag">Link</label><input class="acomp-input" id="ae-link" type="url" placeholder="https://..."></div>
     </div>
     <div class="acomp-new-actions">
+      <button class="acomp-btn" onclick="acompSaveNewGoItems()">Adicionar Itens</button>
+      <button class="acomp-btn" onclick="acompSaveNewGoChecklist()">Checklist</button>
       <button class="acomp-btn save" onclick="acompSaveNew()">Salvar dados</button>
       <button class="acomp-btn" onclick="acompCancelNew()">Cancelar</button>
     </div>
@@ -1338,6 +1341,43 @@ function acompSaveNew(){
   acompNewMode = false;
   renderSidebar();
   acompOpenDetail(item.id);
+}
+
+function acompSaveNewGoItems(){
+  const v = f => document.getElementById(f)?.value?.trim() || '';
+  if(!v('ae-orgao')){ document.getElementById('ae-orgao').style.borderColor='#e05555'; document.getElementById('ae-orgao')?.focus(); return; }
+  const item = {
+    id: String(Date.now()),
+    data: v('ae-data'), tipo_lic: v('ae-tipo-lic')||'Pregão',
+    uasg: v('ae-uasg'), pregao: v('ae-pregao'),
+    orgao: v('ae-orgao'), status: document.getElementById('ae-status')?.value||'A disputar',
+    obs: v('ae-obs'), link: v('ae-link'),
+    aliq: 0, itens: [], docsSelecionados: []
+  };
+  acompData.unshift(item);
+  acompPersist();
+  acompNewMode = false;
+  renderSidebar();
+  acompOpenDetail(item.id);
+  setTimeout(()=>document.getElementById('acomp-item-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}), 200);
+}
+
+function acompSaveNewGoChecklist(){
+  const v = f => document.getElementById(f)?.value?.trim() || '';
+  if(!v('ae-orgao')){ document.getElementById('ae-orgao').style.borderColor='#e05555'; document.getElementById('ae-orgao')?.focus(); return; }
+  const item = {
+    id: String(Date.now()),
+    data: v('ae-data'), tipo_lic: v('ae-tipo-lic')||'Pregão',
+    uasg: v('ae-uasg'), pregao: v('ae-pregao'),
+    orgao: v('ae-orgao'), status: document.getElementById('ae-status')?.value||'A disputar',
+    obs: v('ae-obs'), link: v('ae-link'),
+    aliq: 0, itens: [], docsSelecionados: []
+  };
+  acompData.unshift(item);
+  acompPersist();
+  acompNewMode = false;
+  renderSidebar();
+  acompOpenChecklist(item.id);
 }
 
 function acompCancelNew(){
@@ -2205,6 +2245,23 @@ function copyRecursoRec(key, btn){
 }
 
 // ═══════════════════════════════════════════════════════════
+// RECURSOS HELPERS
+function toggleRecursoItem(key){
+  recursosExpanded[key] = !recursosExpanded[key];
+  renderRecursos();
+}
+
+function editRecursoRec(key){
+  const el = document.getElementById('rec-'+key);
+  if(!el) return;
+  const current = el.textContent;
+  const newVal = prompt('Editar texto:', current);
+  if(newVal !== null && newVal.trim()){
+    localStorage.setItem('recurso_'+key, newVal.trim());
+    renderRecursos();
+  }
+}
+
 // RENDER RECURSOS
 // ═══════════════════════════════════════════════════════════
 function renderRecursos(){
@@ -2218,13 +2275,18 @@ function renderRecursos(){
       <div class="recursos-grupo-title">${escHtml(g.secao)}</div>`;
     g.itens.forEach((item,ii)=>{
       const key = `${gi}-${ii}`;
+      const isOpen = !!recursosExpanded[key];
       const savedRecurso = localStorage.getItem('recurso_'+key)||item.recurso;
       html += `<div class="recursos-item">
-        <div class="recursos-item-tipo">${escHtml(item.tipo)}</div>
-        <div class="ck-recurso-text" id="rec-${key}">${escHtml(savedRecurso)}</div>
-        <div class="recursos-item-actions">
-          <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
+        <div class="recursos-item-tipo" onclick="toggleRecursoItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
+          ${escHtml(item.tipo)}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
+        ${isOpen ? `<div class="ck-recurso-text" id="rec-${key}">${escHtml(savedRecurso)}</div>
+        <div class="recursos-item-actions">
+          <button class="ck-btn" onclick="editRecursoRec('${key}')">Editar</button>
+          <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
+        </div>` : ''}
       </div>`;
     });
     html += `</div>`;
@@ -2493,11 +2555,7 @@ function renderCalculadora(){
           </div>
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="c-aliquota">Alíquota reversa (%)</label>
-          <input class="field-input" id="c-aliquota" type="number" min="0" max="99" step="0.01" value="4.20" oninput="calcUpdate()">
-          <div class="field-hint">Preenchida automaticamente pela faixa. Ajuste manualmente se necessário.</div>
-        </div>
+        <input type="hidden" id="c-aliquota" value="4.20">
       </div>
     </div>
 
