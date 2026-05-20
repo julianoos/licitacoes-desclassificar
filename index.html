@@ -854,6 +854,7 @@ const CHECKLIST = [
 // ═══════════════════════════════════════════════════════════
 let currentSection = 'home';
 let desclassificarTab = 'checklist';
+let checklistLinks = {};
 const openItems = new Set();
 let recursosExpanded = {};
 let respostasExpanded = {};
@@ -949,6 +950,7 @@ let acompItemEditId = null;
 
 (function acompInit(){
   try{ acompData = JSON.parse(localStorage.getItem('acomp_data')||'[]'); }catch(e){ acompData=[]; }
+  loadChecklistLinks();
 })();
 
 function acompPersist(){
@@ -2214,6 +2216,32 @@ const RESPOSTAS = [
     ]
   }
 ];
+
+// ═══════════════════════════════════════════════════════════
+// CHECKLIST LINKS HELPERS
+// ═══════════════════════════════════════════════════════════
+function loadChecklistLinks(){
+  try {
+    checklistLinks = JSON.parse(localStorage.getItem('checklist_links')) || {};
+  } catch(e) {
+    checklistLinks = {};
+  }
+}
+
+function saveChecklistLink(gi, ii, url){
+  const key = `${gi}-${ii}`;
+  if(!url || !url.trim()){
+    delete checklistLinks[key];
+  } else {
+    checklistLinks[key] = url.trim();
+  }
+  localStorage.setItem('checklist_links', JSON.stringify(checklistLinks));
+  renderDesclassificar();
+}
+
+function getChecklistLink(gi, ii){
+  return checklistLinks[`${gi}-${ii}`] || '';
+}
 
 // ═══════════════════════════════════════════════════════════
 // RENDER DESCLASSIFICAR
