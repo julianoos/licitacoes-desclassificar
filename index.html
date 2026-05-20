@@ -609,6 +609,11 @@ html.light .acomp-date-input{color-scheme:light}
 .acomp-aliq-select{appearance:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 32px 6px 12px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;transition:border-color 160ms;min-width:220px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 .acomp-aliq-select:focus{border-color:var(--line-strong)}
 .acomp-aliq-hint{font-size:12px;color:var(--muted-2);font-weight:300}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+.lance-tipo-btn{appearance:none;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;color:var(--muted);font-family:'Google Sans','DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.04em;padding:3px 5px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 140ms,color 140ms}
+.lance-tipo-btn:hover{color:var(--ink)}
 .acomp-item-add-btn{
   appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
   font-family:'Google Sans','DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
@@ -1472,7 +1477,7 @@ function acompItemRenderTable(lic){
   if(!lic.itens) lic.itens = [];
   if(lic.itens.length===0){
     for(let i=0;i<3;i++){
-      lic.itens.push({id:Date.now().toString()+'_'+i,num:i+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:''});
+      lic.itens.push({id:Date.now().toString()+'_'+i,num:i+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$'});
     }
     acompPersist();
   }
@@ -1522,7 +1527,7 @@ function acompItemInlineRow(licId, item, aliq){
     <td>${inp('custo','number',item.custo_unit,'64px','')}</td>
     <td>${inp('frete','number',item.frete,'54px','')}</td>
     <td>${inp('margem','number',item.margem,'46px','')}</td>
-    <td>${inp('lance','number',item.lance_min,'64px','')}</td>
+    <td><div style="display:flex;align-items:center;gap:3px;justify-content:center"><input class="acomp-item-input" id="ii-${item.id}-lance" type="text" value="${escHtml(String(item.lance_min??''))}" placeholder="" style="min-width:54px;text-align:center" oninput="acompItemUpdateCalc('${licId}','${item.id}')"><button class="lance-tipo-btn" id="ii-${item.id}-lance-tipo" onclick="toggleLanceTipo('${licId}','${item.id}')">${item.lance_min_tipo||'R$'}</button></div></td>
     <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv">${pmvTxt}</span></td>
     <td style="white-space:nowrap"><span class="${lucroClass}" id="ii-${item.id}-lucro">${lucroTxt}</span></td>
     <td><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></td>
@@ -1532,7 +1537,7 @@ function acompItemInlineRow(licId, item, aliq){
 function acompItemAddRow(licId){
   const lic = acompData.find(x=>x.id===licId);
   if(!lic) return;
-  lic.itens.push({id:Date.now().toString(),num:lic.itens.length+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:''});
+  lic.itens.push({id:Date.now().toString(),num:lic.itens.length+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$'});
   acompPersist();
   acompItemRenderTable(lic);
   setTimeout(()=>{
@@ -1582,6 +1587,17 @@ function acompItemDelete(licId, itemId){
     acompPersist();
     acompItemRenderTable(lic);
   }
+}
+
+function toggleLanceTipo(licId, itemId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  const item = (lic.itens||[]).find(x=>x.id===itemId);
+  if(!item) return;
+  item.lance_min_tipo = item.lance_min_tipo === '%' ? 'R$' : '%';
+  acompPersist();
+  const btn = document.getElementById(`ii-${itemId}-lance-tipo`);
+  if(btn) btn.textContent = item.lance_min_tipo;
 }
 
 function acompItemOpenModal(licId, itemId){
