@@ -1006,7 +1006,6 @@ function acompToggleSelect(id, checked){
 }
 
 function acompToggleSelectAll(checked){
-  acompMultiSelectMode = checked;
   if(checked){
     acompData.forEach(item => acompSelectedIds.add(item.id));
   } else {
@@ -1323,9 +1322,11 @@ function acompRenderTable(){
   const bulkWrap = document.getElementById('acomp-bulk-wrap');
   if(bulkWrap) bulkWrap.innerHTML = bulkBtn;
 
+  const allChecked = acompData.length > 0 && acompSelectedIds.size === acompData.length;
+  const checkAllAttr = allChecked ? 'checked' : '';
   wrap.innerHTML = newForm + `<div class="acomp-scroll"><table class="acomp-table">
     <thead><tr>
-      <th style="width:14px;text-align:center;padding:4px 2px"><input type="checkbox" class="acomp-select-check" id="acomp-check-all" onchange="acompToggleSelectAll(this.checked)" style="cursor:pointer"></th>
+      <th style="width:14px;text-align:center;padding:4px 2px"><input type="checkbox" class="acomp-select-check" id="acomp-check-all" ${checkAllAttr} onchange="acompToggleSelectAll(this.checked)" style="cursor:pointer"></th>
       <th style="width:28px"></th>
       <th>Data</th><th>Tipo</th><th>Nº UASG</th><th>Nº Pregão</th>
       <th>Nome do Órgão</th><th>Status</th><th>Observações</th>
