@@ -41,10 +41,28 @@ html.light {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{transition:background 300ms var(--ease),color 300ms var(--ease)}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:20px;line-height:1.2;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:20px;line-height:1.1;-webkit-font-smoothing:antialiased;overflow:hidden}
 
 /* ─── APP SHELL ─── */
-.app{display:flex;flex-direction:column;height:100vh}
+.app{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
+/* ─── GRID BACKGROUND ─── */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--grid-line,rgba(200,200,200,.04)) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-line,rgba(200,200,200,.04)) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+.grid-bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(var(--grid-glow,rgba(120,170,255,.2)) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid-glow,rgba(120,170,255,.2)) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(circle 220px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+  mask-image:radial-gradient(circle 220px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+}
+html.light .grid-bg{--grid-line:rgba(0,0,0,.06);--grid-glow:rgba(60,100,220,.22)}
 
 /* ─── TOPBAR ─── */
 .topbar{
@@ -127,7 +145,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .home-wrap{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   min-height:100%;
-  padding:clamp(32px,6vh,80px) clamp(24px,6vw,80px);
+  padding:clamp(16px,3vh,40px) clamp(16px,3vw,48px);
 }
 .home-eyebrow{
   font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
@@ -141,13 +159,13 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .home-sub{font-size:15px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
-  margin-top:48px;width:100%;max-width:960px;
+  margin-top:20px;width:100%;max-width:960px;
 }
 @media(max-width:700px){.home-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:450px){.home-grid{grid-template-columns:1fr}}
 .home-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:28px 28px 40px;cursor:pointer;text-align:left;
+  padding:16px 20px 20px;cursor:pointer;text-align:left;
   display:flex;flex-direction:column;gap:8px;
   position:relative;overflow:hidden;
   transition:transform 280ms var(--ease),border-color 280ms var(--ease),box-shadow 280ms var(--ease);
@@ -188,7 +206,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 /* ─── SIDEBAR ─── */
 .sidebar{
   border-right:1px solid var(--line);overflow-y:auto;
-  padding:clamp(20px,3vh,32px) 0;
+  padding:clamp(12px,2vh,20px) 0;
   scrollbar-width:thin;scrollbar-color:var(--line) transparent;
 }
 .sidebar-section-title{
@@ -207,8 +225,8 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .sidebar-divider{height:1px;background:var(--line);margin:12px 20px}
 
 /* ─── MAIN ─── */
-.main{overflow-y:auto;padding:clamp(28px,4vh,52px) clamp(24px,4vw,64px);scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.section-header{margin-bottom:clamp(12px,2vh,28px)}
+.main{overflow-y:auto;padding:clamp(12px,2vh,24px) clamp(16px,2vw,36px);scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.section-header{margin-bottom:clamp(8px,1.5vh,20px)}
 .section-eyebrow{
   display:inline-flex;align-items:center;gap:8px;
   font-size:12px;letter-spacing:0.2em;text-transform:uppercase;
@@ -268,7 +286,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .ck-item.open .ck-item-arrow{transform:rotate(180deg)}
 .ck-expand{max-height:0;overflow:hidden;transition:max-height 400ms var(--ease)}
 .ck-item.open .ck-expand{max-height:2000px}
-.ck-panels{padding:4px 0 20px 32px;display:flex;flex-direction:column;gap:14px}
+.ck-panels{padding:4px 0 12px 28px;display:flex;flex-direction:column;gap:10px}
 .ck-panel-label{
   font-size:11px;letter-spacing:0.16em;text-transform:uppercase;
   color:var(--muted);font-weight:500;margin-bottom:8px;display:block;
@@ -417,7 +435,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:2px}
 
 /* ─── CALCULADORA ─── */
-.calc-layout{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
+.calc-layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
 @media(max-width:1000px){.calc-layout{grid-template-columns:1fr}}
 
 .calc-form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px}
@@ -468,7 +486,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .calc-total-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
 .calc-total-value{font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
 
-.calc-section{margin-top:40px}
+.calc-section{margin-top:20px}
 .calc-section-title{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:16px}
 
 .callout-info{
@@ -547,16 +565,23 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-link-btn:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .acomp-btn{
   appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
-  font-family:'Outfit',sans-serif;font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-  padding:4px 8px;border-radius:5px;cursor:pointer;white-space:nowrap;
+  font-family:'Outfit',sans-serif;font-size:9px;font-weight:500;letter-spacing:0;text-transform:uppercase;
+  padding:3px 7px;border-radius:4px;cursor:pointer;white-space:nowrap;
   transition:background 140ms,border-color 140ms,color 140ms;
 }
+.acomp-btn-icon{
+  appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+  width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 140ms,color 140ms;
+}
+.acomp-btn-icon:hover{background:var(--surface-2);color:var(--ink)}
 .acomp-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
 .acomp-btn.save{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .acomp-btn.save:hover{opacity:.85}
 .acomp-btn.del{border-color:var(--line)}
 .acomp-btn.del:hover{border-color:#e05555;color:#e05555;background:transparent}
-.acomp-actions-cell{white-space:nowrap;display:flex;gap:6px;align-items:center}
+.acomp-actions-cell{white-space:nowrap;display:flex;gap:4px;align-items:center}
 .acomp-input{
   width:100%;background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;
   padding:6px 10px;color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;outline:none;
@@ -688,6 +713,7 @@ html.light .acomp-date-input{color-scheme:light}
 </style>
 </head>
 <body>
+<div class="grid-bg" id="grid-bg"></div>
 <div class="app">
   <header class="topbar">
   <div class="topbar-left">
@@ -892,6 +918,7 @@ let acompDateFrom = '';
 let acompDateTo = '';
 let acompDetailId = null;
 let acompDetailEditMode = false;
+let acompChecklistId = null;
 let acompExpandedIds = new Set();
 let acompItemEditId = null;
 
@@ -911,13 +938,18 @@ function acompStatusClass(s){
   return 'st-disputar';
 }
 
+const GLOBE_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+
 function acompViewRow(item){
   const sc = acompStatusClass(item.status);
   const isExp = acompExpandedIds.has(item.id);
   const link = item.link
-    ? `<a href="${escHtml(item.link)}" target="_blank" class="acomp-link-btn" title="Abrir edital">↗</a>`
+    ? `<a href="${escHtml(item.link)}" target="_blank" class="acomp-link-btn" title="Abrir edital">${GLOBE_SVG}</a>`
     : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
   const mainRow = `<tr data-id="${item.id}">
+    <td style="width:28px;text-align:center;padding:4px">
+      <button class="acomp-btn-icon" onclick="acompToggleExpand('${item.id}')" title="${isExp?'Fechar':'Expandir'}">${isExp?'▲':'▼'}</button>
+    </td>
     <td style="white-space:nowrap">${escHtml(item.data||'—')}</td>
     <td style="white-space:nowrap;color:var(--muted)">${escHtml(item.tipo_lic||'—')}</td>
     <td style="white-space:nowrap">${escHtml(item.uasg||'—')}</td>
@@ -927,7 +959,6 @@ function acompViewRow(item){
     <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
     <td style="text-align:center">${link}</td>
     <td><div class="acomp-actions-cell">
-      <button class="acomp-btn" onclick="acompToggleExpand('${item.id}')" title="${isExp?'Fechar':'Expandir itens'}">${isExp?'▲':'▼'}</button>
       <button class="acomp-btn" onclick="acompOpenDetail('${item.id}')">Detalhes</button>
       <button class="acomp-btn" onclick="acompOpenChecklist('${item.id}')">Checklist</button>
       <button class="acomp-btn" onclick="acompStartEdit('${item.id}')">Editar</button>
@@ -973,7 +1004,23 @@ function acompViewRow(item){
           </tr>`;
         }).join('')}</tbody>
       </table>`;
-  return mainRow + `<tr class="acomp-expand-row"><td colspan="9" style="padding:8px 16px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);overflow-x:auto">${itensHtml}</td></tr>`;
+  // Docs de habilitação selecionados
+  const allDocs = docsAllDocs();
+  const selDocs = (item.docsSelecionados||[]).map(id=>allDocs.find(d=>d.id===id)).filter(Boolean);
+  let docsHtml = '';
+  if(selDocs.length>0){
+    const groups = {};
+    selDocs.forEach(d=>{if(!groups[d.grupo])groups[d.grupo]=[];groups[d.grupo].push(d);});
+    docsHtml = `<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
+      <div style="color:var(--muted);font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:9px;margin-bottom:8px">Documentos de Habilitação</div>
+      ${Object.entries(groups).map(([grupo,docs])=>`
+        <div style="margin-bottom:8px">
+          <div style="color:var(--muted-2);font-size:9px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">${escHtml(grupo)}</div>
+          ${docs.map(d=>`<div style="padding:2px 0;font-size:11px;color:var(--ink-2)">${escHtml(d.nome)}</div>`).join('')}
+        </div>`).join('')}
+    </div>`;
+  }
+  return mainRow + `<tr class="acomp-expand-row"><td colspan="10" style="padding:8px 16px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);overflow-x:auto">${itensHtml}${docsHtml}</td></tr>`;
 }
 
 function acompToggleExpand(id){
@@ -983,8 +1030,80 @@ function acompToggleExpand(id){
 }
 
 function acompOpenChecklist(id){
-  acompOpenDetail(id);
-  setTimeout(()=>document.getElementById('acomp-docs-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}),200);
+  acompChecklistId = id;
+  acompDetailId = null;
+  renderAcompanhamento();
+}
+
+function acompChecklistBack(){
+  acompChecklistId = null;
+  renderAcompanhamento();
+}
+
+function renderAcompChecklist(id){
+  const lic = acompData.find(x=>x.id===id);
+  if(!lic){ acompChecklistId=null; renderAcompanhamento(); return; }
+  if(!lic.docsSelecionados) lic.docsSelecionados=[];
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="section-header" style="padding-bottom:8px">
+      <div class="acomp-detail-header">
+        <button class="acomp-back-btn" onclick="acompChecklistBack()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Voltar à lista
+        </button>
+        <div class="acomp-detail-meta">
+          <span class="acomp-detail-tag">Órgão:</span>
+          <span class="acomp-detail-val">${escHtml(lic.orgao||'—')}</span>
+          <span class="acomp-detail-tag" style="margin-left:8px">Pregão:</span>
+          <span class="acomp-detail-val">${escHtml(lic.pregao||'—')}</span>
+          <span class="acomp-detail-tag" style="margin-left:8px">Status:</span>
+          <span class="acomp-status ${acompStatusClass(lic.status)}">${escHtml(lic.status||'—')}</span>
+        </div>
+      </div>
+    </div>
+    <div id="ck-docs-main"></div>`;
+  renderAcompDocsStandalone(lic);
+}
+
+function renderAcompDocsStandalone(lic){
+  const wrap = document.getElementById('ck-docs-main');
+  if(!wrap) return;
+  if(!lic.docsSelecionados) lic.docsSelecionados=[];
+  const all = docsAllDocs();
+  const sel = lic.docsSelecionados;
+  let itemsHtml = '';
+  if(sel.length===0){
+    itemsHtml = `<div class="docs-empty">Nenhum documento selecionado. Acesse "Detalhes" e clique em "+ Selecionar documentos" para adicionar.</div>`;
+  } else {
+    const groups = {};
+    sel.forEach(docId=>{
+      const doc = all.find(d=>d.id===docId);
+      if(!doc) return;
+      if(!groups[doc.grupo]) groups[doc.grupo]=[];
+      groups[doc.grupo].push(doc);
+    });
+    Object.entries(groups).forEach(([grupo,docs])=>{
+      itemsHtml += `<div style="margin-bottom:16px">
+        <div class="sidebar-section-title" style="padding:0 0 8px">${escHtml(grupo)}</div>
+        ${docs.map(doc=>{
+          const linkBtn = doc.link
+            ? `<a class="docs-item-link" href="${escHtml(doc.link)}" target="_blank" rel="noopener">Consultar ↗</a>`
+            : `<span class="docs-item-link" style="opacity:0.35;cursor:default">Sem link</span>`;
+          return `<div class="docs-item"><span class="docs-item-name">${escHtml(doc.nome)}</span>${linkBtn}</div>`;
+        }).join('')}
+      </div>`;
+    });
+  }
+  wrap.innerHTML = `<div class="docs-section">
+    <div class="docs-header">
+      <span class="docs-title">Documentos de Habilitação</span>
+      <div class="docs-btns">
+        <button class="acomp-btn save" onclick="acompOpenDetail('${lic.id}')">Abrir Detalhes</button>
+      </div>
+    </div>
+    <div class="docs-list">${itemsHtml}</div>
+  </div>`;
 }
 
 function acompEditRow(item){
@@ -994,6 +1113,7 @@ function acompEditRow(item){
   const tipoOpts = ['Pregão','Dispensa']
     .map(t=>`<option value="${t}"${(item.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
   return `<tr class="editing" data-id="${item.id}">
+    <td style="width:28px"></td>
     <td><input class="acomp-input" id="ae-data" type="date" value="${escHtml(item.data||'')}"></td>
     <td><select class="acomp-input" id="ae-tipo-lic" style="min-width:90px">${tipoOpts}</select></td>
     <td><input class="acomp-input" id="ae-uasg" type="text" value="${escHtml(item.uasg||'')}" placeholder="UASG" style="min-width:70px"></td>
@@ -1007,6 +1127,7 @@ function acompEditRow(item){
 }
 
 function renderAcompanhamento(){
+  if(acompChecklistId) return renderAcompChecklist(acompChecklistId);
   if(acompDetailId) return renderAcompDetail(acompDetailId);
   const main = document.getElementById('main');
   const total = acompData.length;
@@ -1080,6 +1201,7 @@ function acompRenderTable(){
 
   wrap.innerHTML = `<div class="acomp-scroll"><table class="acomp-table">
     <thead><tr>
+      <th style="width:28px"></th>
       <th>Data</th><th>Tipo</th><th>Nº UASG</th><th>Nº Pregão</th>
       <th>Nome do Órgão</th><th>Status</th><th>Observações</th>
       <th style="text-align:center">Link</th><th></th>
@@ -1966,6 +2088,10 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 // SIDEBAR TOGGLE
 // ═══════════════════════════════════════════════════════════
 let sidebarHidden = localStorage.getItem('sidebar_hidden') !== '0';
+document.addEventListener('mousemove',function(e){
+  document.documentElement.style.setProperty('--mx',e.clientX+'px');
+  document.documentElement.style.setProperty('--my',e.clientY+'px');
+});
 
 const SECTION_ICONS = {
   desclassificar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
