@@ -450,7 +450,6 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Google 
 .calc-result-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px 20px;
-  position:sticky;top:24px;
 }
 .calc-result-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:4px}
 .calc-pmv-value{
@@ -2818,9 +2817,8 @@ function renderCalculadora(){
   </div>
 
   <div class="calc-layout">
-    <div>
-      <div class="calc-form-card">
-        <div class="calc-form-title">Dados do item</div>
+    <div class="calc-form-card">
+      <div class="calc-form-title">Dados do item</div>
 
         <div class="field-row">
           <div class="field-group">
@@ -2861,7 +2859,6 @@ function renderCalculadora(){
 
         <input type="hidden" id="c-aliquota" value="4.20">
       </div>
-    </div>
 
     <div class="calc-result-card" id="calc-result">
       <div class="calc-result-label">Preço Mínimo de Venda — unitário</div>
