@@ -2372,7 +2372,7 @@ function renderRecursos(){
   <div id="rec-grupos">`;
 
   CHECKLIST.forEach((g, gi) => {
-    html += `<div class="grupo" id="grupo-rec-${gi}" data-grupo="${gi}">
+    html += `<div class="grupo collapsed" id="grupo-rec-${gi}" data-grupo="${gi}">
       <div class="grupo-header" onclick="toggleGrupo('rec-${gi}')">
         <span class="grupo-eyebrow">${escHtml(g.secao)}</span>
         <span class="grupo-count">${g.itens.length} itens</span>
@@ -2419,7 +2419,7 @@ function renderRespostas(){
   <div id="resp-grupos">`;
 
   RESPOSTAS.forEach((tipo, ti) => {
-    html += `<div class="grupo" id="grupo-resp-${ti}" data-grupo="${ti}">
+    html += `<div class="grupo collapsed" id="grupo-resp-${ti}" data-grupo="${ti}">
       <div class="grupo-header" onclick="toggleGrupo('resp-${ti}')">
         <span class="grupo-eyebrow">${escHtml(tipo.tipo)}</span>
         <span class="grupo-count">${tipo.itens.length} itens</span>
