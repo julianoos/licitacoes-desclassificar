@@ -857,6 +857,8 @@ let desclassificarTab = 'checklist';
 const openItems = new Set();
 let recursosExpanded = {};
 let respostasExpanded = {};
+let recursosGroupExpanded = {};
+let respostasGroupExpanded = {};
 const openGrupos = new Set([0,1,2,3,4,5,6,7]);
 
 // ═══════════════════════════════════════════════════════════
@@ -997,7 +999,11 @@ function acompToggleSelect(id, checked){
 
 function acompToggleSelectAll(checked){
   acompMultiSelectMode = checked;
-  if(!checked) acompSelectedIds.clear();
+  if(checked){
+    acompData.forEach(item => acompSelectedIds.add(item.id));
+  } else {
+    acompSelectedIds.clear();
+  }
   acompRenderTable();
 }
 
@@ -1169,7 +1175,7 @@ function renderAcompDocsStandalone(lic){
           const linkBtn = doc.link
             ? `<a class="docs-item-link" href="${escHtml(doc.link)}" target="_blank" rel="noopener">Consultar ↗</a>`
             : `<span class="docs-item-link" style="opacity:0.35;cursor:default">Sem link</span>`;
-          return `<div class="docs-item"><span class="docs-item-name">${escHtml(doc.nome)}</span>${linkBtn}</div>`;
+          return `<div class="docs-item"><span class="docs-item-name">${escHtml(doc.nome)}</span><div style="display:flex;gap:8px"><button class="acomp-btn-icon" onclick="acompDocDelete('${lic.id}','${doc.id}',event)" style="color:#e05555" title="Remover"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>${linkBtn}</div></div>`;
         }).join('')}
       </div>`;
     });
@@ -1179,7 +1185,6 @@ function renderAcompDocsStandalone(lic){
       <span class="docs-title">Documentos de Habilitação</span>
       <div class="docs-btns">
         <button class="acomp-btn save" onclick="acompDocsOpenSelector('${lic.id}')">+ Selecionar documentos</button>
-        <button class="acomp-btn" onclick="acompOpenDetail('${lic.id}')">Abrir Detalhes</button>
       </div>
     </div>
     <div class="docs-list">${itemsHtml}</div>
@@ -2044,10 +2049,6 @@ function acompDocsOpenSelector(licId){
     body += `<div class="docs-sel-group">${escHtml(g)}</div>`;
     ckDocs.filter(d=>d.grupo===g).forEach(d=>{ body += docRow(d); });
   });
-  if(regional.length > 0){
-    body += `<div class="docs-sel-group" style="margin-top:4px">Biblioteca Regional</div>`;
-    regional.forEach(d=>{ body += docRow(d); });
-  }
 
   const overlay = document.createElement('div');
   overlay.className = 'docs-sel-overlay';
@@ -2080,6 +2081,18 @@ function acompDocsToggle(licId, docId, el){
   }
   acompPersist();
   if(acompChecklistId) renderAcompDocsStandalone(lic); else renderAcompDocs(lic);
+}
+
+function acompDocDelete(licId, docId, event){
+  event.stopPropagation();
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic || !lic.docsSelecionados) return;
+  const idx = lic.docsSelecionados.indexOf(docId);
+  if(idx >= 0){
+    lic.docsSelecionados.splice(idx, 1);
+    acompPersist();
+    renderAcompDocsStandalone(lic);
+  }
 }
 
 function docsLibraryOpen(){
@@ -2357,6 +2370,16 @@ function copyRespostaItem(key, btn){
   setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');}, 2000);
 }
 
+function toggleRecursosGroup(gi){
+  recursosGroupExpanded[gi] = !recursosGroupExpanded[gi];
+  renderRecursos();
+}
+
+function toggleRespostasGroup(ti){
+  respostasGroupExpanded[ti] = !respostasGroupExpanded[ti];
+  renderRespostas();
+}
+
 // RENDER RECURSOS
 // ═══════════════════════════════════════════════════════════
 function renderRecursos(){
@@ -2366,24 +2389,30 @@ function renderRecursos(){
     <p class="section-subtitle">Textos prontos para contestar cada tipo de documento. Clique em Copiar para usar.</p>
   </div>`;
   CHECKLIST.forEach((g,gi)=>{
+    const isGroupOpen = !!recursosGroupExpanded[gi];
     html += `<div class="recursos-grupo">
-      <div class="recursos-grupo-title">${escHtml(g.secao)}</div>`;
-    g.itens.forEach((item,ii)=>{
-      const key = `${gi}-${ii}`;
-      const isOpen = !!recursosExpanded[key];
-      const savedRecurso = localStorage.getItem('recurso_'+key)||item.recurso;
-      html += `<div class="recursos-item">
-        <div class="recursos-item-tipo" onclick="toggleRecursoItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
-          ${escHtml(item.tipo)}
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        ${isOpen ? `<div class="ck-recurso-text" id="rec-${key}">${escHtml(savedRecurso)}</div>
-        <div class="recursos-item-actions">
-          <button class="ck-btn" onclick="editRecursoRec('${key}')">Editar</button>
-          <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
-        </div>` : ''}
+      <div class="recursos-grupo-title" onclick="toggleRecursosGroup(${gi})" style="cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none">
+        <span style="flex:1">${escHtml(g.secao)}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isGroupOpen?'180':'0'}deg);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
       </div>`;
-    });
+    if(isGroupOpen){
+      g.itens.forEach((item,ii)=>{
+        const key = `${gi}-${ii}`;
+        const isOpen = !!recursosExpanded[key];
+        const savedRecurso = localStorage.getItem('recurso_'+key)||item.recurso;
+        html += `<div class="recursos-item">
+          <div class="recursos-item-tipo" onclick="toggleRecursoItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
+            ${escHtml(item.tipo)}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          ${isOpen ? `<div class="ck-recurso-text" id="rec-${key}">${escHtml(savedRecurso)}</div>
+          <div class="recursos-item-actions">
+            <button class="ck-btn" onclick="editRecursoRec('${key}')">Editar</button>
+            <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
+          </div>` : ''}
+        </div>`;
+      });
+    }
     html += `</div>`;
   });
   document.getElementById('main').innerHTML = html;
@@ -2398,25 +2427,31 @@ function renderRespostas(){
     <p class="section-subtitle">Textos prontos para responder a solicitações administrativas. Clique em Copiar para usar.</p>
   </div>`;
   RESPOSTAS.forEach((tipo_obj,ti)=>{
+    const isGroupOpen = !!respostasGroupExpanded[ti];
     html += `<div class="recursos-grupo">
-      <div class="recursos-grupo-title">${escHtml(tipo_obj.tipo)}</div>`;
-    tipo_obj.itens.forEach((item,ii)=>{
-      const key = `${ti}-${ii}`;
-      const isOpen = !!respostasExpanded[key];
-      const savedText = localStorage.getItem('resposta_'+key)||item.texto;
-      html += `<div class="recursos-item">
-        <div class="recursos-item-tipo" onclick="toggleRespostaItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
-          ${escHtml(item.subtipo)}
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        ${isOpen ? `${item.nota ? `<div style="font-size:11px;color:var(--muted-2);margin-top:8px;padding:8px;background:var(--surface-2);border-radius:4px;border-left:2px solid var(--line-strong)">${escHtml(item.nota)}</div>` : ''}
-        <div class="ck-recurso-text" id="resp-${key}" style="margin-top:${item.nota?'8px':'0'}">${escHtml(savedText)}</div>
-        <div class="recursos-item-actions">
-          <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
-          <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
-        </div>` : ''}
+      <div class="recursos-grupo-title" onclick="toggleRespostasGroup(${ti})" style="cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none">
+        <span style="flex:1">${escHtml(tipo_obj.tipo)}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isGroupOpen?'180':'0'}deg);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
       </div>`;
-    });
+    if(isGroupOpen){
+      tipo_obj.itens.forEach((item,ii)=>{
+        const key = `${ti}-${ii}`;
+        const isOpen = !!respostasExpanded[key];
+        const savedText = localStorage.getItem('resposta_'+key)||item.texto;
+        html += `<div class="recursos-item">
+          <div class="recursos-item-tipo" onclick="toggleRespostaItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
+            ${escHtml(item.subtipo)}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          ${isOpen ? `${item.nota ? `<div style="font-size:11px;color:var(--muted-2);margin-top:8px;padding:8px;background:var(--surface-2);border-radius:4px;border-left:2px solid var(--line-strong)">${escHtml(item.nota)}</div>` : ''}
+          <div class="ck-recurso-text" id="resp-${key}" style="margin-top:${item.nota?'8px':'0'}">${escHtml(savedText)}</div>
+          <div class="recursos-item-actions">
+            <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
+            <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
+          </div>` : ''}
+        </div>`;
+      });
+    }
     html += `</div>`;
   });
   document.getElementById('main').innerHTML = html;
