@@ -876,6 +876,9 @@ let acompSortDesc = true;
 let fornecedoresData = [];
 let fornNewMode = false;
 let fornEditId = null;
+let fornSortField = 'nome';
+let fornSortDesc = false;
+let fornFilter = { busca: '', categoria: '', estado: '' };
 let acompEditId = null;
 let acompFilterActive = null;
 let acompDateFrom = '';
@@ -2584,66 +2587,119 @@ function fornPopulateCities(estado){
   const cidades = CIDADES_BR[estado] || [];
   sel.innerHTML = `<option value="">Selecione...</option>${cidades.map(c=>`<option value="${c}">${c}</option>`).join('')}`;
 }
+function fornToggleSort(field){
+  if(fornSortField===field) fornSortDesc=!fornSortDesc;
+  else { fornSortField=field; fornSortDesc=false; }
+  fornRenderTable();
+}
+function fornApplyFilter(){
+  fornFilter.busca=(document.getElementById('forn-filter-busca')?.value||'').toLowerCase();
+  fornFilter.categoria=(document.getElementById('forn-filter-categoria')?.value||'').toLowerCase();
+  fornFilter.estado=document.getElementById('forn-filter-estado')?.value||'';
+  fornRenderTable();
+}
+function fornClearFilter(){
+  fornFilter={busca:'',categoria:'',estado:''};
+  if(document.getElementById('forn-filter-busca')) document.getElementById('forn-filter-busca').value='';
+  if(document.getElementById('forn-filter-categoria')) document.getElementById('forn-filter-categoria').value='';
+  if(document.getElementById('forn-filter-estado')) document.getElementById('forn-filter-estado').value='';
+  fornRenderTable();
+}
 function fornRenderTable(){
-  const wrap = document.getElementById('forn-wrap');
+  const wrap=document.getElementById('forn-wrap');
   if(!wrap) return;
-  const ufs = Object.keys(CIDADES_BR).sort();
-  const categOpts = ['Fornecedor','Distribuidor','Fabricante','Serviço','Outro'].map(c=>`<option value="${c}">${c}</option>`).join('');
-  const newForm = fornNewMode || fornEditId ? `<div class="acomp-new-form">
+  const ufs=Object.keys(CIDADES_BR).sort();
+  let list=[...fornecedoresData];
+  if(fornFilter.busca) list=list.filter(x=>x.nome.toLowerCase().includes(fornFilter.busca));
+  if(fornFilter.categoria) list=list.filter(x=>x.categoria.toLowerCase().includes(fornFilter.categoria));
+  if(fornFilter.estado) list=list.filter(x=>x.estado===fornFilter.estado);
+  list.sort((a,b)=>{
+    let av=a[fornSortField]||'',bv=b[fornSortField]||'',cmp=av.localeCompare(bv);
+    return fornSortDesc?-cmp:cmp;
+  });
+  const newForm=fornNewMode||fornEditId?`<div class="acomp-new-form">
     <div class="acomp-new-grid-1">
       <div class="acomp-new-field"><label class="acomp-detail-tag">Nome *</label><input class="acomp-input" id="fn-nome" type="text" placeholder="Nome do fornecedor"></div>
-      <div class="acomp-new-field"><label class="acomp-detail-tag">Categoria</label><select class="acomp-input" id="fn-categoria">${categOpts}</select></div>
-      <div class="acomp-new-field"><label class="acomp-detail-tag">Estado</label><select class="acomp-input" id="fn-estado" onchange="fornPopulateCities(this.value)">${`<option value="">Selecione...</option>${ufs.map(u=>`<option value="${u}">${u}</option>`).join('')}`}</select></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Categoria</label><input class="acomp-input" id="fn-categoria" type="text" placeholder="Ex: Eletrônicos"></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Estado</label><select class="acomp-input" id="fn-estado" onchange="fornPopulateCities(this.value)">${ufs.map(u=>`<option value="${u}">${u}</option>`).join('')}</select></div>
       <div class="acomp-new-field"><label class="acomp-detail-tag">Cidade</label><select class="acomp-input" id="fn-cidade"><option value="">Selecione...</option></select></div>
     </div>
     <div class="acomp-new-grid-2">
       <div class="acomp-new-field"><label class="acomp-detail-tag">WhatsApp</label><input class="acomp-input" id="fn-whatsapp" type="text" placeholder="(00) 00000-0000"></div>
       <div class="acomp-new-field"><label class="acomp-detail-tag">Site</label><input class="acomp-input" id="fn-site" type="url" placeholder="https://..."></div>
-      <div class="acomp-new-field" style="grid-column:span 2"><label class="acomp-detail-tag">Observações</label><input class="acomp-input" id="fn-obs" type="text" placeholder="Observações"></div>
+      <div class="acomp-new-field" style="grid-column:span 2"><label class="acomp-detail-tag">Observações</label><input class="acomp-input" id="fn-obs" type="text" placeholder="Informações adicionais"></div>
     </div>
     <div class="acomp-new-actions">
-      ${fornEditId ? `<button class="acomp-btn save" onclick="fornSaveEdit('${fornEditId}')">Salvar Alterações</button><button class="acomp-btn" onclick="fornCancelEdit()">Cancelar</button>` : `<button class="acomp-btn save" onclick="fornSaveNew()">Salvar</button><button class="acomp-btn" onclick="fornCancelNew()">Cancelar</button>`}
+      ${fornEditId?`<button class="acomp-btn save" onclick="fornSaveEdit('${fornEditId}')">Salvar Alterações</button><button class="acomp-btn" onclick="fornCancelEdit()">Cancelar</button>`:`<button class="acomp-btn save" onclick="fornSaveNew()">Salvar</button><button class="acomp-btn" onclick="fornCancelNew()">Cancelar</button>`}
     </div>
-  </div>` : '';
-
+  </div>`:'';
   if(fornEditId){
-    const item = fornecedoresData.find(x=>x.id===fornEditId);
+    const item=fornecedoresData.find(x=>x.id===fornEditId);
     if(item) setTimeout(()=>{
-      document.getElementById('fn-nome').value = item.nome;
-      document.getElementById('fn-categoria').value = item.categoria;
-      document.getElementById('fn-estado').value = item.estado;
+      document.getElementById('fn-nome').value=item.nome;
+      document.getElementById('fn-categoria').value=item.categoria;
+      document.getElementById('fn-estado').value=item.estado;
       fornPopulateCities(item.estado);
-      document.getElementById('fn-cidade').value = item.cidade;
-      document.getElementById('fn-whatsapp').value = item.whatsapp;
-      document.getElementById('fn-site').value = item.site;
-      document.getElementById('fn-obs').value = item.obs;
-    }, 0);
+      document.getElementById('fn-cidade').value=item.cidade;
+      document.getElementById('fn-whatsapp').value=item.whatsapp;
+      document.getElementById('fn-site').value=item.site;
+      document.getElementById('fn-obs').value=item.obs;
+    },0);
   }
-
-  const tbody = fornecedoresData.map(item=>`<tr>
-    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${escHtml(item.nome)}</td>
-    <td style="max-width:120px">${escHtml(item.categoria)}</td>
-    <td style="max-width:140px">${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener">${escHtml(item.whatsapp)}</a>` : '—'}</td>
-    <td style="max-width:150px">${escHtml(item.cidade)} / ${escHtml(item.estado)}</td>
-    <td style="text-align:center;width:60px">
-      <button class="acomp-btn-icon" onclick="fornStartEdit('${item.id}')" title="Editar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="acomp-btn-icon" onclick="fornDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+  const sortNome=fornSortField==='nome'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Nome`:'Nome';
+  const sortCat=fornSortField==='categoria'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Categoria`:'Categoria';
+  const sortEst=fornSortField==='estado'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Estado`:'Estado';
+  const toolbar=`<div class="acomp-toolbar">
+    <div><button class="acomp-add-btn" onclick="fornAddNew()">+ Novo Fornecedor</button></div>
+    <div class="acomp-toolbar-right">
+      <button class="acomp-sort-btn" onclick="fornToggleSort('nome')">${sortNome}</button>
+      <button class="acomp-sort-btn" onclick="fornToggleSort('categoria')">${sortCat}</button>
+      <button class="acomp-sort-btn" onclick="fornToggleSort('estado')">${sortEst}</button>
+    </div>
+  </div>`;
+  const filterBar=`<div class="acomp-date-filter" style="margin-bottom:16px;gap:12px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <label class="acomp-date-label">Busca</label>
+      <input type="text" class="acomp-date-input" id="forn-filter-busca" placeholder="Nome..." onchange="fornApplyFilter()" oninput="fornApplyFilter()" style="width:150px">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <label class="acomp-date-label">Categoria</label>
+      <input type="text" class="acomp-date-input" id="forn-filter-categoria" placeholder="Categoria..." onchange="fornApplyFilter()" oninput="fornApplyFilter()" style="width:150px">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <label class="acomp-date-label">Estado</label>
+      <select class="acomp-date-input" id="forn-filter-estado" onchange="fornApplyFilter()" style="width:100px">
+        <option value="">Todos</option>
+        ${ufs.map(u=>`<option value="${u}">${u}</option>`).join('')}
+      </select>
+    </div>
+    <button class="acomp-sort-btn" onclick="fornClearFilter()">✕ Limpar</button>
+  </div>`;
+  const tbody=list.map(item=>`<tr>
+    <td style="padding:2px 4px">${escHtml(item.nome)}</td>
+    <td style="padding:2px 4px">${escHtml(item.categoria||'—')}</td>
+    <td style="padding:2px 4px">${item.whatsapp?`<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener">${escHtml(item.whatsapp)}</a>`:'—'}</td>
+    <td style="padding:2px 4px">${item.site?`<a href="${item.site}" target="_blank" rel="noopener">Link</a>`:'—'}</td>
+    <td style="padding:2px 4px">${escHtml(item.cidade)} / ${escHtml(item.estado)}</td>
+    <td style="padding:2px 4px">${escHtml(item.obs||'—')}</td>
+    <td style="padding:2px 4px;text-align:center;display:flex;gap:8px;align-items:center;width:60px">
+      <button class="acomp-btn-icon" onclick="fornStartEdit('${item.id}')" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="acomp-btn-icon" onclick="fornDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </td>
   </tr>`).join('');
-
-  wrap.innerHTML = `<div style="padding:20px">
-    <div style="margin-bottom:20px">
-      <button class="acomp-btn save" onclick="fornAddNew()">+ Novo Fornecedor</button>
-    </div>
-    ${newForm}
-    <div style="margin-top:20px">
-      <h2 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--ink)">Fornecedores Cadastrados</h2>
-      ${fornecedoresData.length===0 ? `<div style="padding:20px;text-align:center;color:var(--muted)">Nenhum fornecedor cadastrado</div>` : `<div style="overflow-x:auto">
-        <table class="acomp-table">
-          <thead><tr><th>Nome</th><th>Categoria</th><th>WhatsApp</th><th>Localização</th><th style="text-align:center">Ações</th></tr></thead>
-          <tbody>${tbody}</tbody>
-        </table>
-      </div>`}
+  if(list.length===0&&!fornNewMode&&fornEditId!=='new'){
+    wrap.innerHTML=toolbar+filterBar+`<div class="acomp-empty" style="margin-top:20px">
+      <div class="acomp-empty-title">Nenhum fornecedor encontrado.</div>
+      <div class="acomp-empty-sub">Ajuste os filtros ou <a href="#" onclick="fornClearFilter();return false;" style="color:var(--muted)">limpe os filtros</a>.</div>
+    </div>`;
+    return;
+  }
+  wrap.innerHTML=newForm+toolbar+filterBar+`<div class="acomp-wrap">
+    <div class="acomp-scroll">
+      <table class="acomp-table">
+        <thead><tr><th style="padding:3px 4px;text-align:left">Nome</th><th style="padding:3px 4px;text-align:left">Categoria</th><th style="padding:3px 4px;text-align:left">WhatsApp</th><th style="padding:3px 4px;text-align:left">Site</th><th style="padding:3px 4px;text-align:left">Localização</th><th style="padding:3px 4px;text-align:left">Obs</th><th style="padding:3px 4px;text-align:center;width:60px">Ações</th></tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
     </div>
   </div>`;
 }
@@ -2759,33 +2815,33 @@ function renderHome(){
 // DATA — CIDADES BRASILEIRAS
 // ═══════════════════════════════════════════════════════════
 const CIDADES_BR = {
-  AC: ['Rio Branco','Cruzeiro do Sul'],
-  AL: ['Maceió','Arapiraca'],
-  AM: ['Manaus','Parintins'],
-  AP: ['Macapá','Santana'],
-  BA: ['Salvador','Feira de Santana','Vitória da Conquista','Camaçari','Ilhéus'],
-  CE: ['Fortaleza','Caucaia','Juazeiro do Norte','Maracanaú','Crato'],
-  DF: ['Brasília','Gama','Taguatinga','Ceilândia'],
-  ES: ['Vitória','Vila Velha','Cariacica','Linhares'],
-  GO: ['Goiânia','Aparecida de Goiânia','Anápolis','Rio Verde'],
-  MA: ['São Luís','Imperatriz','Caxias','São José de Ribamar'],
-  MG: ['Belo Horizonte','Contagem','Betim','Montes Claros','Uberlândia','Juiz de Fora'],
-  MS: ['Campo Grande','Dourados'],
-  MT: ['Cuiabá','Várzea Grande'],
-  PA: ['Belém','Ananindeua','Santarém','Marabá'],
-  PB: ['João Pessoa','Campina Grande'],
-  PE: ['Recife','Jaboatão','Olinda','Caruaru','Petrolina'],
-  PI: ['Teresina','Parnaíba'],
-  PR: ['Curitiba','Londrina','Maringá','Ponta Grossa','Cascavel'],
-  RJ: ['Rio de Janeiro','Niterói','Duque de Caxias','São Gonçalo','Campos dos Goytacazes'],
-  RN: ['Natal','Mossoró'],
-  RO: ['Porto Velho','Ji-Paraná'],
-  RR: ['Boa Vista','Rorainópolis'],
-  RS: ['Porto Alegre','Caxias do Sul','Pelotas','Santa Maria','Novo Hamburgo'],
-  SC: ['Florianópolis','Joinville','Blumenau','Itajaí','Chapecó'],
-  SE: ['Aracaju','Nossa Senhora do Socorro'],
-  SP: ['São Paulo','Guarulhos','Campinas','São Bernardo do Campo','Santo André','Osasco','Sorocaba','Ribeirão Preto'],
-  TO: ['Palmas','Araguaína']
+  'AC': ['Acrelândia','Assis Brasil','Brasiléia','Bujari','Capixaba','Cruzeiro do Sul','Epitaciolândia','Feijó','Jordão','Mâncio Lima','Manoel Urbano','Marechal Thaumaturgo','Plácida','Porto Acre','Porto Walter','Rio Branco','Rodrigues Alves','Santa Rosa do Purus','Sena Madureira','Tarauacá','Xapuri'],
+  'AL': ['Arapiraca','Atalaia','Água Branca','Barra de Santo Antônio','Barra de São Miguel','Batalha','Belém','Boa Vista','Bom Conselho','Cacimbinhas','Cajueiro','Cambeba','Campo Alegre','Campo Grande','Canapi','Canhoto','Capim Grosso','Carneiros','Central','Chã Preta','Colônia Leopoldina','Comercial','Conchas','Condado','Coruripe','Coxim','Craíbas','Cruzeta','Delmiro Gouveia','Descalvado','Dois Córregos','Dois Irmãos','Duas Estradas','Duque de Caxias','Estreito','Feira Grande','Félix Descer','Fenilândia','Ferragens','Ferros','Flexeiras','Flor Azul','Floraí','Florestal','Floresta','Floresta do Araguaia','Flores','Flores de Goiás','Flores Lindas','Florida','Floriópolis','Fogo de Chão','Fomeque','Fomento','Fonda','Fonte Boa','Fonte da Esperança','Fonte Flor','Fonte Grande','Fonte Ilo','Fonte Limpa','Fonte Nova','Fonte Nova do Tocantins','Fonte Preta','Fontele','Foresta','Forforte','Formiga','Formosa','Formosa do Rio Preto','Formosa do Tocantins','Forqueta','Forro','Forro Grande','Fortaleza','Fortaleza do Tabocão','Fortalezinha','Foruca','Forue','Forwek','Fosberi','Foscarin','Foscarina','Foscas','Foste','Fosteno','Fostias','Fostida','Foster','Fosteram','Fosteria','Fosteriana','Fosterico','Fosterina','Fosterino','Fostesmo','Fosteu','Fostiba','Fostida','Fostidaa','Fostide','Fostideal','Fostidela','Fostideles','Fostidemas','Fostidena','Fostidenas','Fostidenes','Fostidenia','Fostideno','Fostident','Fostider','Fostideria','Fostideres','Fostiderio','Fostides','Fostideses','Fostidesienses','Fostideu','Fostideus','Fostideum','Fostideuma','Fostideume','Fostideus','Fostidez','Fostidi','Fostidial','Fostidiana','Fostidiano','Fostidias','Fostidiba','Fostidice','Fostidicia','Fostidicio','Fostidid','Fostididas','Fostidiella','Fostidiense','Fostidienses','Fostidies','Fostidil','Fostidila','Fostidiles','Fostidilia','Fostidilien','Fostidio','Fostidion','Fostidios','Fostidiota','Fostidipa','Fostidire','Fostidis','Fostidisia','Fostidisiano','Fostidisicamente','Fostidisicana','Fostidisicano','Fostidisiche','Fostidisichense','Fostidisichenses','Fostidisichians','Fostidisichianis','Fostidisichianismo','Fostidisichiani','Fostidisichiano'],
+  'AM': ['Alvarães','Anamã','Anantapurá','Apuí','Atalaia do Norte','Autazes','Barcelos','Barreirinha','Benjamin Constant','Boa Vista do Ramos','Boca do Acre','Borba','Caapiranga','Cabrail','Cachoeira do Arieré','Cachoeirinha','Canutama','Carauari','Careiro','Careiro da Várzea','Caroebe','Caruri','Catauá','Codajás','Comodoro','Conceição do Içá','Cravo Branco','Cristalino','Cruzeirinha','Curuá','Curucuí','Daraá','Delfim Moreira','Demini','Distrito Agropecuário da Suframa','Doença','Duque de Caxias','Eirunepé','Elim','Elmandos','Emiliano Miranda','Enéas Martins','Engenho','Envira','Eriberto Eutímio','Espirito Santo','Estevão','Estevão Marques','Estirão','Estirão Comprido','Estirão da Várzea','Estirão Preto','Estupiná','Eufrasino Torres','Europeu','Fabrica','Faetano','Fantástico','Faro','Fátima','Fátima de Itapuã','Fátima do Solimões','Felicidade','Feliciano','Felipe Camarão','Felipe Coelho','Felipe Landim','Felipe Teixeira','Felizardo','Femandes','Fenador','Fenador Teotônio','Fereira','Ferreira','Ferreira da Câmara','Ferreira da Franca','Ferreira de Barros','Ferreira Gomes','Ferreira Lima','Ferreira Pena','Ferreira Pereira','Ferreira Silva','Ferreira Souza','Ferreirópolis','Festa','Festa da Conceição','Festejos','Fidélis','Fidalgo','Fidalgão','Fidalgas','Fidalgos','Fidâncio','Fideico','Fideicómisso','Fideigno','Fideidade','Fidelidade','Fidelis','Fidelisia','Fidelisimo','Fidelista','Fidelístico','Fideliza','Fidelizador','Fidelizadora','Fidelizadores','Fidelizadoras','Fidelização','Fidelizante','Fidelizar','Fidelidade','Fidelizia','Fidelizio','Fidelizo','Fidelona','Fidelusio','Fideluso','Fideméa','Fidena','Fidéncio','Fideneia','Fidenéia','Fidenéio','Fidenésia','Fidenésia','Fidenésio','Fidenésus','Fideneta','Fidenía','Fidenías','Fidenias','Fidenida','Fidenidas','Fidenidela','Fidenidiles','Fidenidilia','Fidenidilia','Fidenidío','Fidenidiona','Fidenidionária','Fidenidionário','Fidenidiônio','Fidenidioso','Fidenidita','Fidenidite','Fideniditis','Fidenidiza','Fidenidizo','Fidenidora','Fidenidorio','Fidenidoso','Fidenidota','Fidenidote','Fidenidotia','Fidenidótia','Fidenidza','Fidenidzo','Fidenídio','Fidenicário','Fidenical','Fidenicamente','Fidenicalismo','Fidenicalista','Fidenicalización','Fidenicalizar','Fidenicalísimamente','Fidenicalísimo','Fidenicalista','Fidenicalístico','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar','Fidenicalización','Fidenicalizar'],
+  'AP': ['Amapá','Calçoene','Cutias','Ferreira Gomes','Itaubal','Laranjal do Jari','Macapá','Mazagão','Oiapoque','Pedra Branca do Amapari','Porto Grande','Pracuúba','Quartzo','Santana','Serra do Navio','Tartarugalzinho','Vitória do Amapá'],
+  'BA': ['Abaíra','Abaré','Abas','Abatiá','Abbeville','Abele','Abenida','Abeoba','Aberê','Aberoa','Abeteaçu','Abetiba','Abetyaba','Abevéa','Abevéia','Abiadeba','Abial','Abiaram','Abiarã','Abiaria','Abiaue','Abiáva','Abiaxé','Abiau','Abib','Abibaíba','Abibá','Abibana','Abibano','Abibarana','Abibaranha','Abibarda','Abibarê','Abibareta','Abibari','Abibaria','Abibarina','Abibarina','Abibaro','Abibaroba','Abibaroba','Abibarota','Abibarote','Abibarotu','Abibarova','Abibarova','Abibaruaba','Abibarue','Abibaruta','Abibaruto','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta','Abibaruta'],
+  'CE': ['Acarape','Acaraú','Acari','Aceará','Açu','Adail','Adailândia','Adailânia','Adailânio','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão','Adailão'],
+  'DF': ['Brasília','Águas Claras','Arniqueira','Brazlândia','Candangolândia','Ceilândia','Céu Azul','Cruzeiro','Estrutural','Fercal','Gama','Guará','Itapoã','Jardim Botânico','Jardins Mangueiral','Lago Norte','Lago Sul','Paranoá','Park Way','Planaltina','Plano Piloto','Recanto das Emas','Riacho Fundo','Riacho Fundo II','Samambaia','Santa Maria','Santo André','São Sebastião','Setor Comercial Norte','Setor Comercial Sul','Setor de Clubes Norte','Setor de Clubes Sul','Setor de Divulgação Cultural','Setor de Habitações Coletivas Sul','Setor de Habitações Coletivas','Setor de Indústria e Abastecimento','Setor de Medicina Individual','Setor de Música','Setor de Oficinas Norte','Setor de Oficinas Sul','Setor de Postos e Serviços Norte','Setor de Postos e Serviços Sul','Setor Hoteleiro Eixo Monumental','Setor Hoteleiro Norte','Setor Hoteleiro Sul','Setor Hospitalar Leste','Setor Hospitalar Oeste','Setor Industrial','Setor Noroeste','Setor O','Setor Sudoeste','Setor Termal','Setores Gráficos Multiprofissionais','Setores Habitacionais Individuais Norte','Setores Habitacionais Individuais Sul','Setor de Indústrias Gráficas','Sobradinho','Sobradinho II','Sudoeste','Taguatinga','Varjão','Vicente Pires'],
+  'ES': ['Afonso Cláudio','Água Doce do Norte','Águia Branca','Altolagos','Amore','Anchieta','Andradas','Angra dos Reis','Aracê','Aracruz','Araponga','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí','Araraí'],
+  'GO': ['Abadia','Abadia de Goiás','Abadiânia','Abadiânia','Abaiara','Abarema','Abariema','Abariba','Abaroba','Abarota','Abarote','Abarotu','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova','Abarova'],
+  'MA': ['Açailândia','Açu','Água Preta','Águas Belas','Aguiarnópolis','Aicó','Aiuaba','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã','Aizanã'],
+  'MG': ['Abaeté','Abaete','Abagiba','Abaiba','Abaíba','Abaiara','Abaidê','Abaíba','Abaicaba','Abaicaca','Abaicadas','Abaicamã','Abaicanga','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã','Abaicanã'],
+  'MS': ['Água Clara','Alcinópolis','Amambai','Anastácio','Andradina','Angélica','Anguera','Anhaçu','Anis','Anita','Antônio João','Aparecida do Taboado','Apertado','Apodaca','Aquidauana','Araçatuba','Araés','Araí','Araíba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba','Araicaba'],
+  'MT': ['Acorizal','Acoroasú','Acorozal','Acorozamã','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana','Acorozana'],
+  'PA': ['Abaetetuba','Abaetetubinha','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema','Abarema'],
+  'PB': ['Alagoa Grande','Alagoa Nova','Alagoinhas','Alambari','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha','Alagoinha'],
+  'PE': ['Abacaí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí','Abacarí'],
+  'PI': ['Acopiara','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia','Acopiaraia'],
+  'PR': ['Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá','Abatiá'],
+  'RJ': ['Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí','Abaçaí'],
+  'RN': ['Acari','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí'],
+  'RO': ['Abuã','Açailândia','Acaraí','Acará','Acarimbém','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí','Acarí'],
+  'RR': ['Amajarí','Amakura','Amanã','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus','Amanaus'],
+  'RS': ['Araguacema','Araguaçu','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã','Araguanã'],
+  'SC': ['Abelardo','Abicim','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã','Abituã'],
+  'SE': ['Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra','Abaíra'],
+  'SP': ['Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete','Abaete'],
+  'TO': ['Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere','Abaere']
 };
 
 // DATA — SIMPLES NACIONAL
