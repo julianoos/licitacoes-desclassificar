@@ -744,7 +744,7 @@ input[type=number]{-moz-appearance:textfield}
       <button class="nav-btn" data-section="acompanhamento">Acompanhamento</button>
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
       <button class="nav-btn" data-section="editalreader">Leitor de Editais</button>
-      <button class="nav-btn" data-section="desclassificar">Desclassificar</button>
+      <button class="nav-btn" data-section="juridico">Jurídico</button>
       <button class="nav-btn" data-section="fornecedores">Fornecedores</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
@@ -859,7 +859,7 @@ const CHECKLIST = [
 // APP STATE
 // ═══════════════════════════════════════════════════════════
 let currentSection = 'home';
-let desclassificarTab = 'checklist';
+let juridicoTab = 'checklist';
 let checklistLinks = {};
 const openItems = new Set();
 let recursosExpanded = {};
@@ -884,7 +884,7 @@ function renderSidebar(){
   }
   html += `<div class="sidebar-toggle-row"><button class="icon-btn" onclick="toggleSidebar()" title="Ocultar barra lateral">${SIDEBAR_TOGGLE_SVG}</button></div>`;
   [
-    {s:'desclassificar', label:'Desclassificar'},
+    {s:'juridico', label:'Jurídico'},
     {s:'calculadora',    label:'Calculadora'},
     {s:'editalreader',   label:'Leitor de Editais'},
     {s:'acompanhamento', label:'Acompanhamento'},
@@ -2243,7 +2243,7 @@ function saveChecklistLink(gi, ii, url){
     checklistLinks[key] = url.trim();
   }
   localStorage.setItem('checklist_links', JSON.stringify(checklistLinks));
-  renderDesclassificar();
+  renderJuridico();
 }
 
 function getChecklistLink(gi, ii){
@@ -2253,22 +2253,22 @@ function getChecklistLink(gi, ii){
 // ═══════════════════════════════════════════════════════════
 // RENDER DESCLASSIFICAR
 // ═══════════════════════════════════════════════════════════
-function renderDesclassificar(){
-  if(desclassificarTab==='checklist') renderChecklist();
-  else if(desclassificarTab==='recursos') renderRecursos();
+function renderJuridico(){
+  if(juridicoTab==='checklist') renderChecklist();
+  else if(juridicoTab==='recursos') renderRecursos();
   else renderRespostas();
   const main = document.getElementById('main');
   const tabs = `<div class="ref-tabs">
-    <button class="ref-tab${desclassificarTab==='checklist'?' active':''}" onclick="switchDesclassificarTab('checklist')">Checklist</button>
-    <button class="ref-tab${desclassificarTab==='recursos'?' active':''}" onclick="switchDesclassificarTab('recursos')">Recursos</button>
-    <button class="ref-tab${desclassificarTab==='respostas'?' active':''}" onclick="switchDesclassificarTab('respostas')">Respostas</button>
+    <button class="ref-tab${juridicoTab==='checklist'?' active':''}" onclick="switchJuridicoTab('checklist')">Checklist</button>
+    <button class="ref-tab${juridicoTab==='recursos'?' active':''}" onclick="switchJuridicoTab('recursos')">Recursos</button>
+    <button class="ref-tab${juridicoTab==='respostas'?' active':''}" onclick="switchJuridicoTab('respostas')">Respostas</button>
   </div>`;
   main.insertAdjacentHTML('afterbegin', tabs);
 }
 
-function switchDesclassificarTab(tab){
+function switchJuridicoTab(tab){
   desclassificarTab = tab;
-  renderDesclassificar();
+  renderJuridico();
   renderSidebar();
 }
 
@@ -2277,8 +2277,8 @@ function switchDesclassificarTab(tab){
 // ═══════════════════════════════════════════════════════════
 function renderChecklist(){
   let html = `<div class="section-header">
-    <div class="section-eyebrow"><span class="dot"></span>Desclassificar<span class="dot"></span>30+ Itens</div>
-    <h1 class="section-title">Checklist de Desclassificação</h1>
+    <div class="section-eyebrow"><span class="dot"></span>Jurídico<span class="dot"></span>30+ Itens</div>
+    <h1 class="section-title">Checklist Jurídico</h1>
     <p class="section-subtitle">Clique em qualquer item para ver a jurisprudência e as observações aplicáveis.</p>
   </div>
   <div class="ck-search-wrap">
@@ -2562,7 +2562,7 @@ function switchSection(section){
   if(sidebarHidden && section!=='home') renderIconSidebar();
   else renderSidebar();
   if(section==='home') renderHome();
-  else if(section==='desclassificar') renderDesclassificar();
+  else if(section==='desclassificar') renderJuridico();
   else if(section==='calculadora') renderCalculadora();
   else if(section==='editalreader') renderEditalReader();
   else if(section==='acompanhamento') renderAcompanhamento();
