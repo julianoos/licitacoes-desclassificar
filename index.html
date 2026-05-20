@@ -941,6 +941,7 @@ function acompToggleSelect(id, checked){
 }
 
 function acompToggleSelectAll(checked){
+  acompMultiSelectMode = checked;
   if(checked){
     acompData.forEach(item => acompSelectedIds.add(item.id));
   } else {
