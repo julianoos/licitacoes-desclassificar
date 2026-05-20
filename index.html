@@ -2394,19 +2394,19 @@ function renderRecursos(){
       const savedRecurso = localStorage.getItem('recurso_'+key) || item.recurso;
       const isOpen = !!recursosExpanded[key];
 
-      html += `<div class="ck-item" id="rec-item-${key}" data-key="${key}">
+      html += `<div class="ck-item${isOpen ? ' open' : ''}" id="rec-item-${key}" data-key="${key}">
         <div class="ck-item-header" onclick="toggleRecursoItem('${key}',event)">
           <span class="ck-item-titulo">${escHtml(item.tipo)}</span>
           <span class="ck-item-badge">RECURSO</span>
           <span class="ck-item-arrow">▼</span>
         </div>
-        ${isOpen ? `<div class="ck-expand">
+        <div class="ck-expand">
           <div class="ck-recurso-text" id="rec-${key}">${escHtml(savedRecurso)}</div>
           <div class="recursos-item-actions">
             <button class="ck-btn" onclick="editRecursoRec('${key}')">Editar</button>
             <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
           </div>
-        </div>` : ''}
+        </div>
       </div>`;
     });
 
@@ -2442,19 +2442,19 @@ function renderRespostas(){
       const savedResposta = localStorage.getItem('resposta_'+key) || item.texto;
       const isOpen = !!respostasExpanded[key];
 
-      html += `<div class="ck-item" id="resp-item-${key}" data-key="${key}">
+      html += `<div class="ck-item${isOpen ? ' open' : ''}" id="resp-item-${key}" data-key="${key}">
         <div class="ck-item-header" onclick="toggleRespostaItem('${key}',event)">
           <span class="ck-item-titulo">${escHtml(item.subtipo)}</span>
           <span class="ck-item-badge">RESPOSTA</span>
           <span class="ck-item-arrow">▼</span>
         </div>
-        ${isOpen ? `<div class="ck-expand">
+        <div class="ck-expand">
           <div class="ck-resposta-text" id="resp-${key}">${escHtml(savedResposta)}</div>
           <div class="resposta-item-actions">
             <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
             <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
           </div>
-        </div>` : ''}
+        </div>
       </div>`;
     });
 
