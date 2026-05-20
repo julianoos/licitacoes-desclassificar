@@ -41,28 +41,24 @@ html.light {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{transition:background 300ms var(--ease),color 300ms var(--ease)}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:20px;line-height:1.1;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.1;-webkit-font-smoothing:antialiased;overflow:hidden}
 
 /* ─── APP SHELL ─── */
 .app{display:flex;flex-direction:column;height:100vh;position:relative;z-index:1}
 /* ─── GRID BACKGROUND ─── */
 .grid-bg{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(var(--grid-line,rgba(200,200,200,.04)) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid-line,rgba(200,200,200,.04)) 1px,transparent 1px);
-  background-size:64px 64px;
+  background-image: radial-gradient(var(--grid-dot,rgba(200,200,200,.15)) 1px, transparent 1px);
+  background-size:32px 32px;
 }
 .grid-bg::after{
   content:'';position:absolute;inset:0;
-  background-image:
-    linear-gradient(var(--grid-glow,rgba(120,170,255,.2)) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid-glow,rgba(120,170,255,.2)) 1px,transparent 1px);
-  background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(circle 220px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
-  mask-image:radial-gradient(circle 220px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+  background-image: radial-gradient(var(--grid-glow,rgba(120,170,255,.55)) 1.5px, transparent 1.5px);
+  background-size:32px 32px;
+  -webkit-mask-image:radial-gradient(circle 180px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+  mask-image:radial-gradient(circle 180px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
 }
-html.light .grid-bg{--grid-line:rgba(0,0,0,.06);--grid-glow:rgba(60,100,220,.22)}
+html.light .grid-bg{--grid-dot:rgba(0,0,0,.1);--grid-glow:rgba(60,100,220,.35)}
 
 /* ─── TOPBAR ─── */
 .topbar{
@@ -81,15 +77,15 @@ html.light .grid-bg{--grid-line:rgba(0,0,0,.06);--grid-glow:rgba(60,100,220,.22)
 .nav-group{display:flex;gap:8px}
 .nav-btn{
   appearance:none;background:transparent;
-  border:1px solid var(--line);color:var(--muted);
+  border:1px solid transparent;color:var(--muted);
   font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;
   letter-spacing:0.14em;text-transform:uppercase;
   padding:9px clamp(16px,1.4vw,24px);border-radius:var(--radius);
   cursor:pointer;min-width:100px;
-  transition:background 220ms var(--ease),border-color 220ms var(--ease),color 220ms var(--ease),transform 160ms var(--ease);
+  transition:color 220ms var(--ease),transform 160ms var(--ease);
 }
-.nav-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
-.nav-btn.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.nav-btn:hover{background:transparent;border-color:transparent;color:var(--ink)}
+.nav-btn.active{background:transparent;border-color:transparent;color:var(--ink);font-weight:600}
 .nav-btn:active{transform:scale(0.97)}
 
 /* ─── TOPBAR LEFT ─── */
@@ -153,10 +149,9 @@ html.light .grid-bg{--grid-line:rgba(0,0,0,.06);--grid-glow:rgba(60,100,220,.22)
 }
 .home-title{
   font-family:'Outfit',sans-serif;font-weight:200;
-  font-size:clamp(42px,6vw,96px);letter-spacing:-0.04em;
-  color:var(--ink);line-height:1.0;text-align:center;max-width:760px;
+  font-size:clamp(52px,8vw,120px);letter-spacing:-0.03em;
+  color:var(--ink);line-height:1.0;text-align:center;
 }
-.home-sub{font-size:15px;color:var(--muted);font-weight:300;margin-top:12px;text-align:center}
 .home-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
   margin-top:20px;width:100%;max-width:960px;
@@ -959,10 +954,10 @@ function acompViewRow(item){
     <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
     <td style="text-align:center">${link}</td>
     <td><div class="acomp-actions-cell">
-      <button class="acomp-btn" onclick="acompOpenDetail('${item.id}')">Detalhes</button>
-      <button class="acomp-btn" onclick="acompOpenChecklist('${item.id}')">Checklist</button>
-      <button class="acomp-btn" onclick="acompStartEdit('${item.id}')">Editar</button>
-      <button class="acomp-btn del" onclick="acompConfirmDelete('${item.id}')">Excluir</button>
+      <button class="acomp-btn-icon" onclick="acompOpenDetail('${item.id}')" title="Detalhes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompOpenChecklist('${item.id}')" title="Checklist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompStartEdit('${item.id}')" title="Editar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompConfirmDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </div></td>
   </tr>`;
   if(!isExp) return mainRow;
@@ -2103,6 +2098,8 @@ function escAttr(s){
 // ═══════════════════════════════════════════════════════════
 function switchSection(section){
   currentSection=section;
+  const gridEl = document.getElementById('grid-bg');
+  if(gridEl) gridEl.style.display = section === 'home' ? '' : 'none';
   document.querySelectorAll('.nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.section===section);
   });
@@ -2189,42 +2186,9 @@ function toggleSidebar(){
 // RENDER HOME
 // ═══════════════════════════════════════════════════════════
 function renderHome(){
-  const cards = [
-    {
-      section:'desclassificar', num:'01', title:'Desclassificar',
-      desc:'Checklist com 30+ itens para contestar documentos de habilitação e textos de recurso prontos para copiar.',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`
-    },
-    {
-      section:'calculadora', num:'02', title:'Calculadora',
-      desc:'Preço Mínimo de Venda com alíquota reversa do Simples Nacional. Tabelas Comércio (Anexo I) e Serviços (Anexo IV).',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="11" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="11" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>`
-    },
-    {
-      section:'editalreader', num:'03', title:'Leitor de Editais',
-      desc:'Análise de editais e Termos de Referência com IA (Gemma). Upload de PDF, Excel ou Word. Resumo executivo ou análise completa em 7 seções.',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>`
-    },
-    {
-      section:'acompanhamento', num:'04', title:'Acompanhamento',
-      desc:'Lista de licitações com status, datas, observações e links. Organize e acompanhe todos os pregões em um único lugar.',
-      icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`
-    }
-  ];
   document.getElementById('main').innerHTML = `
     <div class="home-wrap">
-      <h1 class="home-title">Licitações 2026</h1>
-      <p class="home-sub">Selecione uma área para começar</p>
-      <div class="home-grid">
-        ${cards.map(c=>`
-          <div class="home-card" onclick="switchSection('${c.section}')">
-            <div class="home-card-icon">${c.icon}</div>
-            <div class="home-card-num">${c.num}</div>
-            <div class="home-card-title">${c.title}</div>
-            <div class="home-card-desc">${c.desc}</div>
-            <span class="home-card-arrow">↗</span>
-          </div>`).join('')}
-      </div>
+      <h1 class="home-title">LICITAÇÕES 2026</h1>
     </div>`;
 }
 
