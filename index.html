@@ -686,7 +686,7 @@ input[type=number]{-moz-appearance:textfield}
 .docs-sel-group{font-family:'Google Sans','DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);padding:10px 12px 4px;border-top:1px solid var(--line);margin-top:4px}
 .docs-sel-group:first-child{border-top:none;margin-top:0;padding-top:0}
 /* ─── REFERÊNCIA TABS ─── */
-.ref-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:32px;gap:0;flex-shrink:0}
+.ref-tabs{position:sticky;top:0;z-index:15;background:var(--bg);display:flex;border-bottom:1px solid var(--line);margin-bottom:32px;gap:0;flex-shrink:0;padding:12px 0;padding-left:clamp(20px,2.5vw,40px);padding-right:clamp(20px,2.5vw,40px)}
 .ref-tab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;padding:10px 22px;font-family:'Google Sans','DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);cursor:pointer;margin-bottom:-1px;transition:color 160ms,border-bottom-color 160ms}
 .ref-tab:hover{color:var(--ink)}
 .ref-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
