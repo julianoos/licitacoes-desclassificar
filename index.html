@@ -102,7 +102,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Inter',
 .container.sidebar-home{grid-template-columns:1fr}
 .container.sidebar-home .sidebar{display:none}
 .container.sidebar-off{grid-template-columns:52px 1fr}
-.sidebar-toggle-row{display:flex;justify-content:flex-end;padding:10px 10px 0;flex-shrink:0}
+.sidebar-toggle-row{display:flex;justify-content:flex-start;padding:10px 10px 0;flex-shrink:0}
 /* ─── SIDEBAR ICON MODE ─── */
 .sidebar.icon-mode{
   padding:0;overflow:hidden;
@@ -516,7 +516,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-scroll{overflow-x:auto}
 .acomp-table{width:100%;border-collapse:collapse;min-width:900px}
 .acomp-table thead th{
-  padding:8px 10px;text-align:left;
+  padding:6px 8px;text-align:left;
   font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);
   background:var(--surface);white-space:nowrap;
@@ -525,7 +525,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
 .acomp-table tbody tr.editing td{background:var(--surface-2)}
 .acomp-table td{
-  padding:7px 10px;color:var(--ink-2);border-bottom:1px solid var(--line);
+  padding:5px 8px;color:var(--ink-2);border-bottom:1px solid var(--line);
   font-size:13px;vertical-align:middle;
 }
 .acomp-table tbody tr:last-child td{border-bottom:none}
@@ -534,10 +534,9 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
   font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
 }
 .acomp-status.st-disputar{border:1px solid #4a9eff55;color:#4a9eff;background:rgba(74,158,255,.08)}
-.acomp-status.st-em-disputa{border:1px solid #f59e0b55;color:#f59e0b;background:rgba(245,158,11,.08)}
-.acomp-status.st-em-selecao{border:1px solid #22c55e55;color:#22c55e;background:rgba(34,197,94,.08)}
-.acomp-status.st-suspenso{border:1px solid #ef444455;color:#ef4444;background:rgba(239,68,68,.08)}
-.acomp-status.st-finalizado{border:1px solid var(--line);color:var(--muted);text-decoration:line-through}
+.acomp-status.st-em-disputa{border:1px solid #f9731655;color:#f97316;background:rgba(249,115,22,.08)}
+.acomp-status.st-habilitacao{border:1px solid #22c55e55;color:#22c55e;background:rgba(34,197,94,.08)}
+.acomp-status.st-finalizado{border:1px solid #ef444455;color:#ef4444;background:rgba(239,68,68,.08)}
 .acomp-obs-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acomp-link-btn{
   display:inline-flex;align-items:center;justify-content:center;
@@ -584,6 +583,8 @@ html.light .acomp-date-input{color-scheme:light}
 }
 .acomp-back-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
 .acomp-detail-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1}
+.acomp-detail-edit-form{flex:1}
+.acomp-detail-edit-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .acomp-detail-tag{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .acomp-detail-val{font-size:13px;color:var(--ink-2);font-weight:400;white-space:nowrap}
 .acomp-aliq-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
@@ -890,6 +891,8 @@ let acompFilterActive = null;
 let acompDateFrom = '';
 let acompDateTo = '';
 let acompDetailId = null;
+let acompDetailEditMode = false;
+let acompExpandedIds = new Set();
 let acompItemEditId = null;
 
 (function acompInit(){
@@ -903,18 +906,18 @@ function acompPersist(){
 function acompStatusClass(s){
   if(s==='A disputar') return 'st-disputar';
   if(s==='Em disputa') return 'st-em-disputa';
-  if(s==='Em Seleção') return 'st-em-selecao';
-  if(s==='Suspenso') return 'st-suspenso';
+  if(s==='Habilitação') return 'st-habilitacao';
   if(s==='Finalizado') return 'st-finalizado';
   return 'st-disputar';
 }
 
 function acompViewRow(item){
   const sc = acompStatusClass(item.status);
+  const isExp = acompExpandedIds.has(item.id);
   const link = item.link
     ? `<a href="${escHtml(item.link)}" target="_blank" class="acomp-link-btn" title="Abrir edital">↗</a>`
     : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
-  return `<tr data-id="${item.id}">
+  const mainRow = `<tr data-id="${item.id}">
     <td style="white-space:nowrap">${escHtml(item.data||'—')}</td>
     <td style="white-space:nowrap;color:var(--muted)">${escHtml(item.tipo_lic||'—')}</td>
     <td style="white-space:nowrap">${escHtml(item.uasg||'—')}</td>
@@ -924,16 +927,44 @@ function acompViewRow(item){
     <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
     <td style="text-align:center">${link}</td>
     <td><div class="acomp-actions-cell">
+      <button class="acomp-btn" onclick="acompToggleExpand('${item.id}')" title="${isExp?'Fechar itens':'Ver itens'}">${isExp?'▲':'▼'}</button>
       <button class="acomp-btn" onclick="acompOpenDetail('${item.id}')">Itens</button>
       <button class="acomp-btn" onclick="acompStartEdit('${item.id}')">Editar</button>
       <button class="acomp-btn del" onclick="acompConfirmDelete('${item.id}')">Excluir</button>
     </div></td>
   </tr>`;
+  if(!isExp) return mainRow;
+  const itens = item.itens||[];
+  const itensHtml = itens.length===0
+    ? `<em style="color:var(--muted);font-size:12px">Nenhum item cadastrado.</em>`
+    : `<table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr>
+          <th style="text-align:left;padding:3px 6px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)">Nº</th>
+          <th style="text-align:left;padding:3px 6px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)">Produto</th>
+          <th style="text-align:right;padding:3px 6px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)">Qtd</th>
+          <th style="text-align:right;padding:3px 6px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)">Vl Edital</th>
+          <th style="text-align:right;padding:3px 6px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)">Lance Mín.</th>
+        </tr></thead>
+        <tbody>${itens.map(it=>`<tr>
+          <td style="padding:3px 6px;color:var(--muted)">${escHtml(String(it.num||''))}</td>
+          <td style="padding:3px 6px">${escHtml(it.produto||'—')}</td>
+          <td style="padding:3px 6px;text-align:right;color:var(--muted)">${escHtml(String(it.qtd||''))}</td>
+          <td style="padding:3px 6px;text-align:right">R$ ${fmtBRL(Number(it.valor_edital||0))}</td>
+          <td style="padding:3px 6px;text-align:right">R$ ${fmtBRL(Number(it.lance_min||0))}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  return mainRow + `<tr class="acomp-expand-row"><td colspan="9" style="padding:8px 16px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)">${itensHtml}</td></tr>`;
+}
+
+function acompToggleExpand(id){
+  if(acompExpandedIds.has(id)) acompExpandedIds.delete(id);
+  else acompExpandedIds.add(id);
+  acompRenderTable();
 }
 
 function acompEditRow(item){
   const isNew = item.id==='new';
-  const statusOpts = ['A disputar','Em disputa','Em Seleção','Suspenso','Finalizado']
+  const statusOpts = ['A disputar','Em disputa','Habilitação','Finalizado']
     .map(s=>`<option value="${s}"${item.status===s?' selected':''}>${s}</option>`).join('');
   const tipoOpts = ['Pregão','Dispensa']
     .map(t=>`<option value="${t}"${(item.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
@@ -1033,9 +1064,12 @@ function acompRenderTable(){
 }
 
 function acompAddNew(){
-  acompEditId = 'new';
-  acompRenderTable();
-  document.getElementById('acomp-wrap')?.scrollIntoView({behavior:'smooth',block:'start'});
+  const newId = Date.now().toString();
+  const blank = {id:newId,data:'',uasg:'',pregao:'',orgao:'',tipo_lic:'Pregão',status:'A disputar',obs:'',link:'',aliq:0,itens:[],docsSelecionados:[]};
+  acompData.unshift(blank);
+  localStorage.setItem('acomp_data',JSON.stringify(acompData));
+  acompDetailEditMode = true;
+  acompOpenDetail(newId);
 }
 
 function acompStartEdit(id){
@@ -1157,7 +1191,25 @@ function acompOpenDetail(id){
 
 function acompDetailBack(){
   acompDetailId = null;
+  acompDetailEditMode = false;
   acompItemEditId = null;
+  renderAcompanhamento();
+}
+
+function acompDetailSave(id){
+  const lic = acompData.find(x=>x.id===id);
+  if(!lic) return;
+  const v = f => document.getElementById(f)?.value||'';
+  lic.orgao = v('dd-orgao');
+  lic.tipo_lic = v('dd-tipo-lic');
+  lic.pregao = v('dd-pregao');
+  lic.data = v('dd-data');
+  lic.uasg = v('dd-uasg');
+  lic.status = v('dd-status');
+  lic.obs = v('dd-obs');
+  lic.link = v('dd-link');
+  localStorage.setItem('acomp_data',JSON.stringify(acompData));
+  acompDetailEditMode = false;
   renderAcompanhamento();
 }
 
@@ -1180,6 +1232,50 @@ function renderAcompDetail(id){
   if(!lic.docsSelecionados) lic.docsSelecionados = [];
 
   const sc = acompStatusClass(lic.status);
+  const editing = acompDetailEditMode;
+  const tipoOpts = ['Pregão','Dispensa'].map(t=>`<option value="${t}"${(lic.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
+  const statusOpts2 = ['A disputar','Em disputa','Habilitação','Finalizado'].map(s=>`<option value="${s}"${lic.status===s?' selected':''}>${s}</option>`).join('');
+
+  const headerMeta = editing ? `
+    <div class="acomp-detail-edit-form">
+      <div class="acomp-detail-edit-row">
+        <label class="acomp-detail-tag">Órgão</label>
+        <input class="acomp-input" id="dd-orgao" type="text" value="${escHtml(lic.orgao||'')}" placeholder="Nome do órgão" style="flex:1;min-width:180px">
+        <label class="acomp-detail-tag" style="margin-left:8px">Tipo</label>
+        <select class="acomp-input" id="dd-tipo-lic" style="min-width:90px">${tipoOpts}</select>
+        <label class="acomp-detail-tag" style="margin-left:8px">Nº Pregão</label>
+        <input class="acomp-input" id="dd-pregao" type="text" value="${escHtml(lic.pregao||'')}" placeholder="001/2026" style="min-width:90px">
+        <label class="acomp-detail-tag" style="margin-left:8px">Data</label>
+        <input class="acomp-input" id="dd-data" type="date" value="${escHtml(lic.data||'')}">
+      </div>
+      <div class="acomp-detail-edit-row" style="margin-top:6px">
+        <label class="acomp-detail-tag">UASG</label>
+        <input class="acomp-input" id="dd-uasg" type="text" value="${escHtml(lic.uasg||'')}" placeholder="UASG" style="min-width:80px">
+        <label class="acomp-detail-tag" style="margin-left:8px">Status</label>
+        <select class="acomp-input" id="dd-status" style="min-width:120px">${statusOpts2}</select>
+        <label class="acomp-detail-tag" style="margin-left:8px">Observações</label>
+        <input class="acomp-input" id="dd-obs" type="text" value="${escHtml(lic.obs||'')}" placeholder="Observações" style="flex:1;min-width:130px">
+        <label class="acomp-detail-tag" style="margin-left:8px">Link</label>
+        <input class="acomp-input" id="dd-link" type="url" value="${escHtml(lic.link||'')}" placeholder="https://..." style="min-width:120px">
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="acomp-btn save" onclick="acompDetailSave('${lic.id}')">Salvar dados</button>
+        <button class="acomp-btn" onclick="acompDetailEditMode=false;renderAcompanhamento()">Cancelar</button>
+      </div>
+    </div>` : `
+    <div class="acomp-detail-meta">
+      <span class="acomp-detail-tag">Órgão:</span>
+      <span class="acomp-detail-val">${escHtml(lic.orgao||'—')}</span>
+      <span class="acomp-detail-tag" style="margin-left:8px">Tipo:</span>
+      <span class="acomp-detail-val">${escHtml(lic.tipo_lic||'—')}</span>
+      <span class="acomp-detail-tag" style="margin-left:8px">Pregão:</span>
+      <span class="acomp-detail-val">${escHtml(lic.pregao||'—')}</span>
+      <span class="acomp-detail-tag" style="margin-left:8px">Data:</span>
+      <span class="acomp-detail-val">${escHtml(lic.data||'—')}</span>
+      <span class="acomp-status ${sc}" style="flex-shrink:0;margin-left:8px">${escHtml(lic.status||'—')}</span>
+      <button class="acomp-btn" style="margin-left:auto" onclick="acompDetailEditMode=true;renderAcompanhamento()">Editar dados</button>
+    </div>`;
+
   const main = document.getElementById('main');
   main.innerHTML = `
     <div class="section-header" style="padding-bottom:8px">
@@ -1188,15 +1284,7 @@ function renderAcompDetail(id){
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           Voltar à lista
         </button>
-        <div class="acomp-detail-meta">
-          <span class="acomp-detail-tag">Órgão:</span>
-          <span class="acomp-detail-val">${escHtml(lic.orgao||'—')}</span>
-          <span class="acomp-detail-tag" style="margin-left:8px">Pregão:</span>
-          <span class="acomp-detail-val">${escHtml(lic.pregao||'—')}</span>
-          <span class="acomp-detail-tag" style="margin-left:8px">Data:</span>
-          <span class="acomp-detail-val">${escHtml(lic.data||'—')}</span>
-        </div>
-        <span class="acomp-status ${sc}" style="flex-shrink:0">${escHtml(lic.status||'—')}</span>
+        ${headerMeta}
       </div>
     </div>
     <div class="acomp-aliq-row">
