@@ -1377,9 +1377,10 @@ function renderAcompDetail(id){
   const tipoOpts = ['Pregão','Dispensa'].map(t=>`<option value="${t}"${(lic.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
   const statusOpts2 = ['A disputar','Em disputa','Habilitação','Finalizado'].map(s=>`<option value="${s}"${lic.status===s?' selected':''}>${s}</option>`).join('');
   const aliqNum = parseFloat(lic.aliq)||0;
-  const mkAO = (v,label) => `<option value="${v}"${aliqNum===v?' selected':''}>${label}</option>`;
-  const aliqServOpts = [mkAO(6,'Faixa 1 — 6,00%'),mkAO(11.2,'Faixa 2 — 11,20%'),mkAO(13.5,'Faixa 3 — 13,50%'),mkAO(16,'Faixa 4 — 16,00%'),mkAO(21,'Faixa 5 — 21,00%'),mkAO(33,'Faixa 6 — 33,00%')].join('');
-  const aliqComOpts = [mkAO(4,'Faixa 1 — 4,00%'),mkAO(7.3,'Faixa 2 — 7,30%'),mkAO(9.5,'Faixa 3 — 9,50%'),mkAO(10.7,'Faixa 4 — 10,70%'),mkAO(14.3,'Faixa 5 — 14,30%'),mkAO(19,'Faixa 6 — 19,00%')].join('');
+  const mkAO = (v,label) => `<option value="${v}"${Math.abs(aliqNum-v)<0.01?' selected':''}>${label}</option>`;
+  const _pct = x => (x*100).toFixed(1)+'%';
+  const aliqServOpts = SIMPLES.servico.faixas.map((f,i)=>mkAO(+(f.reversa*100).toFixed(2),`Faixa ${i+1} — ${_pct(f.reversa)}`)).join('');
+  const aliqComOpts = SIMPLES.comercio.faixas.map((f,i)=>mkAO(+(f.reversa*100).toFixed(2),`Faixa ${i+1} — ${_pct(f.reversa)}`)).join('');
 
   const headerMeta = editing ? `
     <div class="acomp-detail-edit-form">
@@ -1452,7 +1453,7 @@ function renderAcompDetail(id){
       <span class="acomp-aliq-label">Alíquota Simples Nacional</span>
       <select class="acomp-aliq-select" id="aliq-input" onchange="acompSetAliq('${lic.id}')">
         <option value="0"${aliqNum===0?' selected':''}>Sem alíquota — 0%</option>
-        <optgroup label="Serviço (Anexo III)">${aliqServOpts}</optgroup>
+        <optgroup label="Serviço (Anexo IV)">${aliqServOpts}</optgroup>
         <optgroup label="Comércio (Anexo I)">${aliqComOpts}</optgroup>
       </select>
       <span class="acomp-aliq-hint">PMV = custo ÷ (1 − margem% − aliq%)</span>
