@@ -466,7 +466,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-new-actions{display:flex;gap:8px;margin-top:4px}
 .acomp-bulk-delete{appearance:none;background:transparent;border:1px solid #e05555;color:#e05555;font-family:'Google Sans','DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:var(--radius);cursor:pointer;transition:background 140ms,color 140ms}
 .acomp-bulk-delete:hover{background:#e05555;color:#fff}
-.acomp-select-check{width:14px;height:14px;cursor:pointer;accent-color:var(--ink)}
+.acomp-select-check{width:14px;height:14px;padding:4px 10px;cursor:pointer;accent-color:var(--ink)}
 .acomp-add-btn{
   appearance:none;background:var(--ink);color:var(--bg);border:none;
   font-family:'Google Sans','DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
@@ -523,7 +523,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 }
 .acomp-btn-icon{
   appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
-  width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:9px;flex-shrink:0;
+  width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:13px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   transition:background 140ms,color 140ms;
 }
@@ -533,7 +533,7 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 .acomp-btn.save:hover{opacity:.85}
 .acomp-btn.del{border-color:var(--line)}
 .acomp-btn.del:hover{border-color:#e05555;color:#e05555;background:transparent}
-.acomp-actions-cell{white-space:nowrap;display:flex;gap:4px;align-items:center}
+.acomp-actions-cell{white-space:nowrap;display:flex;gap:8px;align-items:center}
 .acomp-input{
   width:100%;background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;
   padding:6px 10px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:13px;outline:none;
@@ -987,10 +987,10 @@ function acompViewRow(item){
     <td class="acomp-obs-cell" title="${escAttr(item.obs||'')}">${escHtml(item.obs||'')}</td>
     <td style="text-align:center">${link}</td>
     <td><div class="acomp-actions-cell">
-      <button class="acomp-btn-icon" onclick="acompOpenDetail('${item.id}')" title="Detalhes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      <button class="acomp-btn-icon" onclick="acompOpenChecklist('${item.id}')" title="Checklist"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg></button>
-      <button class="acomp-btn-icon" onclick="acompStartEdit('${item.id}')" title="Editar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="acomp-btn-icon" onclick="acompConfirmDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompOpenDetail('${item.id}')" title="Detalhes"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompOpenChecklist('${item.id}')" title="Checklist"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompStartEdit('${item.id}')" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="acomp-btn-icon" onclick="acompConfirmDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </div></td>
   </tr>`;
   if(!isExp) return mainRow;
