@@ -48,17 +48,17 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Google 
 /* ─── GRID BACKGROUND ─── */
 .grid-bg{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image: radial-gradient(var(--grid-dot,rgba(200,200,200,.15)) 1px, transparent 1px);
-  background-size:32px 32px;
+  background-image: radial-gradient(var(--grid-dot,rgba(220,220,220,.28)) 1.5px, transparent 1.5px);
+  background-size:16px 16px;
 }
 .grid-bg::after{
   content:'';position:absolute;inset:0;
-  background-image: radial-gradient(var(--grid-glow,rgba(120,170,255,.55)) 1.5px, transparent 1.5px);
-  background-size:32px 32px;
-  -webkit-mask-image:radial-gradient(circle 180px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
-  mask-image:radial-gradient(circle 180px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+  background-image: radial-gradient(var(--grid-glow,rgba(140,190,255,1)) 3px, transparent 3px);
+  background-size:16px 16px;
+  -webkit-mask-image:radial-gradient(circle 240px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
+  mask-image:radial-gradient(circle 240px at var(--mx,50%) var(--my,50%),black 0%,transparent 100%);
 }
-html.light .grid-bg{--grid-dot:rgba(0,0,0,.1);--grid-glow:rgba(60,100,220,.35)}
+html.light .grid-bg{--grid-dot:rgba(0,0,0,.18);--grid-glow:rgba(60,100,220,.8)}
 
 /* ─── TOPBAR ─── */
 .topbar{
@@ -250,10 +250,10 @@ html.light .grid-bg{--grid-dot:rgba(0,0,0,.1);--grid-glow:rgba(60,100,220,.35)}
 }
 .ck-search::placeholder{color:var(--muted-2)}
 .ck-search:focus{border-color:var(--line-strong)}
-.grupo{margin-bottom:32px;scroll-margin-top:80px}
+.grupo{margin-bottom:16px;scroll-margin-top:80px}
 .grupo-header{
   display:flex;align-items:center;gap:16px;
-  cursor:pointer;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:8px;
+  cursor:pointer;padding:7px 0;border-bottom:1px solid var(--line);margin-bottom:4px;
   user-select:none;
 }
 .grupo-eyebrow{
@@ -268,7 +268,7 @@ html.light .grid-bg{--grid-dot:rgba(0,0,0,.1);--grid-glow:rgba(60,100,220,.35)}
 .ck-item{border-bottom:1px solid var(--line)}
 .ck-item-header{
   display:flex;align-items:center;gap:14px;
-  padding:13px 0;cursor:pointer;
+  padding:6px 0;cursor:pointer;
   transition:padding-left 200ms var(--ease);
   user-select:none;
 }
