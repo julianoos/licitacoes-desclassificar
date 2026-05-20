@@ -27,7 +27,9 @@
       "WebFetch(domain:antigravity.google)",
       "WebFetch(domain:brandfetch.com)",
       "WebFetch(domain:www.bram.us)",
-      "Bash(curl -s \"https://docs.google.com/spreadsheets/d/1y5iuV32luj7KtAMK5CGlVPjNUJ_uwHEzTU6TbHV2D9U/export?format=csv&gid=31516928\")"
+      "Bash(curl -s \"https://docs.google.com/spreadsheets/d/1y5iuV32luj7KtAMK5CGlVPjNUJ_uwHEzTU6TbHV2D9U/export?format=csv&gid=31516928\")",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(curl *)"
     ]
   }
 }

@@ -421,7 +421,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Google 
 ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:2px}
 
 /* ─── CALCULADORA ─── */
-.calc-layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
 @media(max-width:1000px){.calc-layout{grid-template-columns:1fr}}
 
 .calc-form-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px}
@@ -740,6 +740,7 @@ input[type=number]{-moz-appearance:textfield}
       <button class="nav-btn" data-section="calculadora">Calculadora</button>
       <button class="nav-btn" data-section="editalreader">Leitor de Editais</button>
       <button class="nav-btn" data-section="desclassificar">Desclassificar</button>
+      <button class="nav-btn" data-section="fornecedores">Fornecedores</button>
     </nav>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro">
       <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -856,6 +857,7 @@ let currentSection = 'home';
 let desclassificarTab = 'checklist';
 const openItems = new Set();
 let recursosExpanded = {};
+let respostasExpanded = {};
 const openGrupos = new Set([0,1,2,3,4,5,6,7]);
 
 // ═══════════════════════════════════════════════════════════
@@ -928,6 +930,9 @@ function docsAllDocs(){
 // ═══════════════════════════════════════════════════════════
 let acompData = [];
 let acompSortDesc = true;
+let fornecedoresData = [];
+let fornNewMode = false;
+let fornEditId = null;
 let acompEditId = null;
 let acompFilterActive = null;
 let acompDateFrom = '';
@@ -1149,7 +1154,7 @@ function renderAcompDocsStandalone(lic){
   const sel = lic.docsSelecionados;
   let itemsHtml = '';
   if(sel.length===0){
-    itemsHtml = `<div class="docs-empty">Nenhum documento selecionado. Acesse "Detalhes" e clique em "+ Selecionar documentos" para adicionar.</div>`;
+    itemsHtml = `<div class="docs-empty">Clique em "+ Selecionar documentos" para adicionar documentos de habilitação.</div>`;
   } else {
     const groups = {};
     sel.forEach(docId=>{
@@ -1174,7 +1179,8 @@ function renderAcompDocsStandalone(lic){
     <div class="docs-header">
       <span class="docs-title">Documentos de Habilitação</span>
       <div class="docs-btns">
-        <button class="acomp-btn save" onclick="acompOpenDetail('${lic.id}')">Abrir Detalhes</button>
+        <button class="acomp-btn save" onclick="acompDocsOpenSelector('${lic.id}')">+ Selecionar documentos</button>
+        <button class="acomp-btn" onclick="acompOpenDetail('${lic.id}')">Abrir Detalhes</button>
       </div>
     </div>
     <div class="docs-list">${itemsHtml}</div>
@@ -2074,7 +2080,7 @@ function acompDocsToggle(licId, docId, el){
     if(check) check.classList.add('on');
   }
   acompPersist();
-  renderAcompDocs(lic);
+  if(acompChecklistId) renderAcompDocsStandalone(lic); else renderAcompDocs(lic);
 }
 
 function docsLibraryOpen(){
@@ -2146,15 +2152,69 @@ function docsLibraryDelete(id){
 }
 
 // ═══════════════════════════════════════════════════════════
+// RESPOSTAS DATA
+// ═══════════════════════════════════════════════════════════
+const RESPOSTAS = [
+  {
+    tipo: 'DESCLASSIFICAÇÃO PRÓPRIA',
+    itens: [
+      {subtipo: 'ANÁLISE DE CUSTOS INEXEQUÍVEIS', texto: 'Prezado(a) Pregoeiro(a), após detalhada análise de custos, constatamos que o valor de R$ X,XX por item não supre as despesas operacionais e tributárias mínimas para o fornecimento do produto. Portanto, solicitamos a desclassificação do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'ERRO DE COTAÇÃO', texto: 'Prezado(a) Pregoeiro(a), após o envio de nossa proposta, identificamos um erro material, que considerou quantitativo inferior ao exigido no Termo de Referência (X unidades em vez de X). Portanto, solicitamos a desclassificação do item, uma vez que o valor apresentado não contempla os custos reais para o fornecimento total dele. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'ERRO DE DIGITAÇÃO NO LANCE', texto: 'Prezado(a) Pregoeiro(a), solicitamos a desclassificação neste item devido a um erro de digitação durante a etapa de lances, o que resultou em um valor manifestamente inexequível. Portanto, solicitamos a desclassificação do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'INCONSISTÊNCIA TÉCNICA DO OBJETO', texto: 'Prezado(a) Pregoeiro(a), identificamos um equívoco na interpretação da descrição técnica do item, que não atende integralmente à necessidade administrativa. Portanto, solicitamos a desclassificação do item. Reforçamos que não houve intenção de prejudicar o certame e pedimos desculpas pelo transtorno. Ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'DESCONFORMIDADE COM O EDITAL', texto: 'Prezado(a) Pregoeiro(a), após diligência e análise de custos junto aos nossos fornecedores, verificamos que o produto cotado não atende aos requisitos técnicos do Edital. Portanto, solicitamos a desclassificação do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'VALOR DE REFERÊNCIA', texto: 'Prezado(a) Pregoeiro(a), informamos que o valor de referência encontra-se abaixo dos custos vigentes de mercado, impossibilitando a redução adicional do nosso lance. Portanto, solicitamos o declínio do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'VALOR ABAIXO DO MERCADO', texto: 'Prezado(a) Pregoeiro(a), após nova análise de custos, constatamos que o valor de referência da Administração encontra-se abaixo dos preços praticados pelo mercado e nossos fornecedores, inviabilizando a execução. Portanto, solicitamos a desclassificação do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'}
+    ]
+  },
+  {
+    tipo: 'SOLICITAR PRAZO',
+    itens: [
+      {subtipo: 'REAVALIAÇÃO DE CUSTOS', texto: 'Prezado(a) Pregoeiro(a), temos pleno interesse no item. Solicitamos a concessão de [X] horas de prazo para realizarmos uma nova análise de custos junto aos fornecedores e tentar viabilizar o valor alvo da Administração. Agradecemos pela oportunidade e ficamos à disposição.'}
+    ]
+  },
+  {
+    tipo: 'PROPOSTAS',
+    itens: [
+      {subtipo: 'PROPOSTA INEXEQUÍVEL', texto: 'Prezado(a) Pregoeiro(a), após detalhada análise de custos, constatamos que o Custo Variável Unitário (CVU) supera o Preço de Venda Unitário (PVU) ofertado, resultando em uma margem de contribuição negativa. Portanto, solicitamos a desclassificação do item. Pedimos desculpas e ficamos à disposição para quaisquer esclarecimentos.'},
+      {subtipo: 'PROPOSTA EXEQUÍVEL', texto: 'Prezado(a) Pregoeiro(a), após rigorosa análise de custos, informamos que o valor de R$ X,XX é exequível e contempla todos os tributos, encargos e custos operacionais, mantendo uma margem de contribuição positiva. Ressaltamos que nossa proposta é fruto de uma estratégia comercial sólida para este certame. Portanto, ratificamos o lance e ficamos à disposição para quaisquer esclarecimentos.'}
+    ]
+  },
+  {
+    tipo: 'DESCLASSIFICAÇÃO CONCORRENTES',
+    itens: [
+      {subtipo: 'REGULARIZAÇÃO FISCAL TARDIA', texto: 'Prezado(a) Pregoeiro(a), solicitamos a inabilitação da empresa [Nome], pois o documento [Citar o Documento] é de natureza [Jurídica / Técnica / Econômica] e não Fiscal. O benefício de regularização tardia do Art. 43 da LC 123/06 é restritivo e não se aplica a este documento, que deveria estar válido na abertura do certame. Requeremos o cumprimento imediato do edital.'},
+      {subtipo: 'INEXEQUIBILIDADE', texto: 'Prezado(a) Pregoeiro(a), solicitamos a imediata diligência sobre a proposta da empresa [Nome], visto que o valor de R$ [Valor] é inferior a 75% do valor orçado (R$ [Valor do Edital]). Trata-se de preço com presunção de inexequibilidade (Art. 59, III, Lei 14.133/21). Requeremos que o licitante apresente planilha de custos detalhada comprovando a viabilidade da execução. Caso a análise técnica demonstre a insuficiência dos valores para cobrir encargos e custos operacionais, requeremos a sua desclassificação.'},
+      {subtipo: 'INEXEQUIBILIDADE - QUANDO CONCORRENTE ENVIA', texto: 'Prezado(a) Pregoeiro(a), a proposta da empresa [Nome] apresenta ausência de lucro e de reserva de contingência em sua planilha de custos. Conforme a jurisprudência do TCU (Acórdão 325/2007-Plenário), a cotação de lucro zero ou negativo configura preço inexequível, pois inviabiliza a saúde financeira da execução contratual. Requeremos a imediata desclassificação do licitante por descumprimento do dever de apresentar proposta exequível e sustentável.'},
+      {subtipo: 'AUSÊNCIA DE ATESTADO DE CAPACIDADE TÉCNICA', texto: 'Prezado(a) Pregoeiro(a), solicitamos a inabilitação da empresa [Nome], visto que deixou de apresentar o Atestado de Capacidade Técnica exigido no item [X] do edital. Ressaltamos que a comprovação de aptidão técnica é requisito de natureza imediata e essencial para a segurança da administração, não sendo permitida a sua juntada posterior por não se tratar de documento de regularidade fiscal (Art. 43, LC 123/06).'},
+      {subtipo: 'DOCUMENTO VENCIDO', texto: 'Prezado(a) Pregoeiro(a), requeremos a inabilitação da empresa [Nome] em razão da apresentação do documento [Nome do Documento] com prazo de validade expirado. Por não possuir natureza fiscal, social ou trabalhista, este documento deveria estar válido na data de abertura do certame. A aceitação de documento vencido fere o Princípio da Vinculação ao Edital e a isonomia entre os licitantes.'},
+      {subtipo: 'DOCUMENTO AUSENTE', texto: 'Prezado(a) Pregoeiro(a), solicitamos a inabilitação da empresa [Nome] devido à ausência do documento [Nome do Documento], item obrigatório conforme o edital. A falta de documento essencial na fase de habilitação configura vício insanável, impossibilitando a concessão de prazo para inclusão posterior, sob pena de nulidade do certame por favorecimento indevido ao licitante omisso.'},
+      {subtipo: 'ERRO INSANÁVEL - DOCUMENTO AUSENTE', texto: 'Prezado(a) Pregoeiro(a), a ausência do documento [Nome] configura erro insanável, pois altera a substância da habilitação. A inclusão posterior via diligência é vedada pelo Art. 64 da Lei 14.133/21, pois não se trata de mero esclarecimento, mas de juntada de documento novo, o que fere a isonomia e a vinculação ao edital. Requeremos a inabilitação imediata.'},
+      {subtipo: 'ERRO INSANÁVEL - ERRO DE PREÇO', texto: 'Prezado(a) Pregoeiro(a), Identificamos erro insanável na planilha de custos da empresa [Nome], que omitiu encargos trabalhistas obrigatórios. Tal falha impede a aferição da exequibilidade e não pode ser saneada, pois alteraria o valor final da proposta. Solicitamos a desclassificação conforme o Art. 59 da Lei 14.133/21.'},
+      {subtipo: 'ERRO INSANÁVEL - SANEAMENTO INDEVIDO', texto: 'Prezado(a) Pregoeiro(a), solicitamos a reanálise da decisão que saneou a falha da empresa [Nome]. O vício apresentado (ausência de [Documento/Informação]) possui natureza insanável, pois sua correção após a abertura do certame configura inclusão de documento novo, o que é vedado pelo Art. 64 da Lei 14.133/21. O saneamento deve restringir-se a erros formais que não alterem a substância da habilitação, sob pena de violação direta ao Princípio da Isonomia e da Vinculação ao Edital. Requeremos a inabilitação do licitante.'},
+      {subtipo: 'ERRO INSANÁVEL - MARCA NÃO ATENDE EXIGÊNCIAS', texto: 'Prezado(a) Pregoeiro(a), solicitamos a desclassificação imediata da empresa [Nome] por descumprimento das especificações técnicas obrigatórias do Item [X] do Edital. O objeto ofertado apresenta [Citar a falha específica], o que configura vício insanável e viola o Princípio da Vinculação ao Instrumento Convocatório. Ressaltamos que a conformidade técnica deve ser comprovada na proposta original, sendo vedada a substituição ou alteração do objeto após a fase de lances.'}
+    ]
+  },
+  {
+    tipo: 'DILIGÊNCIA',
+    itens: [
+      {subtipo: 'INCLUSÃO DE NOVO DOCUMENTO PELO CONCORRENTE', nota: 'Verifique se o pregoeiro tenta usar a "Diligência" (Art. 64 da Lei 14.133) para aceitar documento novo. Não pode. Diligência serve para esclarecer o que já existe, não para incluir o que falta.', texto: 'Prezado(a) Pregoeiro(a), solicitamos a reanálise da diligência facultada à empresa [Nome]. Conforme o Art. 64 da Lei 14.133/21 e a jurisprudência do TCU (Acórdão 1.211/2021-Plenário), a diligência destina-se apenas a esclarecer dúvidas ou complementar informações de documentos já existentes. No presente caso, a medida resultou na inclusão de documento novo que deveria constar originariamente na proposta. Para preservar a isonomia entre os licitantes e o princípio da vinculação ao edital, requeremos a reforma da decisão com a consequente inabilitação do licitante.'}
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════
 // RENDER DESCLASSIFICAR
 // ═══════════════════════════════════════════════════════════
 function renderDesclassificar(){
   if(desclassificarTab==='checklist') renderChecklist();
-  else renderRecursos();
+  else if(desclassificarTab==='recursos') renderRecursos();
+  else renderRespostas();
   const main = document.getElementById('main');
   const tabs = `<div class="ref-tabs">
     <button class="ref-tab${desclassificarTab==='checklist'?' active':''}" onclick="switchDesclassificarTab('checklist')">Checklist</button>
     <button class="ref-tab${desclassificarTab==='recursos'?' active':''}" onclick="switchDesclassificarTab('recursos')">Recursos</button>
+    <button class="ref-tab${desclassificarTab==='respostas'?' active':''}" onclick="switchDesclassificarTab('respostas')">Respostas</button>
   </div>`;
   main.insertAdjacentHTML('afterbegin', tabs);
 }
@@ -2262,6 +2322,42 @@ function editRecursoRec(key){
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// RESPOSTAS HELPERS
+function toggleRespostaItem(key){
+  respostasExpanded[key] = !respostasExpanded[key];
+  renderRespostas();
+}
+
+function editRespostaItem(key){
+  const el = document.getElementById('resp-'+key);
+  if(!el) return;
+  const current = el.textContent;
+  const newVal = prompt('Editar texto:', current);
+  if(newVal !== null && newVal.trim()){
+    localStorage.setItem('resposta_'+key, newVal.trim());
+    renderRespostas();
+  }
+}
+
+function copyRespostaItem(key, btn){
+  const el = document.getElementById('resp-'+key);
+  if(!el) return;
+  const text = localStorage.getItem('resposta_'+key) || RESPOSTAS.find(t=>RESPOSTAS.flatMap((g,gi)=>g.itens.map((i,ii)=>[gi,ii])).some(([gi,ii])=>`${gi}-${ii}`===key));
+  if(!text) return;
+  const ta = document.createElement('textarea');
+  ta.value = text.textContent || text;
+  ta.style.position='fixed';
+  ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  btn.textContent = 'Copiado ✓';
+  btn.classList.add('copied');
+  setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');}, 2000);
+}
+
 // RENDER RECURSOS
 // ═══════════════════════════════════════════════════════════
 function renderRecursos(){
@@ -2286,6 +2382,39 @@ function renderRecursos(){
         <div class="recursos-item-actions">
           <button class="ck-btn" onclick="editRecursoRec('${key}')">Editar</button>
           <button class="ck-btn" onclick="copyRecursoRec('${key}',this)">Copiar</button>
+        </div>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('main').innerHTML = html;
+}
+
+// RENDER RESPOSTAS
+// ═══════════════════════════════════════════════════════════
+function renderRespostas(){
+  let html = `<div class="section-header">
+    <div class="section-eyebrow"><span class="dot"></span>Desclassificar<span class="dot"></span>Textos Prontos</div>
+    <h1 class="section-title">Respostas</h1>
+    <p class="section-subtitle">Textos prontos para responder a solicitações administrativas. Clique em Copiar para usar.</p>
+  </div>`;
+  RESPOSTAS.forEach((tipo_obj,ti)=>{
+    html += `<div class="recursos-grupo">
+      <div class="recursos-grupo-title">${escHtml(tipo_obj.tipo)}</div>`;
+    tipo_obj.itens.forEach((item,ii)=>{
+      const key = `${ti}-${ii}`;
+      const isOpen = !!respostasExpanded[key];
+      const savedText = localStorage.getItem('resposta_'+key)||item.texto;
+      html += `<div class="recursos-item">
+        <div class="recursos-item-tipo" onclick="toggleRespostaItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
+          ${escHtml(item.subtipo)}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        ${isOpen ? `${item.nota ? `<div style="font-size:11px;color:var(--muted-2);margin-top:8px;padding:8px;background:var(--surface-2);border-radius:4px;border-left:2px solid var(--line-strong)">${escHtml(item.nota)}</div>` : ''}
+        <div class="ck-recurso-text" id="resp-${key}" style="margin-top:${item.nota?'8px':'0'}">${escHtml(savedText)}</div>
+        <div class="recursos-item-actions">
+          <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
+          <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
         </div>` : ''}
       </div>`;
     });
@@ -2341,11 +2470,154 @@ function switchSection(section){
   else if(section==='calculadora') renderCalculadora();
   else if(section==='editalreader') renderEditalReader();
   else if(section==='acompanhamento') renderAcompanhamento();
+  else if(section==='fornecedores') renderFornecedores();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click',()=>switchSection(btn.dataset.section));
 });
+
+// ═══════════════════════════════════════════════════════════
+// FORNECEDORES
+// ═══════════════════════════════════════════════════════════
+function fornLoadData(){
+  const stored = localStorage.getItem('fornecedoresData');
+  fornecedoresData = stored ? JSON.parse(stored) : [];
+}
+function fornPersist(){
+  localStorage.setItem('fornecedoresData', JSON.stringify(fornecedoresData));
+}
+function fornAddNew(){
+  fornNewMode = true;
+  fornEditId = null;
+  fornRenderTable();
+  setTimeout(()=>document.getElementById('fn-nome')?.focus(), 50);
+}
+function fornSaveNew(){
+  const v = f => document.getElementById(f)?.value?.trim() || '';
+  if(!v('fn-nome')){ document.getElementById('fn-nome').style.borderColor='#e05555'; return; }
+  const item = { id: String(Date.now()), nome: v('fn-nome'), categoria: v('fn-categoria'), whatsapp: v('fn-whatsapp'), site: v('fn-site'), cidade: v('fn-cidade'), estado: v('fn-estado'), obs: v('fn-obs') };
+  fornecedoresData.unshift(item);
+  fornPersist();
+  fornNewMode = false;
+  fornRenderTable();
+}
+function fornCancelNew(){
+  fornNewMode = false;
+  fornRenderTable();
+}
+function fornStartEdit(id){
+  fornEditId = id;
+  fornRenderTable();
+}
+function fornSaveEdit(id){
+  const v = f => document.getElementById(f)?.value?.trim() || '';
+  if(!v('fn-nome')){ document.getElementById('fn-nome').style.borderColor='#e05555'; return; }
+  const item = fornecedoresData.find(x=>x.id===id);
+  if(item){
+    item.nome = v('fn-nome');
+    item.categoria = v('fn-categoria');
+    item.whatsapp = v('fn-whatsapp');
+    item.site = v('fn-site');
+    item.cidade = v('fn-cidade');
+    item.estado = v('fn-estado');
+    item.obs = v('fn-obs');
+  }
+  fornPersist();
+  fornEditId = null;
+  fornRenderTable();
+}
+function fornCancelEdit(){
+  fornEditId = null;
+  fornRenderTable();
+}
+function fornDelete(id){
+  if(!confirm('Excluir fornecedor? Esta ação não pode ser desfeita.')) return;
+  fornecedoresData = fornecedoresData.filter(x=>x.id!==id);
+  fornPersist();
+  fornRenderTable();
+}
+function fornPopulateCities(estado){
+  const sel = document.getElementById('fn-cidade');
+  if(!sel) return;
+  const cidades = CIDADES_BR[estado] || [];
+  sel.innerHTML = `<option value="">Selecione...</option>${cidades.map(c=>`<option value="${c}">${c}</option>`).join('')}`;
+}
+function fornRenderTable(){
+  const wrap = document.getElementById('forn-wrap');
+  if(!wrap) return;
+  const ufs = Object.keys(CIDADES_BR).sort();
+  const categOpts = ['Fornecedor','Distribuidor','Fabricante','Serviço','Outro'].map(c=>`<option value="${c}">${c}</option>`).join('');
+  const newForm = fornNewMode || fornEditId ? `<div class="acomp-new-form">
+    <div class="acomp-new-grid-1">
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Nome *</label><input class="acomp-input" id="fn-nome" type="text" placeholder="Nome do fornecedor"></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Categoria</label><select class="acomp-input" id="fn-categoria">${categOpts}</select></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Estado</label><select class="acomp-input" id="fn-estado" onchange="fornPopulateCities(this.value)">${`<option value="">Selecione...</option>${ufs.map(u=>`<option value="${u}">${u}</option>`).join('')}`}</select></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Cidade</label><select class="acomp-input" id="fn-cidade"><option value="">Selecione...</option></select></div>
+    </div>
+    <div class="acomp-new-grid-2">
+      <div class="acomp-new-field"><label class="acomp-detail-tag">WhatsApp</label><input class="acomp-input" id="fn-whatsapp" type="text" placeholder="(00) 00000-0000"></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Site</label><input class="acomp-input" id="fn-site" type="url" placeholder="https://..."></div>
+      <div class="acomp-new-field" style="grid-column:span 2"><label class="acomp-detail-tag">Observações</label><input class="acomp-input" id="fn-obs" type="text" placeholder="Observações"></div>
+    </div>
+    <div class="acomp-new-actions">
+      ${fornEditId ? `<button class="acomp-btn save" onclick="fornSaveEdit('${fornEditId}')">Salvar Alterações</button><button class="acomp-btn" onclick="fornCancelEdit()">Cancelar</button>` : `<button class="acomp-btn save" onclick="fornSaveNew()">Salvar</button><button class="acomp-btn" onclick="fornCancelNew()">Cancelar</button>`}
+    </div>
+  </div>` : '';
+
+  if(fornEditId){
+    const item = fornecedoresData.find(x=>x.id===fornEditId);
+    if(item) setTimeout(()=>{
+      document.getElementById('fn-nome').value = item.nome;
+      document.getElementById('fn-categoria').value = item.categoria;
+      document.getElementById('fn-estado').value = item.estado;
+      fornPopulateCities(item.estado);
+      document.getElementById('fn-cidade').value = item.cidade;
+      document.getElementById('fn-whatsapp').value = item.whatsapp;
+      document.getElementById('fn-site').value = item.site;
+      document.getElementById('fn-obs').value = item.obs;
+    }, 0);
+  }
+
+  const tbody = fornecedoresData.map(item=>`<tr>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${escHtml(item.nome)}</td>
+    <td style="max-width:120px">${escHtml(item.categoria)}</td>
+    <td style="max-width:140px">${item.whatsapp ? `<a href="https://wa.me/${item.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener">${escHtml(item.whatsapp)}</a>` : '—'}</td>
+    <td style="max-width:150px">${escHtml(item.cidade)} / ${escHtml(item.estado)}</td>
+    <td style="text-align:center;width:60px">
+      <button class="acomp-btn-icon" onclick="fornStartEdit('${item.id}')" title="Editar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="acomp-btn-icon" onclick="fornDelete('${item.id}')" title="Excluir" style="color:#e05555"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    </td>
+  </tr>`).join('');
+
+  wrap.innerHTML = `<div style="padding:20px">
+    <div style="margin-bottom:20px">
+      <button class="acomp-btn save" onclick="fornAddNew()">+ Novo Fornecedor</button>
+    </div>
+    ${newForm}
+    <div style="margin-top:20px">
+      <h2 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--ink)">Fornecedores Cadastrados</h2>
+      ${fornecedoresData.length===0 ? `<div style="padding:20px;text-align:center;color:var(--muted)">Nenhum fornecedor cadastrado</div>` : `<div style="overflow-x:auto">
+        <table class="acomp-table">
+          <thead><tr><th>Nome</th><th>Categoria</th><th>WhatsApp</th><th>Localização</th><th style="text-align:center">Ações</th></tr></thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      </div>`}
+    </div>
+  </div>`;
+}
+function renderFornecedores(){
+  document.getElementById('main').innerHTML = `<div style="padding:20px">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="dot"></span>Cadastro<span class="dot"></span>Gestão</div>
+      <h1 class="section-title">Fornecedores</h1>
+      <p class="section-subtitle">Gerencie seus fornecedores e parceiros comerciais.</p>
+    </div>
+    <div id="forn-wrap"></div>
+  </div>`;
+  fornLoadData();
+  fornRenderTable();
+}
 
 // ═══════════════════════════════════════════════════════════
 // SIDEBAR TOGGLE
@@ -2476,6 +2748,38 @@ function renderHome(){
 }
 
 // ═══════════════════════════════════════════════════════════
+// DATA — CIDADES BRASILEIRAS
+// ═══════════════════════════════════════════════════════════
+const CIDADES_BR = {
+  AC: ['Rio Branco','Cruzeiro do Sul'],
+  AL: ['Maceió','Arapiraca'],
+  AM: ['Manaus','Parintins'],
+  AP: ['Macapá','Santana'],
+  BA: ['Salvador','Feira de Santana','Vitória da Conquista','Camaçari','Ilhéus'],
+  CE: ['Fortaleza','Caucaia','Juazeiro do Norte','Maracanaú','Crato'],
+  DF: ['Brasília','Gama','Taguatinga','Ceilândia'],
+  ES: ['Vitória','Vila Velha','Cariacica','Linhares'],
+  GO: ['Goiânia','Aparecida de Goiânia','Anápolis','Rio Verde'],
+  MA: ['São Luís','Imperatriz','Caxias','São José de Ribamar'],
+  MG: ['Belo Horizonte','Contagem','Betim','Montes Claros','Uberlândia','Juiz de Fora'],
+  MS: ['Campo Grande','Dourados'],
+  MT: ['Cuiabá','Várzea Grande'],
+  PA: ['Belém','Ananindeua','Santarém','Marabá'],
+  PB: ['João Pessoa','Campina Grande'],
+  PE: ['Recife','Jaboatão','Olinda','Caruaru','Petrolina'],
+  PI: ['Teresina','Parnaíba'],
+  PR: ['Curitiba','Londrina','Maringá','Ponta Grossa','Cascavel'],
+  RJ: ['Rio de Janeiro','Niterói','Duque de Caxias','São Gonçalo','Campos dos Goytacazes'],
+  RN: ['Natal','Mossoró'],
+  RO: ['Porto Velho','Ji-Paraná'],
+  RR: ['Boa Vista','Rorainópolis'],
+  RS: ['Porto Alegre','Caxias do Sul','Pelotas','Santa Maria','Novo Hamburgo'],
+  SC: ['Florianópolis','Joinville','Blumenau','Itajaí','Chapecó'],
+  SE: ['Aracaju','Nossa Senhora do Socorro'],
+  SP: ['São Paulo','Guarulhos','Campinas','São Bernardo do Campo','Santo André','Osasco','Sorocaba','Ribeirão Preto'],
+  TO: ['Palmas','Araguaína']
+};
+
 // DATA — SIMPLES NACIONAL
 // ═══════════════════════════════════════════════════════════
 const SIMPLES = {
