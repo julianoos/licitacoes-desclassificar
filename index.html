@@ -2308,7 +2308,7 @@ function copyRecursoRec(key, btn){
 function toggleRecursoItem(key, e){
   if(e) e.stopPropagation();
   recursosExpanded[key] = !recursosExpanded[key];
-  renderRecursos();
+  renderJuridico();
 }
 
 function editRecursoRec(key){
@@ -2318,7 +2318,7 @@ function editRecursoRec(key){
   const newVal = prompt('Editar texto:', current);
   if(newVal !== null && newVal.trim()){
     localStorage.setItem('recurso_'+key, newVal.trim());
-    renderRecursos();
+    renderJuridico();
   }
 }
 
@@ -2327,7 +2327,7 @@ function editRecursoRec(key){
 function toggleRespostaItem(key, e){
   if(e) e.stopPropagation();
   respostasExpanded[key] = !respostasExpanded[key];
-  renderRespostas();
+  renderJuridico();
 }
 
 function editRespostaItem(key){
@@ -2337,7 +2337,7 @@ function editRespostaItem(key){
   const newVal = prompt('Editar texto:', current);
   if(newVal !== null && newVal.trim()){
     localStorage.setItem('resposta_'+key, newVal.trim());
-    renderRespostas();
+    renderJuridico();
   }
 }
 
@@ -2361,12 +2361,12 @@ function copyRespostaItem(key, btn){
 
 function toggleRecursosGroup(gi){
   recursosGroupExpanded[gi] = !recursosGroupExpanded[gi];
-  renderRecursos();
+  renderJuridico();
 }
 
 function toggleRespostasGroup(ti){
   respostasGroupExpanded[ti] = !respostasGroupExpanded[ti];
-  renderRespostas();
+  renderJuridico();
 }
 
 // RENDER RECURSOS
