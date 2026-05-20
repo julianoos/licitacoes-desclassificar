@@ -2365,7 +2365,8 @@ function editRecursoRec(key){
 
 // ═══════════════════════════════════════════════════════════
 // RESPOSTAS HELPERS
-function toggleRespostaItem(key){
+function toggleRespostaItem(key, e){
+  if(e) e.stopPropagation();
   respostasExpanded[key] = !respostasExpanded[key];
   renderRespostas();
 }
@@ -2460,38 +2461,46 @@ function renderRecursos(){
 // ═══════════════════════════════════════════════════════════
 function renderRespostas(){
   let html = `<div class="section-header">
-    <div class="section-eyebrow"><span class="dot"></span>Desclassificar<span class="dot"></span>Textos Prontos</div>
+    <div class="section-eyebrow"><span class="dot"></span>Jurídico<span class="dot"></span>Respostas Prontas</div>
     <h1 class="section-title">Respostas</h1>
-    <p class="section-subtitle">Textos prontos para responder a solicitações administrativas. Clique em Copiar para usar.</p>
-  </div>`;
-  RESPOSTAS.forEach((tipo_obj,ti)=>{
-    const isGroupOpen = !!respostasGroupExpanded[ti];
-    html += `<div class="recursos-grupo">
-      <div class="recursos-grupo-title" onclick="toggleRespostasGroup(${ti})" style="cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none">
-        <span style="flex:1">${escHtml(tipo_obj.tipo)}</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isGroupOpen?'180':'0'}deg);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>`;
-    if(isGroupOpen){
-      tipo_obj.itens.forEach((item,ii)=>{
-        const key = `${ti}-${ii}`;
-        const isOpen = !!respostasExpanded[key];
-        const savedText = localStorage.getItem('resposta_'+key)||item.texto;
-        html += `<div class="recursos-item">
-          <div class="recursos-item-tipo" onclick="toggleRespostaItem('${key}')" style="cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none">
-            ${escHtml(item.subtipo)}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;transform:rotate(${isOpen?'180':'0'}deg)"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          ${isOpen ? `${item.nota ? `<div style="font-size:11px;color:var(--muted-2);margin-top:8px;padding:8px;background:var(--surface-2);border-radius:4px;border-left:2px solid var(--line-strong)">${escHtml(item.nota)}</div>` : ''}
-          <div class="ck-recurso-text" id="resp-${key}" style="margin-top:${item.nota?'8px':'0'}">${escHtml(savedText)}</div>
-          <div class="recursos-item-actions">
+    <p class="section-subtitle">Textos de resposta a questionamentos. Clique em Copiar para usar.</p>
+  </div>
+  <div id="resp-grupos">`;
+
+  RESPOSTAS.forEach((tipo, ti) => {
+    html += `<div class="grupo" id="resp-grupo-${ti}" data-grupo="${ti}">
+      <div class="grupo-header" onclick="toggleGrupo('resp-${ti}')">
+        <span class="grupo-eyebrow">${escHtml(tipo.tipo)}</span>
+        <span class="grupo-count">${tipo.itens.length} itens</span>
+        <span class="grupo-chevron">▼</span>
+      </div>
+      <div class="grupo-items">`;
+
+    tipo.itens.forEach((item, ii) => {
+      const key = `${ti}-${ii}`;
+      const savedResposta = localStorage.getItem('resposta_'+key) || item.texto;
+      const isOpen = !!respostasExpanded[key];
+
+      html += `<div class="ck-item" id="resp-item-${key}" data-key="${key}">
+        <div class="ck-item-header" onclick="toggleRespostaItem('${key}',event)">
+          <span class="ck-item-titulo">${escHtml(item.subtipo)}</span>
+          <span class="ck-item-badge">RESPOSTA</span>
+          <span class="ck-item-arrow">▼</span>
+        </div>
+        ${isOpen ? `<div class="ck-expand">
+          <div class="ck-resposta-text" id="resp-${key}">${escHtml(savedResposta)}</div>
+          <div class="resposta-item-actions">
             <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
             <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
-          </div>` : ''}
-        </div>`;
-      });
-    }
-    html += `</div>`;
+          </div>
+        </div>` : ''}
+      </div>`;
+    });
+
+    html += `</div></div>`;
   });
+
+  html += `</div>`;
   document.getElementById('main').innerHTML = html;
 }
 
