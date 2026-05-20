@@ -606,6 +606,8 @@ html.light .acomp-date-input{color-scheme:light}
 .acomp-aliq-label{font-family:'Google Sans','DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .acomp-aliq-input{background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:13px;width:90px;outline:none;transition:border-color 160ms;text-align:center}
 .acomp-aliq-input:focus{border-color:var(--line-strong)}
+.acomp-aliq-select{appearance:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 32px 6px 12px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;transition:border-color 160ms;min-width:220px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.acomp-aliq-select:focus{border-color:var(--line-strong)}
 .acomp-aliq-hint{font-size:12px;color:var(--muted-2);font-weight:300}
 .acomp-item-add-btn{
   appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
@@ -1374,6 +1376,10 @@ function renderAcompDetail(id){
   const editing = acompDetailEditMode;
   const tipoOpts = ['Pregão','Dispensa'].map(t=>`<option value="${t}"${(lic.tipo_lic||'Pregão')===t?' selected':''}>${t}</option>`).join('');
   const statusOpts2 = ['A disputar','Em disputa','Habilitação','Finalizado'].map(s=>`<option value="${s}"${lic.status===s?' selected':''}>${s}</option>`).join('');
+  const aliqNum = parseFloat(lic.aliq)||0;
+  const mkAO = (v,label) => `<option value="${v}"${aliqNum===v?' selected':''}>${label}</option>`;
+  const aliqServOpts = [mkAO(6,'Faixa 1 — 6,00%'),mkAO(11.2,'Faixa 2 — 11,20%'),mkAO(13.5,'Faixa 3 — 13,50%'),mkAO(16,'Faixa 4 — 16,00%'),mkAO(21,'Faixa 5 — 21,00%'),mkAO(33,'Faixa 6 — 33,00%')].join('');
+  const aliqComOpts = [mkAO(4,'Faixa 1 — 4,00%'),mkAO(7.3,'Faixa 2 — 7,30%'),mkAO(9.5,'Faixa 3 — 9,50%'),mkAO(10.7,'Faixa 4 — 10,70%'),mkAO(14.3,'Faixa 5 — 14,30%'),mkAO(19,'Faixa 6 — 19,00%')].join('');
 
   const headerMeta = editing ? `
     <div class="acomp-detail-edit-form">
@@ -1444,10 +1450,12 @@ function renderAcompDetail(id){
     </div>
     <div class="acomp-aliq-row">
       <span class="acomp-aliq-label">Alíquota Simples Nacional</span>
-      <input class="acomp-aliq-input" id="aliq-input" type="number" min="0" max="33" step="0.1" value="${lic.aliq||0}" placeholder="0.0">
-      <span class="acomp-aliq-hint">%</span>
-      <button class="acomp-back-btn" onclick="acompSetAliq('${lic.id}')">Aplicar</button>
-      <span class="acomp-aliq-hint" style="margin-left:4px">PMV = custo ÷ (1 − margem% − aliq%)</span>
+      <select class="acomp-aliq-select" id="aliq-input" onchange="acompSetAliq('${lic.id}')">
+        <option value="0"${aliqNum===0?' selected':''}>Sem alíquota — 0%</option>
+        <optgroup label="Serviço (Anexo III)">${aliqServOpts}</optgroup>
+        <optgroup label="Comércio (Anexo I)">${aliqComOpts}</optgroup>
+      </select>
+      <span class="acomp-aliq-hint">PMV = custo ÷ (1 − margem% − aliq%)</span>
     </div>
     <div class="acomp-wrap" id="acomp-item-wrap"></div>
     <div id="acomp-docs-wrap"></div>`;
