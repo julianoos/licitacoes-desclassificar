@@ -501,8 +501,8 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 /* ─── ACOMPANHAMENTO ─── */
 .acomp-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
 .acomp-toolbar-right{display:flex;gap:10px;align-items:center}
-.acomp-status-menu{position:fixed;z-index:2000;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 8px 28px rgba(0,0,0,0.35);min-width:140px}
-.acomp-status-menu-item{padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;transition:opacity 120ms;white-space:nowrap}
+.acomp-status-menu{position:fixed;z-index:2000;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;box-shadow:0 8px 28px rgba(0,0,0,0.35);min-width:150px;display:flex;flex-direction:column;gap:2px}
+.acomp-status-menu-item{display:block!important;width:100%;padding:8px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;transition:opacity 120ms;white-space:nowrap;box-sizing:border-box}
 .acomp-status-menu-item:hover{opacity:0.8}
 .acomp-new-form{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:20px}
 .acomp-new-grid-1,.acomp-new-grid-2{display:grid;gap:8px 14px;margin-bottom:10px}
@@ -936,6 +936,7 @@ let acompDetailEditMode = false;
 let acompChecklistId = null;
 let acompNewMode = false;
 let acompSelectedIds = new Set();
+let acompMultiSelectMode = false;
 let acompExpandedIds = new Set();
 let acompItemEditId = null;
 
@@ -956,12 +957,14 @@ function acompStatusClass(s){
 }
 
 function acompShowStatusMenu(id, el){
-  document.getElementById('acomp-status-menu')?.remove();
+  const existing = document.getElementById('acomp-status-menu');
+  if(existing){ const sameEl = existing.dataset.forId===id; existing.remove(); if(sameEl) return; }
   const statuses = ['A disputar','Em disputa','Habilitação','Finalizado'];
   const rect = el.getBoundingClientRect();
   const menu = document.createElement('div');
   menu.id = 'acomp-status-menu';
   menu.className = 'acomp-status-menu';
+  menu.dataset.forId = id;
   menu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
   menu.style.left = rect.left + 'px';
   menu.innerHTML = statuses.map(s=>`<div class="acomp-status-menu-item acomp-status ${acompStatusClass(s)}" onclick="acompSetStatus('${id}','${s}')">${s}</div>`).join('');
@@ -988,10 +991,9 @@ function acompToggleSelect(id, checked){
 }
 
 function acompToggleSelectAll(checked){
-  const checkboxes = document.querySelectorAll('.acomp-select-check');
-  checkboxes.forEach(cb=>{ acompSelectedIds[checked?'add':'delete'](cb.dataset.id); cb.checked = checked; });
-  const bulkBtn = document.getElementById('acomp-bulk-btn');
-  if(bulkBtn) bulkBtn.style.display = acompSelectedIds.size > 0 ? 'inline-flex' : 'none';
+  acompMultiSelectMode = checked;
+  if(!checked) acompSelectedIds.clear();
+  acompRenderTable();
 }
 
 function acompDeleteSelected(){
@@ -1017,7 +1019,7 @@ function acompViewRow(item){
   const isSelected = acompSelectedIds.has(item.id);
   const mainRow = `<tr data-id="${item.id}">
     <td style="width:14px;text-align:center;padding:4px 2px">
-      <input type="checkbox" class="acomp-select-check" data-id="${item.id}" ${isSelected?'checked':''} onchange="acompToggleSelect('${item.id}',this.checked)">
+      <input type="checkbox" class="acomp-select-check" data-id="${item.id}" ${isSelected?'checked':''} ${acompMultiSelectMode?'':'style="display:none"'} onchange="acompToggleSelect('${item.id}',this.checked)">
     </td>
     <td style="width:28px;text-align:center;padding:4px">
       <button class="acomp-btn-icon" onclick="acompToggleExpand('${item.id}')" title="${isExp?'Fechar':'Expandir'}">${isExp?'▲':'▼'}</button>
@@ -1334,8 +1336,8 @@ function acompSaveNew(){
   acompData.unshift(item);
   acompPersist();
   acompNewMode = false;
-  acompRenderTable();
   renderSidebar();
+  acompOpenDetail(item.id);
 }
 
 function acompCancelNew(){
