@@ -620,7 +620,7 @@ html.light .acomp-date-input{color-scheme:light}
 .acomp-item-add-btn{
   appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
   font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
-  padding:9px 18px;border-radius:var(--radius);cursor:pointer;margin-bottom:12px;
+  padding:4px 10px;border-radius:var(--radius);cursor:pointer;
   transition:background 140ms,border-color 140ms,color 140ms;
 }
 .acomp-item-add-btn:hover{background:var(--surface-2);border-color:var(--line-strong);color:var(--ink)}
@@ -630,7 +630,7 @@ html.light .acomp-date-input{color-scheme:light}
   font-family:'Outfit',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
   color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;
 }
-.acomp-item-table td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
+.acomp-item-table td{padding:4px 6px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:13px}
 .acomp-item-table tbody tr:last-child td{border-bottom:none}
 .acomp-item-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
 .acomp-item-table tbody tr.editing td{background:var(--surface-2)}
@@ -1441,7 +1441,6 @@ function renderAcompDetail(id){
       <button class="acomp-back-btn" onclick="acompSetAliq('${lic.id}')">Aplicar</button>
       <span class="acomp-aliq-hint" style="margin-left:4px">PMV = custo ÷ (1 − margem% − aliq%)</span>
     </div>
-    <button class="acomp-item-add-btn" onclick="acompItemAdd('${lic.id}')">+ Adicionar Item</button>
     <div class="acomp-wrap" id="acomp-item-wrap"></div>
     <div id="acomp-docs-wrap"></div>`;
 
@@ -1453,69 +1452,107 @@ function acompItemRenderTable(lic){
   const wrap = document.getElementById('acomp-item-wrap');
   if(!wrap) return;
 
+  if(!lic.itens) lic.itens = [];
   if(lic.itens.length===0){
-    wrap.innerHTML = `<div class="acomp-item-empty">Nenhum item cadastrado. Clique em "+ Adicionar Item" para começar.</div>`;
-    return;
+    for(let i=0;i<3;i++){
+      lic.itens.push({id:Date.now().toString()+'_'+i,num:i+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:''});
+    }
+    acompPersist();
   }
 
   let tbody = '';
-  lic.itens.forEach(item=>{
-    tbody += acompItemViewRow(lic.id, item, lic.aliq||0);
-  });
+  lic.itens.forEach(item=>{ tbody += acompItemInlineRow(lic.id, item, lic.aliq||0); });
 
   wrap.innerHTML = `<div class="acomp-scroll"><table class="acomp-item-table">
     <thead><tr>
-      <th style="width:40px">Nº</th>
+      <th style="width:44px">Nº</th>
       <th>Fabricante</th>
       <th>Produto</th>
-      <th>Valor Edital</th>
+      <th>Val. Edital</th>
       <th>Qtd</th>
       <th>Custo Unit.</th>
       <th>Frete</th>
-      <th>Margem</th>
+      <th>Margem %</th>
       <th>Lance Mín.</th>
       <th>PMV *</th>
       <th>Lucro *</th>
-      <th></th>
+      <th style="width:32px"></th>
     </tr></thead>
     <tbody>${tbody}</tbody>
+    <tfoot><tr><td colspan="12" style="padding:5px 6px;border-top:1px solid var(--line)">
+      <button class="acomp-item-add-btn" onclick="acompItemAddRow('${lic.id}')">+ Adicionar linha</button>
+    </td></tr></tfoot>
   </table>
-  <div style="padding:10px 12px;font-size:11px;color:var(--muted);font-weight:300">* PMV = (custo+frete) ÷ (1 − margem% − aliq%) &nbsp;|&nbsp; Lucro = (PMV − custo − frete) × qtd</div>
+  <div style="padding:6px 8px;font-size:11px;color:var(--muted);font-weight:300">* PMV = (custo+frete) ÷ (1 − margem% − aliq%) &nbsp;|&nbsp; Lucro = (PMV − custo − frete) × qtd</div>
   </div>`;
 }
 
-function acompItemViewRow(licId, item, aliq){
+function acompItemInlineRow(licId, item, aliq){
   const frete = Number(item.frete)||0;
   const pmv = acompCalcPMV(Number(item.custo_unit), frete, Number(item.margem), Number(aliq));
   const lucro = pmv!==null ? (pmv - Number(item.custo_unit) - frete) * Number(item.qtd) : null;
-  const pmvHtml = pmv!==null ? `<span class="acomp-pmv-cell">R$ ${fmtBRL(pmv)}</span>` : `<span style="color:var(--muted-2)">—</span>`;
+  const pmvTxt = pmv!==null ? `R$ ${fmtBRL(pmv)}` : '—';
   const lucroClass = lucro!==null && lucro < 0 ? 'acomp-lucro-neg' : 'acomp-lucro-pos';
-  const lucroHtml = lucro!==null ? `<span class="${lucroClass}">R$ ${fmtBRL(lucro)}</span>` : `<span style="color:var(--muted-2)">—</span>`;
+  const lucroTxt = lucro!==null ? `R$ ${fmtBRL(lucro)}` : '—';
+  const inp = (fid, type, val, w, ph) =>
+    `<input class="acomp-item-input" id="ii-${item.id}-${fid}" type="${type}" value="${escHtml(String(val??''))}" placeholder="${ph||''}" style="min-width:${w}" oninput="acompItemUpdateCalc('${licId}','${item.id}')">`;
   return `<tr data-item-id="${item.id}">
-    <td>${escHtml(String(item.num||''))}</td>
-    <td>${escHtml(item.fabricante||'—')}</td>
-    <td>${escHtml(item.produto||'—')}</td>
-    <td>R$ ${fmtBRL(Number(item.valor_edital))}</td>
-    <td>${escHtml(String(item.qtd||''))}</td>
-    <td>R$ ${fmtBRL(Number(item.custo_unit))}</td>
-    <td>${frete>0?'R$ '+fmtBRL(frete):'—'}</td>
-    <td>${escHtml(String(item.margem||''))}%</td>
-    <td>R$ ${fmtBRL(Number(item.lance_min))}</td>
-    <td>${pmvHtml}</td>
-    <td>${lucroHtml}</td>
-    <td><div class="acomp-actions-cell">
-      <button class="acomp-btn" onclick="acompItemStartEdit('${licId}','${item.id}')">Editar</button>
-      <button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')">Excluir</button>
-    </div></td>
+    <td>${inp('num','number',item.num,'34px','')}</td>
+    <td>${inp('fab','text',item.fabricante,'70px','')}</td>
+    <td>${inp('prod','text',item.produto,'110px','')}</td>
+    <td>${inp('vedital','number',item.valor_edital,'64px','')}</td>
+    <td>${inp('qtd','number',item.qtd,'40px','')}</td>
+    <td>${inp('custo','number',item.custo_unit,'64px','')}</td>
+    <td>${inp('frete','number',item.frete,'54px','')}</td>
+    <td>${inp('margem','number',item.margem,'46px','')}</td>
+    <td>${inp('lance','number',item.lance_min,'64px','')}</td>
+    <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv">${pmvTxt}</span></td>
+    <td style="white-space:nowrap"><span class="${lucroClass}" id="ii-${item.id}-lucro">${lucroTxt}</span></td>
+    <td><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></td>
   </tr>`;
 }
 
-function acompItemAdd(licId){
-  acompItemOpenModal(licId, 'new');
+function acompItemAddRow(licId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  lic.itens.push({id:Date.now().toString(),num:lic.itens.length+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:''});
+  acompPersist();
+  acompItemRenderTable(lic);
+  setTimeout(()=>{
+    const rows = document.querySelectorAll('#acomp-item-wrap tbody tr');
+    if(rows.length){const last=rows[rows.length-1];const inp=last.querySelector('.acomp-item-input');if(inp)inp.focus();}
+  },50);
 }
 
-function acompItemStartEdit(licId, itemId){
-  acompItemOpenModal(licId, itemId);
+function acompItemUpdateCalc(licId, itemId){
+  const lic = acompData.find(x=>x.id===licId);
+  if(!lic) return;
+  const item = (lic.itens||[]).find(x=>x.id===itemId);
+  if(!item) return;
+  const gv = fid => { const el = document.getElementById(`ii-${itemId}-${fid}`); return el ? el.value : ''; };
+  item.num = gv('num');
+  item.fabricante = gv('fab');
+  item.produto = gv('prod');
+  item.valor_edital = gv('vedital');
+  item.qtd = gv('qtd');
+  item.custo_unit = gv('custo');
+  item.frete = gv('frete');
+  item.margem = gv('margem');
+  item.lance_min = gv('lance');
+  acompPersist();
+  const custo = Number(item.custo_unit)||0;
+  const frete = Number(item.frete)||0;
+  const margem = Number(item.margem)||0;
+  const qtd = Number(item.qtd)||0;
+  const pmv = acompCalcPMV(custo, frete, margem, lic.aliq||0);
+  const lucro = pmv!==null ? (pmv - custo - frete) * qtd : null;
+  const pmvEl = document.getElementById(`ii-${itemId}-pmv`);
+  const lucroEl = document.getElementById(`ii-${itemId}-lucro`);
+  if(pmvEl) pmvEl.textContent = pmv!==null ? `R$ ${fmtBRL(pmv)}` : '—';
+  if(lucroEl){
+    lucroEl.textContent = lucro!==null ? `R$ ${fmtBRL(lucro)}` : '—';
+    lucroEl.className = lucro!==null && lucro < 0 ? 'acomp-lucro-neg' : 'acomp-lucro-pos';
+  }
 }
 
 function acompItemDelete(licId, itemId){
