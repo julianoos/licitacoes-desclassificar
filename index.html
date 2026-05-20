@@ -722,6 +722,12 @@ input[type=number]{-moz-appearance:textfield}
 .er-modal-error{font-size:13px;color:#e05555;margin-bottom:14px;min-height:18px}
 .er-modal-btn{width:100%;padding:12px;background:var(--ink);color:var(--bg);border:none;border-radius:8px;font-family:'Google Sans','DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.06em;cursor:pointer;transition:opacity 180ms}
 .er-modal-btn:hover{opacity:.85}
+/* ─── CHECKLIST LINK INPUT ─── */
+.ck-panel-link-wrapper{display:flex;gap:6px;align-items:center}
+.ck-link-input{flex:1;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:6px;font-size:12px;font-family:'Courier New',monospace;outline:none;transition:border-color 200ms,background 200ms}
+.ck-link-input:focus{border-color:var(--line-strong);background:var(--surface)}
+.ck-link-btn{appearance:none;background:transparent;border:1px solid var(--line);color:var(--ink);width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background 200ms,border-color 200ms;padding:0}
+.ck-link-btn:hover{background:var(--surface);border-color:var(--line-strong)}
 </style>
 </head>
 <body>
@@ -2290,6 +2296,7 @@ function renderChecklist(){
     g.itens.forEach((item,ii)=>{
       const key = `${gi}-${ii}`;
       const obsFormatted = item.observacoes.replace(/\n/g,'<br>');
+      const linkValue = getChecklistLink(gi, ii);
       html += `<div class="ck-item" id="ck-${key}" data-tipo="${item.tipo.toLowerCase()}">
         <div class="ck-item-header" onclick="toggleItem('${key}',event)">
           <span class="ck-item-titulo">${item.tipo}</span>
@@ -2305,6 +2312,13 @@ function renderChecklist(){
             <div>
               <span class="ck-panel-label">Observações</span>
               <div class="ck-panel-content">${obsFormatted}</div>
+            </div>
+            <div>
+              <span class="ck-panel-label">Link</span>
+              <div class="ck-panel-link-wrapper">
+                <input class="ck-link-input" type="url" id="ck-link-${key}" value="${escHtml(linkValue)}" placeholder="https://..." onblur="saveChecklistLink(${gi},${ii},this.value)">
+                <button class="ck-link-btn" onclick="document.getElementById('ck-link-${key}').focus()">🔗</button>
+              </div>
             </div>
           </div>
         </div>
