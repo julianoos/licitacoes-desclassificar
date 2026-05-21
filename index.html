@@ -549,6 +549,7 @@ select.acomp-input option{background:var(--surface);color:var(--ink)}
 .acomp-date-input{background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:7px 10px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:12px;outline:none;cursor:pointer;transition:border-color 160ms;color-scheme:dark}
 .acomp-date-input:focus{border-color:var(--line-strong)}
 html.light .acomp-date-input{color-scheme:light}
+select.acomp-date-input option{color:#111;background:#fff}
 .acomp-save-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface)}
 .acomp-empty{text-align:center;padding:64px 24px}
 .acomp-empty-title{font-family:'Google Sans','DM Sans',sans-serif;font-size:16px;font-weight:300;color:var(--muted);margin-bottom:8px}
@@ -2625,8 +2626,8 @@ function fornRenderTable(){
     <div class="acomp-new-grid-1">
       <div class="acomp-new-field"><label class="acomp-detail-tag">Nome *</label><input class="acomp-input" id="fn-nome" type="text" placeholder="Nome do fornecedor"></div>
       <div class="acomp-new-field"><label class="acomp-detail-tag">Categoria</label><input class="acomp-input" id="fn-categoria" type="text" placeholder="Ex: Eletrônicos"></div>
-      <div class="acomp-new-field"><label class="acomp-detail-tag">Estado</label><select class="acomp-input" id="fn-estado" onchange="fornPopulateCities(this.value)">${ufs.map(u=>`<option value="${u}">${u}</option>`).join('')}</select></div>
-      <div class="acomp-new-field"><label class="acomp-detail-tag">Cidade</label><select class="acomp-input" id="fn-cidade"><option value="">Selecione...</option></select></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Estado</label><input class="acomp-input" id="fn-estado" type="text" placeholder="Ex: CE"></div>
+      <div class="acomp-new-field"><label class="acomp-detail-tag">Cidade</label><input class="acomp-input" id="fn-cidade" type="text" placeholder="Nome da cidade"></div>
     </div>
     <div class="acomp-new-grid-2">
       <div class="acomp-new-field"><label class="acomp-detail-tag">WhatsApp</label><input class="acomp-input" id="fn-whatsapp" type="text" placeholder="(00) 00000-0000"></div>
