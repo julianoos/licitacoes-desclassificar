@@ -783,9 +783,12 @@ function authLogout(){
 function hideAuthOverlay(){
   const overlay = document.getElementById('auth-overlay');
   if(overlay) overlay.remove();
-  document.querySelector('.app').classList.remove('auth-mode');
+  const app = document.querySelector('.app');
+  if(app) app.classList.remove('auth-mode');
+  const topbar = document.querySelector('.topbar');
+  if(topbar) topbar.style.display = '';
   const logoutBtn = document.getElementById('auth-logout-btn');
-  if(logoutBtn) logoutBtn.style.display = 'flex';
+  if(logoutBtn) logoutBtn.style.display = '';
 }
 
 function renderAuth(){
@@ -795,7 +798,13 @@ function renderAuth(){
     return;
   }
 
-  document.querySelector('.app').classList.add('auth-mode');
+  const app = document.querySelector('.app');
+  if(app) app.classList.add('auth-mode');
+  const topbar = document.querySelector('.topbar');
+  if(topbar) topbar.style.display = 'none';
+  const logoutBtn = document.getElementById('auth-logout-btn');
+  if(logoutBtn) logoutBtn.style.display = 'none';
+
   let html = '';
   if(authView === 'login') html = renderAuthLogin();
   else if(authView === 'cadastro') html = renderAuthCadastro();
