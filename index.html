@@ -1021,7 +1021,7 @@ function acompViewRow(item){
           const frete = Number(it.frete)||0;
           const pmv = acompCalcPMV(Number(it.custo_unit),frete,Number(it.margem),aliq);
           const lucro = pmv!==null?(pmv-Number(it.custo_unit)-frete)*Number(it.qtd):null;
-          const pmvHtml = pmv!==null?`R$ ${fmtBRL(pmv)}`:'—';
+          const pmvHtml = pmv!==null?`<span class="acomp-pmv-cell" style="color:#4a9eff !important">R$ ${fmtBRL(pmv)}</span>`:'—';
           const lucroClass = lucro!==null&&lucro<0?'acomp-lucro-neg':'acomp-lucro-pos';
           const lucroHtml = lucro!==null?`<span class="${lucroClass}">R$ ${fmtBRL(lucro)}</span>`:'—';
           const td = 'style="padding:3px 8px"';
