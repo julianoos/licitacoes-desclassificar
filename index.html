@@ -261,6 +261,33 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Google 
   border-left-color:var(--ink);background:var(--surface);cursor:text;
 }
 .ck-empty{text-align:center;color:var(--muted-2);padding:48px 24px;font-size:14px}
+.resp-edit-btn{
+  appearance:none;background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font-size:14px;padding:4px 8px;margin-left:12px;transition:color 180ms var(--ease);
+}
+.resp-edit-btn:hover{color:var(--ink)}
+.resp-edit-titulo-grupo,.resp-edit-titulo-item{
+  background:var(--surface-2);border:1px solid var(--line-strong);border-radius:6px;
+  color:var(--ink);padding:4px 8px;font-family:inherit;outline:none;
+  transition:border-color 200ms var(--ease);
+}
+.resp-edit-titulo-grupo:focus,.resp-edit-titulo-item:focus{border-color:var(--ink)}
+.resp-edit-titulo-grupo{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;min-width:240px}
+.resp-edit-titulo-item{font-size:13px;flex:1}
+.resp-del-btn{
+  appearance:none;background:transparent;border:none;color:var(--muted);
+  cursor:pointer;font-size:14px;padding:2px 6px;line-height:1;
+  transition:color 180ms var(--ease);flex-shrink:0;
+}
+.resp-del-btn:hover{color:var(--ink)}
+.resp-add-btn{
+  appearance:none;background:transparent;border:1px solid var(--line);
+  color:var(--muted);cursor:pointer;font-size:11px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;padding:6px 12px;
+  border-radius:var(--radius);margin-top:8px;margin-bottom:8px;
+  transition:background 180ms var(--ease),border-color 180ms var(--ease),color 180ms var(--ease);
+}
+.resp-add-btn:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 
 /* ─── EDITAL READER ─── */
 .er-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
@@ -802,7 +829,6 @@ function renderAuth(){
   let html = '';
   if(authView === 'login') html = renderAuthLogin();
   else if(authView === 'cadastro') html = renderAuthCadastro();
-  else if(authView === 'verificar') html = renderAuthVerificar();
   else if(authView === 'recuperar') html = renderAuthRecuperar();
   else if(authView === 'nova-senha') html = renderAuthNovaSenha();
 
@@ -859,12 +885,6 @@ async function authDoLogin(e){
   const senhaHash = await hashSenha(senha);
   if(user.senhaHash !== senhaHash){
     errorEl.textContent = 'E-mail ou senha incorretos';
-    errorEl.classList.add('show');
-    return;
-  }
-
-  if(!user.verificado){
-    errorEl.textContent = 'Conta não verificada. Verifique seu e-mail.';
     errorEl.classList.add('show');
     return;
   }
@@ -940,80 +960,22 @@ async function authDoCadastro(e){
     return;
   }
 
-  const codigo = String(Math.floor(100000 + Math.random() * 900000));
   const senhaHash = await hashSenha(senha);
   const novoUser = {
     id: 'user_' + Date.now(),
     email,
     senhaHash,
     nome,
-    verificado: false,
-    codigoVerif: codigo,
-    tsVerif: Date.now(),
+    verificado: true,
+    codigoVerif: null,
+    tsVerif: null,
     codeSenha: null,
     tsCodeSenha: null
   };
 
   users.push(novoUser);
   authSaveUsers(users);
-  authPendingEmail = email;
-  authTempCode = codigo;
-  authView = 'verificar';
-  renderAuth();
-}
-
-function renderAuthVerificar(){
-  console.log(`%c🔐 Código de verificação: ${authTempCode}`, 'color:#4a9eff;font-size:16px;font-weight:bold');
-  return `<div class="auth-overlay">
-    <div class="auth-card">
-      <div class="auth-logo">Licitações 2026</div>
-      <div class="auth-title">Verificar e-mail</div>
-      <div class="auth-sub">Um código foi enviado para ${authPendingEmail}</div>
-      <div class="auth-code-display">
-        <div style="font-size:12px;margin-bottom:8px">📧 Verifique seu e-mail ou abra o console (F12) para ver o código</div>
-      </div>
-      <div id="auth-error" class="auth-error"></div>
-      <form onsubmit="authDoVerificar(event)">
-        <div class="auth-field">
-          <label class="auth-label">Digite o código recebido</label>
-          <input type="text" id="auth-codigo" class="auth-input" placeholder="000000" maxlength="6" required>
-        </div>
-        <button type="submit" class="auth-btn">Confirmar</button>
-      </form>
-      <div class="auth-links">
-        <button class="auth-link" onclick="authDoReenviar()">Reenviar código</button>
-        <button class="auth-link" onclick="authView='cadastro';renderAuth()">Voltar</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function authDoReenviar(){
-  authTempCode = String(Math.floor(100000 + Math.random() * 900000));
-  renderAuth();
-}
-
-function authDoVerificar(e){
-  e.preventDefault();
-  const codigo = document.getElementById('auth-codigo').value.trim();
-  const errorEl = document.getElementById('auth-error');
-
-  if(codigo !== authTempCode){
-    errorEl.textContent = 'Código inválido';
-    errorEl.classList.add('show');
-    return;
-  }
-
-  const users = authGetUsers();
-  const user = users.find(u => u.email === authPendingEmail);
-  if(user){
-    user.verificado = true;
-    user.codigoVerif = null;
-    user.tsVerif = null;
-    authSaveUsers(users);
-  }
-
-  authSetSession({ userId: user.id, email: user.email, nome: user.nome, loginTs: Date.now() });
+  authSetSession({ userId: novoUser.id, email: novoUser.email, nome: novoUser.nome, loginTs: Date.now() });
   hideAuthOverlay();
   switchSection('home');
 }
@@ -1239,6 +1201,7 @@ let recursosExpanded = {};
 let respostasExpanded = {};
 let recursosGroupExpanded = {};
 let respostasGroupExpanded = {};
+let jur_respEditMode = false;
 const openGrupos = new Set([0,1,2,3,4,5,6,7]);
 
 // ═══════════════════════════════════════════════════════════
@@ -2921,17 +2884,28 @@ function renderRecursos(){
 function renderRespostas(){
   let html = `<div class="section-header">
     <div class="section-eyebrow"><span class="dot"></span>Jurídico<span class="dot"></span>Respostas Prontas</div>
-    <h1 class="section-title">Respostas</h1>
+    <h1 class="section-title" style="display:flex;align-items:center">
+      Respostas
+      <button class="resp-edit-btn" onclick="respToggleEditMode()">
+        ${jur_respEditMode ? '✓ Salvar alterações' : '✎ Editar estrutura'}
+      </button>
+    </h1>
     <p class="section-subtitle">Textos de resposta a questionamentos. Clique em Copiar para usar.</p>
   </div>
   <div id="resp-grupos">`;
 
   RESPOSTAS.forEach((tipo, ti) => {
     const isGroupOpen = !!respostasGroupExpanded[ti];
+    const grupoTitulo = respGetGrupoTitulo(ti);
+    const customItems = respGetCustomItems().filter(c => c.grupo === ti);
+
     html += `<div class="grupo${isGroupOpen ? '' : ' collapsed'}" id="grupo-resp-${ti}" data-grupo="${ti}">
       <div class="grupo-header" onclick="toggleRespostasGroup(${ti})">
-        <span class="grupo-eyebrow">${escHtml(tipo.tipo)}</span>
-        <span class="grupo-count">${tipo.itens.length} itens</span>
+        ${jur_respEditMode ?
+          `<input class="resp-edit-titulo-grupo" value="${escAttr(grupoTitulo)}" data-ti="${ti}">` :
+          `<span class="grupo-eyebrow">${escHtml(grupoTitulo)}</span>`
+        }
+        <span class="grupo-count">${tipo.itens.length + customItems.length} itens</span>
         <span class="grupo-chevron">▼</span>
       </div>
       <div class="grupo-items">`;
@@ -2940,10 +2914,14 @@ function renderRespostas(){
       const key = `${ti}-${ii}`;
       const savedResposta = localStorage.getItem('resposta_'+key) || item.texto;
       const isOpen = !!respostasExpanded[key];
+      const itemTitulo = respGetItemTitulo(key);
 
       html += `<div class="ck-item${isOpen ? ' open' : ''}" id="resp-item-${key}" data-key="${key}">
         <div class="ck-item-header" onclick="toggleRespostaItem('${key}',event)">
-          <span class="ck-item-titulo">${escHtml(item.subtipo)}</span>
+          ${jur_respEditMode ?
+            `<input class="resp-edit-titulo-item" value="${escAttr(itemTitulo)}" data-key="${key}">` :
+            `<span class="ck-item-titulo">${escHtml(itemTitulo)}</span>`
+          }
           <span class="ck-item-badge">RESPOSTA</span>
           <span class="ck-item-arrow">▼</span>
         </div>
@@ -2956,6 +2934,36 @@ function renderRespostas(){
         </div>
       </div>`;
     });
+
+    customItems.forEach(custom => {
+      const key = custom.key;
+      const savedResposta = localStorage.getItem('resposta_'+key) || custom.texto;
+      const isOpen = !!respostasExpanded[key];
+      const itemTitulo = respGetItemTitulo(key);
+
+      html += `<div class="ck-item${isOpen ? ' open' : ''}" id="resp-item-${key}" data-key="${key}">
+        <div class="ck-item-header" onclick="toggleRespostaItem('${key}',event)">
+          ${jur_respEditMode ?
+            `<input class="resp-edit-titulo-item" value="${escAttr(itemTitulo)}" data-key="${key}">
+             <button class="resp-del-btn" onclick="respDeleteItem('${key}')">✕</button>` :
+            `<span class="ck-item-titulo">${escHtml(itemTitulo)}</span>`
+          }
+          <span class="ck-item-badge">RESPOSTA</span>
+          <span class="ck-item-arrow">▼</span>
+        </div>
+        <div class="ck-expand">
+          <div class="ck-recurso-text" id="resp-${key}">${escHtml(savedResposta)}</div>
+          <div class="resposta-item-actions">
+            <button class="ck-btn" onclick="editRespostaItem('${key}')">Editar</button>
+            <button class="ck-btn" onclick="copyRespostaItem('${key}',this)">Copiar</button>
+          </div>
+        </div>
+      </div>`;
+    });
+
+    if(jur_respEditMode){
+      html += `<button class="resp-add-btn" onclick="respAddItem(${ti})">+ Adicionar resposta</button>`;
+    }
 
     html += `</div></div>`;
   });
@@ -2979,6 +2987,96 @@ function filterChecklist(q){
     });
     grupo.style.display=grupoVisible?'':'none';
   });
+}
+
+function respGetGrupoTitulo(ti){
+  const saved = localStorage.getItem(`resp_grupo_titulo_${ti}`);
+  return saved || (RESPOSTAS[ti] ? RESPOSTAS[ti].tipo : '');
+}
+
+function respSaveGrupoTitulo(ti, val){
+  localStorage.setItem(`resp_grupo_titulo_${ti}`, val);
+}
+
+function respGetItemTitulo(key){
+  const saved = localStorage.getItem(`resp_item_titulo_${key}`);
+  if(saved) return saved;
+  const [ti, ii] = key.split('-');
+  const customItems = respGetCustomItems();
+  const custom = customItems.find(c => c.key === key);
+  if(custom) return custom.subtipo;
+  return (RESPOSTAS[ti] && RESPOSTAS[ti].itens[ii]) ? RESPOSTAS[ti].itens[ii].subtipo : '';
+}
+
+function respSaveItemTitulo(key, val){
+  localStorage.setItem(`resp_item_titulo_${key}`, val);
+}
+
+function respGetCustomItems(){
+  try{
+    const json = localStorage.getItem('resp_custom_items');
+    return json ? JSON.parse(json) : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function respSaveCustomItems(items){
+  localStorage.setItem('resp_custom_items', JSON.stringify(items));
+}
+
+function respAddItem(ti){
+  const customItems = respGetCustomItems();
+  const key = `custom-${Date.now()}`;
+  customItems.push({
+    key: key,
+    grupo: ti,
+    subtipo: 'Nova resposta',
+    texto: 'Digite aqui o texto da resposta'
+  });
+  respSaveCustomItems(customItems);
+  renderRespostas();
+}
+
+function respDeleteItem(key){
+  const customItems = respGetCustomItems();
+  const filtered = customItems.filter(item => item.key !== key);
+  respSaveCustomItems(filtered);
+  renderRespostas();
+}
+
+function respToggleEditMode(){
+  if(jur_respEditMode){
+    respSaveAllChanges();
+  }else{
+    jur_respEditMode = true;
+    renderRespostas();
+  }
+}
+
+function respSaveAllChanges(){
+  const grupos = document.querySelectorAll('[data-grupo]');
+  grupos.forEach(grupoEl => {
+    const ti = parseInt(grupoEl.dataset.grupo);
+    const titleInput = grupoEl.querySelector('.resp-edit-titulo-grupo');
+    if(titleInput) respSaveGrupoTitulo(ti, titleInput.value);
+  });
+
+  const items = document.querySelectorAll('[data-key]');
+  const customItems = respGetCustomItems();
+  items.forEach(itemEl => {
+    const key = itemEl.dataset.key;
+    const titleInput = itemEl.querySelector('.resp-edit-titulo-item');
+    if(titleInput){
+      respSaveItemTitulo(key, titleInput.value);
+      const custom = customItems.find(c => c.key === key);
+      if(custom) custom.subtipo = titleInput.value;
+    }
+  });
+  respSaveCustomItems(customItems);
+
+  jur_respEditMode = false;
+  renderRespostas();
 }
 
 // ═══════════════════════════════════════════════════════════
