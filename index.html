@@ -1723,7 +1723,7 @@ function acompItemInlineRow(licId, item, aliq){
     <td>${inp('frete','number',item.frete,'54px','')}</td>
     <td>${inp('margem','number',item.margem,'46px','')}</td>
     <td><div style="display:flex;align-items:center;gap:3px;justify-content:center"><input class="acomp-item-input" id="ii-${item.id}-lance" type="text" value="${escHtml(String(item.lance_min??''))}" placeholder="" style="min-width:54px;text-align:center" oninput="acompItemUpdateCalc('${licId}','${item.id}')"><button class="lance-tipo-btn" id="ii-${item.id}-lance-tipo" onclick="toggleLanceTipo('${licId}','${item.id}')">${item.lance_min_tipo||'R$'}</button></div></td>
-    <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv">${pmvTxt}</span></td>
+    <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv" style="color:#4a9eff !important">${pmvTxt}</span></td>
     <td style="white-space:nowrap"><span class="${lucroClass}" id="ii-${item.id}-lucro">${lucroTxt}</span></td>
     <td><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></td>
   </tr>`;
