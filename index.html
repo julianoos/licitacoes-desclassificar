@@ -979,10 +979,10 @@ function acompViewRow(item){
     : `<span style="color:var(--muted-2);font-size:12px">—</span>`;
   const isSelected = acompSelectedIds.has(item.id);
   const mainRow = `<tr data-id="${item.id}">
-    <td style="width:14px;text-align:center;padding:4px 2px">
+    <td style="width:14px;text-align:center;padding:8px 16px">
       <input type="checkbox" class="acomp-select-check" data-id="${item.id}" ${isSelected?'checked':''} ${acompMultiSelectMode?'':'style="display:none"'} onchange="acompToggleSelect('${item.id}',this.checked)">
     </td>
-    <td style="width:28px;text-align:center;padding:4px">
+    <td style="width:28px;text-align:center;padding:8px">
       <button class="acomp-btn-icon" onclick="acompToggleExpand('${item.id}')" title="${isExp?'Fechar':'Expandir'}">${isExp?'▲':'▼'}</button>
     </td>
     <td style="white-space:nowrap">${fmtDate(item.data)}</td>
@@ -1269,7 +1269,7 @@ function acompRenderTable(){
   const checkAllAttr = allChecked ? 'checked' : '';
   wrap.innerHTML = newForm + `<div class="acomp-scroll"><table class="acomp-table">
     <thead><tr>
-      <th style="width:14px;text-align:center;padding:4px 2px"><input type="checkbox" class="acomp-select-check" id="acomp-check-all" ${checkAllAttr} onchange="acompToggleSelectAll(this.checked)" style="cursor:pointer"></th>
+      <th style="width:14px;text-align:center;padding:8px 16px"><input type="checkbox" class="acomp-select-check" id="acomp-check-all" ${checkAllAttr} onchange="acompToggleSelectAll(this.checked)" style="cursor:pointer"></th>
       <th style="width:28px"></th>
       <th>Data</th><th>Tipo</th><th>Nº UASG</th><th>Nº Pregão</th>
       <th>Nome do Órgão</th><th>Status</th><th>Observações</th>
