@@ -960,14 +960,14 @@ async function authDoCadastro(e){
 }
 
 function renderAuthVerificar(){
+  console.log(`%c🔐 Código de verificação: ${authTempCode}`, 'color:#4a9eff;font-size:16px;font-weight:bold');
   return `<div class="auth-overlay">
     <div class="auth-card">
       <div class="auth-logo">Licitações 2026</div>
       <div class="auth-title">Verificar e-mail</div>
       <div class="auth-sub">Um código foi enviado para ${authPendingEmail}</div>
       <div class="auth-code-display">
-        <div>Seu código de confirmação:</div>
-        <strong>${authTempCode}</strong>
+        <div style="font-size:12px;margin-bottom:8px">📧 Verifique seu e-mail ou abra o console (F12) para ver o código</div>
       </div>
       <div id="auth-error" class="auth-error"></div>
       <form onsubmit="authDoVerificar(event)">
@@ -1061,14 +1061,14 @@ function authDoRecuperar(e){
 }
 
 function renderAuthNovaSenha(){
+  console.log(`%c🔐 Código de recuperação: ${authTempCode}`, 'color:#4a9eff;font-size:16px;font-weight:bold');
   return `<div class="auth-overlay">
     <div class="auth-card">
       <div class="auth-logo">Licitações 2026</div>
       <div class="auth-title">Nova senha</div>
       <div class="auth-sub">Digite o código e sua nova senha</div>
       <div class="auth-code-display">
-        <div>Seu código de recuperação:</div>
-        <strong>${authTempCode}</strong>
+        <div style="font-size:12px;margin-bottom:8px">📧 Verifique seu e-mail ou abra o console (F12) para ver o código</div>
       </div>
       <div id="auth-error" class="auth-error"></div>
       <form onsubmit="authDoNovaSenha(event)">
