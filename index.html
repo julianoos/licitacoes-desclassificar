@@ -2649,16 +2649,8 @@ function fornRenderTable(){
       document.getElementById('fn-obs').value=item.obs;
     },0);
   }
-  const sortNome=fornSortField==='nome'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Nome`:'Nome';
-  const sortCat=fornSortField==='categoria'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Categoria`:'Categoria';
-  const sortEst=fornSortField==='estado'?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${fornSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> Estado`:'Estado';
   const toolbar=`<div class="acomp-toolbar">
     <div><button class="acomp-add-btn" onclick="fornAddNew()">+ Novo Fornecedor</button></div>
-    <div class="acomp-toolbar-right">
-      <button class="acomp-sort-btn" onclick="fornToggleSort('nome')">${sortNome}</button>
-      <button class="acomp-sort-btn" onclick="fornToggleSort('categoria')">${sortCat}</button>
-      <button class="acomp-sort-btn" onclick="fornToggleSort('estado')">${sortEst}</button>
-    </div>
   </div>`;
   const filterBar=`<div class="acomp-date-filter" style="margin-bottom:16px;gap:12px">
     <div style="display:flex;align-items:center;gap:8px">
@@ -2702,7 +2694,7 @@ function fornRenderTable(){
   wrap.innerHTML=newForm+toolbar+filterBar+`<div class="acomp-wrap">
     <div class="acomp-scroll">
       <table class="acomp-table">
-        <thead><tr><th style="padding:2px 2px;text-align:left;width:18%">NOME</th><th style="padding:2px 2px;text-align:left;width:12%">CATEGORIA</th><th style="padding:2px 2px;text-align:left;width:12%">WHATSAPP</th><th style="padding:2px 2px;text-align:left;width:7%">SITE</th><th style="padding:2px 2px;text-align:left;width:14%">LOCALIZAÇÃO</th><th style="padding:2px 2px;text-align:left;width:20%">OBSERVAÇÕES</th><th style="padding:2px 2px;text-align:center;width:72px">AÇÕES</th></tr></thead>
+        <thead><tr><th style="padding:2px 2px;text-align:left;width:20%">NOME</th><th style="padding:2px 2px;text-align:left;width:15%">CATEGORIA</th><th style="padding:2px 2px;text-align:left;width:12%">WHATSAPP</th><th style="padding:2px 2px;text-align:left;width:7%">SITE</th><th style="padding:2px 2px;text-align:left;width:13%">LOCALIZAÇÃO</th><th style="padding:2px 2px;text-align:left;width:25%">OBSERVAÇÕES</th><th style="padding:2px 2px;text-align:center;width:8%">AÇÕES</th></tr></thead>
         <tbody>${tbody}</tbody>
       </table>
     </div>
