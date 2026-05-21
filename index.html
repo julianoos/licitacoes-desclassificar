@@ -500,8 +500,8 @@ table.simples td.rev{color:var(--ink);font-weight:500;text-align:right;font-vari
 }
 .acomp-table tbody tr:last-child td{border-bottom:none}
 #forn-wrap .acomp-table{border-collapse:collapse;min-width:0 !important;width:100% !important;table-layout:fixed}
-#forn-wrap .acomp-table th,#forn-wrap .acomp-table td{padding:2px 0px !important;margin:0 !important}
-#forn-wrap .acomp-table thead th{padding:3px 0px !important}
+#forn-wrap .acomp-table th,#forn-wrap .acomp-table td{padding:2px 6px !important;margin:0 !important}
+#forn-wrap .acomp-table thead th{padding:3px 6px !important}
 .acomp-status{
   display:inline-block;padding:3px 10px;border-radius:20px;
   font-family:'Google Sans','DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
@@ -2702,7 +2702,7 @@ function fornRenderTable(){
   wrap.innerHTML=newForm+toolbar+filterBar+`<div class="acomp-wrap">
     <div class="acomp-scroll">
       <table class="acomp-table">
-        <thead><tr><th style="padding:2px 2px;text-align:left;width:18%">Nome</th><th style="padding:2px 2px;text-align:left;width:12%">Categoria</th><th style="padding:2px 2px;text-align:left;width:12%">WhatsApp</th><th style="padding:2px 2px;text-align:left;width:7%">Site</th><th style="padding:2px 2px;text-align:left;width:14%">Localização</th><th style="padding:2px 2px;text-align:left;width:20%">Obs</th><th style="padding:2px 2px;text-align:center;width:72px">Ações</th></tr></thead>
+        <thead><tr><th style="padding:2px 2px;text-align:left;width:18%">NOME</th><th style="padding:2px 2px;text-align:left;width:12%">CATEGORIA</th><th style="padding:2px 2px;text-align:left;width:12%">WHATSAPP</th><th style="padding:2px 2px;text-align:left;width:7%">SITE</th><th style="padding:2px 2px;text-align:left;width:14%">LOCALIZAÇÃO</th><th style="padding:2px 2px;text-align:left;width:20%">OBSERVAÇÕES</th><th style="padding:2px 2px;text-align:center;width:72px">AÇÕES</th></tr></thead>
         <tbody>${tbody}</tbody>
       </table>
     </div>
