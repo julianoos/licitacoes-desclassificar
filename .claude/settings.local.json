@@ -29,7 +29,13 @@
       "WebFetch(domain:www.bram.us)",
       "Bash(curl -s \"https://docs.google.com/spreadsheets/d/1y5iuV32luj7KtAMK5CGlVPjNUJ_uwHEzTU6TbHV2D9U/export?format=csv&gid=31516928\")",
       "WebFetch(domain:docs.google.com)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(node -c index.html)",
+      "Bash(start *)",
+      "Bash(powershell -Command \"\\(Get-Content 'D:\\\\projetosclaude\\\\licitacoes-desclassificar\\\\index.html'\\).Count\")",
+      "PowerShell(head *)",
+      "Bash(python *)",
+      "WebFetch(domain:localhost)"
     ]
   }
 }

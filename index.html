@@ -603,7 +603,8 @@ input[type=number]{-moz-appearance:textfield}
 .acomp-item-table tbody tr:last-child td{border-bottom:none}
 .acomp-item-table tbody tr:hover td{background:rgba(240,240,240,0.025)}
 .acomp-item-table tbody tr.editing td{background:var(--surface-2)}
-.acomp-pmv-cell{font-weight:500;color:var(--ink);white-space:nowrap}
+.acomp-item-table tbody tr.row-selected td{background:rgba(74,158,255,0.10)!important;border-left:2px solid #4a9eff}
+.acomp-pmv-cell{font-weight:600;color:#4a9eff;white-space:nowrap}
 .acomp-lucro-pos{color:var(--ink-2);white-space:nowrap}
 .acomp-lucro-neg{color:#e05555;white-space:nowrap}
 .acomp-item-input{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--ink);font-family:'Google Sans','DM Sans',sans-serif;font-size:12px;outline:none;transition:border-color 160ms;width:100%;text-align:center}
@@ -895,6 +896,7 @@ let acompSelectedIds = new Set();
 let acompMultiSelectMode = false;
 let acompExpandedIds = new Set();
 let acompItemEditId = null;
+let acompFilterTipo='', acompFilterUasg='', acompFilterPregao='', acompFilterOrgao='', acompFilterStatus2='';
 
 (function acompInit(){
   try{ acompData = JSON.parse(localStorage.getItem('acomp_data')||'[]'); }catch(e){ acompData=[]; }
@@ -1071,8 +1073,10 @@ function acompOpenChecklist(id){
 }
 
 function acompChecklistBack(){
+  const id = acompChecklistId;
   acompChecklistId = null;
-  renderAcompanhamento();
+  if(id) acompOpenDetail(id);
+  else renderAcompanhamento();
 }
 
 function renderAcompChecklist(id){
@@ -1085,7 +1089,7 @@ function renderAcompChecklist(id){
       <div class="acomp-detail-header">
         <button class="acomp-back-btn" onclick="acompChecklistBack()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          Voltar à lista
+          ← Voltar à Licitação
         </button>
         <div class="acomp-detail-meta">
           <span class="acomp-detail-tag">Órgão:</span>
@@ -1135,6 +1139,7 @@ function renderAcompDocsStandalone(lic){
       <span class="docs-title">Documentos de Habilitação</span>
       <div class="docs-btns">
         <button class="acomp-btn save" onclick="acompDocsOpenSelector('${lic.id}')">+ Selecionar documentos</button>
+        <button class="acomp-btn save" onclick="acompChecklistBack()" style="margin-left:8px">Salvar e Voltar</button>
       </div>
     </div>
     <div class="docs-list">${itemsHtml}</div>
@@ -1191,6 +1196,39 @@ function renderAcompanhamento(){
         </button>
       </div>
     </div>
+    <div class="acomp-date-filter" id="acomp-col-filters" style="margin-bottom:8px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="acomp-date-label">Tipo</label>
+        <select class="acomp-date-input" id="af-tipo" onchange="acompApplyColFilter()">
+          <option value="">Todos</option>
+          <option value="Pregão" ${acompFilterTipo==='Pregão'?'selected':''}>Pregão</option>
+          <option value="Dispensa" ${acompFilterTipo==='Dispensa'?'selected':''}>Dispensa</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="acomp-date-label">UASG</label>
+        <input type="text" class="acomp-date-input" id="af-uasg" placeholder="UASG..." value="${acompFilterUasg}" oninput="acompApplyColFilter()" style="width:80px">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="acomp-date-label">Pregão</label>
+        <input type="text" class="acomp-date-input" id="af-pregao" placeholder="Pregão..." value="${acompFilterPregao}" oninput="acompApplyColFilter()" style="width:90px">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="acomp-date-label">Órgão</label>
+        <input type="text" class="acomp-date-input" id="af-orgao" placeholder="Órgão..." value="${acompFilterOrgao}" oninput="acompApplyColFilter()" style="width:120px">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="acomp-date-label">Status</label>
+        <select class="acomp-date-input" id="af-status" onchange="acompApplyColFilter()">
+          <option value="">Todos</option>
+          <option value="A disputar" ${acompFilterStatus2==='A disputar'?'selected':''}>A disputar</option>
+          <option value="Em disputa" ${acompFilterStatus2==='Em disputa'?'selected':''}>Em disputa</option>
+          <option value="Habilitação" ${acompFilterStatus2==='Habilitação'?'selected':''}>Habilitação</option>
+          <option value="Finalizado" ${acompFilterStatus2==='Finalizado'?'selected':''}>Finalizado</option>
+        </select>
+      </div>
+      <button class="acomp-sort-btn" onclick="acompClearColFilters()">✕ Limpar filtros</button>
+    </div>
     <div class="acomp-wrap" id="acomp-wrap"></div>`;
   acompRenderTable();
 }
@@ -1206,6 +1244,11 @@ function acompRenderTable(){
   if(acompFilterActive) list = list.filter(x=>x.status===acompFilterActive);
   if(acompDateFrom) list = list.filter(x=>(x.data||'')>=acompDateFrom);
   if(acompDateTo)   list = list.filter(x=>(x.data||'')<=acompDateTo);
+  if(acompFilterTipo)    list = list.filter(x=>(x.tipo_lic||'').toLowerCase().includes(acompFilterTipo.toLowerCase()));
+  if(acompFilterUasg)    list = list.filter(x=>(x.uasg||'').toLowerCase().includes(acompFilterUasg.toLowerCase()));
+  if(acompFilterPregao)  list = list.filter(x=>(x.pregao||'').toLowerCase().includes(acompFilterPregao.toLowerCase()));
+  if(acompFilterOrgao)   list = list.filter(x=>(x.orgao||'').toLowerCase().includes(acompFilterOrgao.toLowerCase()));
+  if(acompFilterStatus2) list = list.filter(x=>x.status===acompFilterStatus2);
 
   list.sort((a,b)=>{
     const da=a.data||'', db=b.data||'';
@@ -1216,7 +1259,7 @@ function acompRenderTable(){
   if(countLabel) countLabel.textContent = acompFilterActive ? `Filtro: ${acompFilterActive}` : '';
   if(sortBtn) sortBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="${acompSortDesc?'M12 5v14M5 12l7 7 7-7':'M12 19V5M5 12l7-7 7 7'}"/></svg> ${acompSortDesc?'Mais recente':'Mais antiga'}`;
 
-  if(list.length===0 && acompEditId!=='new'){
+  if(list.length===0 && !acompNewMode){
     wrap.innerHTML = `<div class="acomp-empty">
       <div class="acomp-empty-title">${acompFilterActive?'Nenhuma licitação com este status.':'Nenhuma licitação cadastrada.'}</div>
       <div class="acomp-empty-sub">${acompFilterActive?'<a href="#" onclick="acompFilterStatus(null);return false;" style="color:var(--muted)">Limpar filtro</a>':'Clique em "+ Nova Licitação" para começar.'}</div>
@@ -1301,6 +1344,7 @@ function acompSaveNew(){
   acompData.unshift(item);
   acompPersist();
   acompNewMode = false;
+  acompEditId = null;
   renderSidebar();
   acompOpenDetail(item.id);
 }
@@ -1319,6 +1363,7 @@ function acompSaveNewGoItems(){
   acompData.unshift(item);
   acompPersist();
   acompNewMode = false;
+  acompEditId = null;
   renderSidebar();
   acompOpenDetail(item.id);
   setTimeout(()=>document.getElementById('acomp-item-wrap')?.scrollIntoView({behavior:'smooth',block:'start'}), 200);
@@ -1338,12 +1383,14 @@ function acompSaveNewGoChecklist(){
   acompData.unshift(item);
   acompPersist();
   acompNewMode = false;
+  acompEditId = null;
   renderSidebar();
   acompOpenChecklist(item.id);
 }
 
 function acompCancelNew(){
   acompNewMode = false;
+  acompEditId = null;
   acompRenderTable();
 }
 
@@ -1452,6 +1499,22 @@ function acompClearDates(){
   acompRenderTable();
   const clearBtn = document.getElementById('acomp-clear-date');
   if(clearBtn) clearBtn.style.display = 'none';
+}
+
+function acompApplyColFilter(){
+  acompFilterTipo    = document.getElementById('af-tipo')?.value||'';
+  acompFilterUasg    = (document.getElementById('af-uasg')?.value||'').trim();
+  acompFilterPregao  = (document.getElementById('af-pregao')?.value||'').trim();
+  acompFilterOrgao   = (document.getElementById('af-orgao')?.value||'').trim();
+  acompFilterStatus2 = document.getElementById('af-status')?.value||'';
+  acompRenderTable();
+}
+
+function acompClearColFilters(){
+  acompFilterTipo=acompFilterUasg=acompFilterPregao=acompFilterOrgao=acompFilterStatus2='';
+  acompFilterActive=null;
+  acompRenderTable();
+  renderAcompanhamento();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1626,13 +1689,14 @@ function acompItemRenderTable(lic){
       <th>Frete</th>
       <th>Margem %</th>
       <th>Lance Mín.</th>
-      <th>PMV *</th>
+      <th style="color:#4a9eff">PMV *</th>
       <th>Lucro *</th>
       <th style="width:32px"></th>
     </tr></thead>
     <tbody>${tbody}</tbody>
     <tfoot><tr><td colspan="12" style="padding:5px 6px;border-top:1px solid var(--line)">
       <button class="acomp-item-add-btn" onclick="acompItemAddRow('${lic.id}')">+ Adicionar linha</button>
+      <button class="acomp-btn save" onclick="acompItemSaveFeedback(this)" style="margin-left:8px">Salvar itens</button>
     </td></tr></tfoot>
   </table>
   <div style="padding:6px 8px;font-size:11px;color:var(--muted);font-weight:300">* PMV = (custo+frete) ÷ (1 − margem% − aliq%) &nbsp;|&nbsp; Lucro = (PMV − custo − frete) × qtd</div>
@@ -1648,7 +1712,7 @@ function acompItemInlineRow(licId, item, aliq){
   const lucroTxt = lucro!==null ? `R$ ${fmtBRL(lucro)}` : '—';
   const inp = (fid, type, val, w, ph) =>
     `<input class="acomp-item-input" id="ii-${item.id}-${fid}" type="${type}" value="${escHtml(String(val??''))}" placeholder="${ph||''}" style="min-width:${w}" oninput="acompItemUpdateCalc('${licId}','${item.id}')">`;
-  return `<tr data-item-id="${item.id}">
+  return `<tr data-item-id="${item.id}" onclick="acompItemToggleSelect(this,event)">
     <td>${inp('num','number',item.num,'34px','')}</td>
     <td>${inp('fab','text',item.fabricante,'70px','')}</td>
     <td>${inp('prod','text',item.produto,'110px','')}</td>
@@ -1674,6 +1738,17 @@ function acompItemAddRow(licId){
     const rows = document.querySelectorAll('#acomp-item-wrap tbody tr');
     if(rows.length){const last=rows[rows.length-1];const inp=last.querySelector('.acomp-item-input');if(inp)inp.focus();}
   },50);
+}
+
+function acompItemSaveFeedback(btn){
+  acompPersist();
+  if(btn){ const t=btn.textContent; btn.textContent='Salvo!'; btn.disabled=true;
+    setTimeout(()=>{ btn.textContent=t; btn.disabled=false; },1500); }
+}
+
+function acompItemToggleSelect(tr,e){
+  if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON'||e.target.tagName==='SELECT') return;
+  tr.classList.toggle('row-selected');
 }
 
 function acompItemUpdateCalc(licId, itemId){
