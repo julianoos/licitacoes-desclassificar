@@ -2396,7 +2396,7 @@ function renderAcompDocs(lic){
     <div class="docs-header">
       <span class="docs-title">Documentos de Habilitação</span>
       <div class="docs-btns">
-        <button class="acomp-btn" onclick="docsLibraryOpen()">Biblioteca regional</button>
+        <button class="acomp-btn" onclick="docsLibraryOpen('${lic.id}')">Biblioteca regional</button>
         <button class="acomp-btn save" onclick="acompDocsOpenSelector('${lic.id}')">+ Selecionar documentos</button>
       </div>
     </div>
@@ -2473,16 +2473,31 @@ function acompDocDelete(licId, docId, event){
   }
 }
 
-function docsLibraryOpen(){
+function docsLibraryOpen(licId){
   const lib = docsLibrary;
+  const lic = licId ? acompData.find(x=>x.id===licId) : null;
+  if(licId && !lic) return;
+  if(lic && !lic.docsSelecionados) lic.docsSelecionados = [];
 
   function libRows(){
     if(lib.length===0) return `<div class="docs-empty" style="padding:12px 0">Nenhum link regional cadastrado.</div>`;
-    return lib.map(d => `<div class="docs-sel-item" style="gap:8px">
-      <span style="flex:1">${escHtml(d.nome)}</span>
-      ${d.link ? `<a href="${escHtml(d.link)}" target="_blank" rel="noopener" class="docs-item-link" style="font-size:11px">↗</a>` : ''}
-      <button class="acomp-btn del" onclick="docsLibraryDelete('${d.id}')" style="padding:2px 8px;font-size:11px">Excluir</button>
-    </div>`).join('');
+    if(licId){
+      return lib.map(d => {
+        const on = lic.docsSelecionados.includes(d.id);
+        return `<div class="docs-sel-item" onclick="acompDocsToggle('${licId}','${d.id}',this)">
+          <span class="docs-sel-check${on?' on':''}">✓</span>
+          <span style="flex:1">${escHtml(d.nome)}</span>
+          ${d.link ? `<a href="${escHtml(d.link)}" target="_blank" rel="noopener" class="docs-item-link" style="font-size:11px">↗</a>` : ''}
+          <button class="acomp-btn del" onclick="docsLibraryDelete('${d.id}','${licId}',event)" style="padding:2px 8px;font-size:11px">Excluir</button>
+        </div>`;
+      }).join('');
+    } else {
+      return lib.map(d => `<div class="docs-sel-item" style="gap:8px">
+        <span style="flex:1">${escHtml(d.nome)}</span>
+        ${d.link ? `<a href="${escHtml(d.link)}" target="_blank" rel="noopener" class="docs-item-link" style="font-size:11px">↗</a>` : ''}
+        <button class="acomp-btn del" onclick="docsLibraryDelete('${d.id}')" style="padding:2px 8px;font-size:11px">Excluir</button>
+      </div>`).join('');
+    }
   }
 
   const overlay = document.createElement('div');
@@ -2503,7 +2518,7 @@ function docsLibraryOpen(){
         <div class="field-group" style="margin-bottom:8px">
           <input class="field-input" id="dlib-link" type="url" placeholder="URL de consulta (opcional)">
         </div>
-        <button class="acomp-btn save" onclick="docsLibraryAdd()">+ Adicionar</button>
+        <button class="acomp-btn save" onclick="docsLibraryAdd('${licId}')">+ Adicionar</button>
       </div>
     </div>
     <div class="docs-sel-footer">
@@ -2513,7 +2528,7 @@ function docsLibraryOpen(){
   document.body.appendChild(overlay);
 }
 
-function docsLibraryAdd(){
+function docsLibraryAdd(licId){
   const nome = document.getElementById('dlib-nome')?.value?.trim();
   const link = document.getElementById('dlib-link')?.value?.trim();
   if(!nome){ alert('Informe o nome do documento.'); return; }
@@ -2521,10 +2536,11 @@ function docsLibraryAdd(){
   docsLibrary.push(newDoc);
   docsLibraryPersist();
   document.getElementById('docs-lib-overlay')?.remove();
-  docsLibraryOpen();
+  docsLibraryOpen(licId);
 }
 
-function docsLibraryDelete(id){
+function docsLibraryDelete(id, licId, event){
+  if(event) event.stopPropagation();
   if(!confirm('Excluir este documento da biblioteca?')) return;
   const idx = docsLibrary.findIndex(d=>d.id===id);
   if(idx>=0){
@@ -2538,7 +2554,7 @@ function docsLibraryDelete(id){
     acompPersist();
   }
   document.getElementById('docs-lib-overlay')?.remove();
-  docsLibraryOpen();
+  docsLibraryOpen(licId);
 }
 
 // ═══════════════════════════════════════════════════════════
