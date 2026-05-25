@@ -1381,45 +1381,6 @@ function acompViewRow(item){
     </div></td>
   </tr>`;
   if(!isExp) return mainRow;
-  const itens = item.itens||[];
-  const aliq = item.aliq||0;
-  const thS = 'style="text-align:left;padding:3px 8px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);white-space:nowrap"';
-  const thR = 'style="text-align:right;padding:3px 8px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);white-space:nowrap"';
-  const itensHtml = itens.length===0
-    ? `<em style="color:var(--muted);font-size:12px">Nenhum item cadastrado.</em>`
-    : `<table style="width:100%;border-collapse:collapse;font-size:11px">
-        <thead><tr>
-          <th ${thS}>Nº</th><th ${thS}>Fabricante</th><th ${thS}>Produto</th>
-          <th ${thR}>Vl Edital</th><th ${thR}>Qtd</th><th ${thR}>Custo Unit.</th>
-          <th ${thR}>Frete</th><th ${thR}>Margem</th><th ${thR}>Lance Mín.</th>
-          <th ${thR}>PMV</th><th ${thR}>Lucro</th>
-        </tr></thead>
-        <tbody>${itens.map(it=>{
-          const frete = Number(it.frete)||0;
-          const pmv = acompCalcPMV(Number(it.custo_unit),frete,Number(it.margem),aliq);
-          const lucro = pmv!==null?(pmv-Number(it.custo_unit)-frete)*Number(it.qtd):null;
-          const pmvHtml = pmv!==null?`<span class="acomp-pmv-cell" style="color:#4a9eff !important">R$ ${fmtBRL(pmv)}</span>`:'—';
-          const lucroClass = lucro!==null&&lucro<0?'acomp-lucro-neg':'acomp-lucro-pos';
-          const lucroHtml = lucro!==null?`<span class="${lucroClass}">R$ ${fmtBRL(lucro)}</span>`:'—';
-          const td = 'style="padding:3px 8px"';
-          const tdr = 'style="padding:3px 8px;text-align:right"';
-          const tdm = 'style="padding:3px 8px;color:var(--muted)"';
-          return `<tr>
-            <td ${tdm}>${escHtml(String(it.num||''))}</td>
-            <td ${td}>${escHtml(it.fabricante||'—')}</td>
-            <td ${td}>${escHtml(it.produto||'—')}</td>
-            <td ${tdr}>R$ ${fmtBRL(Number(it.valor_edital||0))}</td>
-            <td ${tdr}>${escHtml(String(it.qtd||''))}</td>
-            <td ${tdr}>R$ ${fmtBRL(Number(it.custo_unit||0))}</td>
-            <td ${tdr}>${frete>0?'R$ '+fmtBRL(frete):'—'}</td>
-            <td ${tdr}>${escHtml(String(it.margem||''))}%</td>
-            <td ${tdr}>R$ ${fmtBRL(Number(it.lance_min||0))}</td>
-            <td ${tdr}>${pmvHtml}</td>
-            <td ${tdr}>${lucroHtml}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>`;
-  // Docs de habilitação selecionados
   const allDocs = docsAllDocs();
   const selDocs = (item.docsSelecionados||[]).map(id=>allDocs.find(d=>d.id===id)).filter(Boolean);
   let docsHtml = '';
@@ -1435,7 +1396,7 @@ function acompViewRow(item){
         </div>`).join('')}
     </div>`;
   }
-  return mainRow + `<tr class="acomp-expand-row"><td colspan="11" style="padding:8px 16px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);overflow-x:auto">${itensHtml}${docsHtml}</td></tr>`;
+  return mainRow + `<tr class="acomp-expand-row"><td colspan="11" style="padding:8px 16px 12px;background:var(--surface-2);border-bottom:1px solid var(--line);overflow-x:auto"><div id="acomp-list-items-${item.id}"></div>${docsHtml}</td></tr>`;
 }
 
 function acompToggleExpand(id){
@@ -1698,6 +1659,10 @@ function acompRenderTable(){
     </tr></thead>
     <tbody>${tbody}</tbody>
   </table></div>${editBar}`;
+  acompExpandedIds.forEach(id => {
+    const lic = acompData.find(x => x.id === id);
+    if (lic) acompItemRenderTable(lic, `acomp-list-items-${id}`);
+  });
 }
 
 function acompAddNew(){
@@ -2041,14 +2006,14 @@ function renderAcompDetail(id){
   renderAcompDocs(lic);
 }
 
-function acompItemRenderTable(lic){
-  const wrap = document.getElementById('acomp-item-wrap');
+function acompItemRenderTable(lic, containerId='acomp-item-wrap'){
+  const wrap = document.getElementById(containerId);
   if(!wrap) return;
 
   if(!lic.itens) lic.itens = [];
   if(lic.itens.length===0){
     for(let i=0;i<3;i++){
-      lic.itens.push({id:Date.now().toString()+'_'+i,num:i+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$'});
+      lic.itens.push({id:Date.now().toString()+'_'+i,num:i+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$',link:''});
     }
     acompPersist();
   }
@@ -2067,12 +2032,13 @@ function acompItemRenderTable(lic){
       <th>Frete</th>
       <th>Margem %</th>
       <th>Lance Mín.</th>
+      <th style="width:90px">Link</th>
       <th style="color:#4a9eff">PMV *</th>
       <th>Lucro *</th>
       <th style="width:32px"></th>
     </tr></thead>
     <tbody>${tbody}</tbody>
-    <tfoot><tr><td colspan="12" style="padding:5px 6px;border-top:1px solid var(--line)">
+    <tfoot><tr><td colspan="13" style="padding:5px 6px;border-top:1px solid var(--line)">
       <button class="acomp-item-add-btn" onclick="acompItemAddRow('${lic.id}')">+ Adicionar linha</button>
       <button class="acomp-btn save" onclick="acompItemSaveFeedback(this)" style="margin-left:8px">Salvar itens</button>
     </td></tr></tfoot>
@@ -2100,6 +2066,7 @@ function acompItemInlineRow(licId, item, aliq){
     <td>${inp('frete','number',item.frete,'54px','')}</td>
     <td>${inp('margem','number',item.margem,'46px','')}</td>
     <td><div style="display:flex;align-items:center;gap:3px;justify-content:center"><input class="acomp-item-input" id="ii-${item.id}-lance" type="text" value="${escHtml(String(item.lance_min??''))}" placeholder="" style="min-width:54px;text-align:center" oninput="acompItemUpdateCalc('${licId}','${item.id}')"><button class="lance-tipo-btn" id="ii-${item.id}-lance-tipo" onclick="toggleLanceTipo('${licId}','${item.id}')">${item.lance_min_tipo||'R$'}</button></div></td>
+    <td>${inp('link','url',item.link||'','80px','URL...')}</td>
     <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv" style="color:#4a9eff !important">${pmvTxt}</span></td>
     <td style="white-space:nowrap"><span class="${lucroClass}" id="ii-${item.id}-lucro">${lucroTxt}</span></td>
     <td><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></td>
@@ -2109,11 +2076,13 @@ function acompItemInlineRow(licId, item, aliq){
 function acompItemAddRow(licId){
   const lic = acompData.find(x=>x.id===licId);
   if(!lic) return;
-  lic.itens.push({id:Date.now().toString(),num:lic.itens.length+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$'});
+  lic.itens.push({id:Date.now().toString(),num:lic.itens.length+1,fabricante:'',produto:'',valor_edital:'',qtd:'',custo_unit:'',frete:0,margem:25,lance_min:'',lance_min_tipo:'R$',link:''});
   acompPersist();
-  acompItemRenderTable(lic);
+  const containerId = document.getElementById('acomp-item-wrap') ? 'acomp-item-wrap' : `acomp-list-items-${licId}`;
+  acompItemRenderTable(lic, containerId);
   setTimeout(()=>{
-    const rows = document.querySelectorAll('#acomp-item-wrap tbody tr');
+    const wrap = document.getElementById(containerId);
+    const rows = wrap ? wrap.querySelectorAll('tbody tr') : [];
     if(rows.length){const last=rows[rows.length-1];const inp=last.querySelector('.acomp-item-input');if(inp)inp.focus();}
   },50);
 }
@@ -2144,6 +2113,7 @@ function acompItemUpdateCalc(licId, itemId){
   item.frete = gv('frete');
   item.margem = gv('margem');
   item.lance_min = gv('lance');
+  item.link = gv('link');
   acompPersist();
   const custo = Number(item.custo_unit)||0;
   const frete = Number(item.frete)||0;
@@ -2168,7 +2138,8 @@ function acompItemDelete(licId, itemId){
   if(confirm(`Excluir item "${label}"?\n\nEsta ação não pode ser desfeita.`)){
     lic.itens = (lic.itens||[]).filter(x=>x.id!==itemId);
     acompPersist();
-    acompItemRenderTable(lic);
+    const containerId = document.getElementById('acomp-item-wrap') ? 'acomp-item-wrap' : `acomp-list-items-${licId}`;
+    acompItemRenderTable(lic, containerId);
   }
 }
 
@@ -2357,6 +2328,7 @@ function acompItemModalSave(licId, itemId){
   const g = id => document.getElementById(id)?.value || '';
   const aliqVal = parseFloat(g('mi-aliq'))||0;
   lic.aliq = aliqVal;
+  const existingItem = lic.itens.find(x=>x.id===itemId);
   const item = {
     id: itemId==='new' ? String(Date.now()) : itemId,
     num: Number(g('mi-num'))||0,
@@ -2367,7 +2339,8 @@ function acompItemModalSave(licId, itemId){
     custo_unit: parseFloat(g('mi-custo'))||0,
     frete: parseFloat(g('mi-frete'))||0,
     margem: parseFloat(g('mi-margem'))||0,
-    lance_min: parseFloat(g('mi-lance'))||0
+    lance_min: parseFloat(g('mi-lance'))||0,
+    link: existingItem?.link || ''
   };
   if(itemId==='new'){
     lic.itens.push(item);
