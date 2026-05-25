@@ -2075,7 +2075,7 @@ function acompItemInlineRow(licId, item, aliq){
     <td>${inp('link','url',item.link||'','80px','URL...')}</td>
     <td style="white-space:nowrap"><span class="acomp-pmv-cell" id="ii-${item.id}-pmv" style="color:#4a9eff !important">${pmvTxt}</span></td>
     <td style="white-space:nowrap"><span class="${lucroClass}" id="ii-${item.id}-lucro">${lucroTxt}</span></td>
-    <td><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></td>
+    <td><div style="display:flex;gap:3px;justify-content:center"><button class="acomp-btn save" onclick="acompItemStartEdit('${licId}',null)" title="Confirmar" style="padding:2px 6px">✓</button><button class="acomp-btn del" onclick="acompItemDelete('${licId}','${item.id}')" title="Excluir" style="padding:2px 6px">✕</button></div></td>
   </tr>`;
 }
 
